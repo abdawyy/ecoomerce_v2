@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'Help & Guides',
+    'meta_description' => 'Download size guides, care instructions, and helpful documents.',
+    'download' => 'Download PDF',
+    'empty' => 'No guides available yet.',
+    'breadcrumb' => 'Guides',
+    'size_guide' => 'Size guide',
+    'admin_title' => 'Guides / PDFs',
+    'add' => 'Add guide',
+    'list' => 'All guides',
+    'saved' => 'Guide saved successfully.',
+    'content_upload' => 'Upload PDF file',
+    'content_html' => 'HTML content (generate PDF)',
+    'requires_auth' => 'Login required to download',
+    'product_link' => 'Related size guide',
+    'admin_manual' => 'Admin manual (how to use the website)',
+    'admin_manual_en' => 'Download manual (English PDF)',
+    'admin_manual_ar' => 'Download manual (Arabic PDF)',
+    'sample_pdf' => 'Editable sample PDF',
+    'sample_preview_en' => 'Preview sample (EN)',
+    'sample_preview_ar' => 'Preview sample (AR)',
+    'load_sample_template' => 'Load sample template into form',
+    'preview_pdf' => 'Preview PDF',
+    'preview_saved' => 'Preview saved guide',
+    'edit_hint' => 'Edit HTML below — use headings, lists, tables, and tip-box divs. Save then preview.',
+];

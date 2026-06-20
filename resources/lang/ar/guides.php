@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'المساعدة والأدلة',
+    'meta_description' => 'حمّل دليل المقاسات وتعليمات العناية والمستندات المفيدة.',
+    'download' => 'تحميل PDF',
+    'empty' => 'لا توجد أدلة متاحة حالياً.',
+    'breadcrumb' => 'الأدلة',
+    'size_guide' => 'دليل المقاسات',
+    'admin_title' => 'الأدلة / PDF',
+    'add' => 'إضافة دليل',
+    'list' => 'كل الأدلة',
+    'saved' => 'تم حفظ الدليل.',
+    'content_upload' => 'رفع ملف PDF',
+    'content_html' => 'محتوى HTML (إنشاء PDF)',
+    'requires_auth' => 'يتطلب تسجيل الدخول للتحميل',
+    'product_link' => 'دليل المقاسات',
+    'admin_manual' => 'دليل المسؤول (كيفية استخدام الموقع)',
+    'admin_manual_en' => 'تحميل الدليل (PDF إنجليزي)',
+    'admin_manual_ar' => 'تحميل الدليل (PDF عربي)',
+    'sample_pdf' => 'PDF نموذجي قابل للتعديل',
+    'sample_preview_en' => 'معاينة النموذج (EN)',
+    'sample_preview_ar' => 'معاينة النموذج (AR)',
+    'load_sample_template' => 'تحميل القالب النموذجي في النموذج',
+    'preview_pdf' => 'معاينة PDF',
+    'preview_saved' => 'معاينة الدليل المحفوظ',
+    'edit_hint' => 'عدّل HTML أدناه — استخدم عناوين وقوائم وجداول وصناديق tip-box. احفظ ثم عاين.',
+];
