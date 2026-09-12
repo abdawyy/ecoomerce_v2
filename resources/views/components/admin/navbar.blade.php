@@ -13,8 +13,11 @@
                 <button type="button" class="toggle-sidebar-btn admin-icon-btn border me-2" aria-label="Toggle sidebar">
                     <i class="bi bi-list fs-4"></i>
                 </button>
-                <a class="navbar-brand mb-0" href="{{ route('admin.dashboard') }}">
-                    <x-branding.logo style="width: 120px; height: 60px;" />
+                <a class="navbar-brand mb-0 d-inline-flex align-items-center" href="{{ route('admin.dashboard') }}">
+                    <x-branding.logo
+                        :link="false"
+                        style="width: 120px; height: 48px; object-fit: contain;"
+                    />
                 </a>
             </div>
 

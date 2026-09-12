@@ -94,7 +94,8 @@
                         </div>
 
                         <hr class="my-4">
-
+                        <h5>{{ __('branding.logos_media') }}</h5>
+                        <p class="text-muted small mb-3">{{ __('branding.logo_usage_hint') }}</p>
                         <div class="row g-4">
                             @foreach ([
                                 'logo' => __('branding.logo'),
@@ -118,13 +119,23 @@
                                             default => $field.'_path',
                                         };
                                         $currentPath = $settings->{$pathColumn} ?? null;
+                                        $previewUrl = $currentPath
+                                            ? $branding->assetUrl($currentPath)
+                                            : ($field === 'logo' ? $branding->logoUrl() : null);
                                     @endphp
-                                    @if ($currentPath)
+                                    @if ($previewUrl)
+                                        <div class="mb-2">
+                                            <img src="{{ $previewUrl }}" alt="" class="img-thumbnail" style="max-height:80px; object-fit: contain;">
+                                        </div>
+                                    @elseif ($currentPath)
                                         <div class="mb-2">
                                             <img src="{{ $branding->assetUrl($currentPath) }}" alt="" class="img-thumbnail" style="max-height:80px">
                                         </div>
                                     @endif
                                     <input type="file" name="{{ $field }}" class="form-control" accept="image/*">
+                                    @if ($field === 'logo')
+                                        <div class="form-text">{{ __('branding.logo_main_hint') }}</div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

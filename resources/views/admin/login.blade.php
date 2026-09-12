@@ -17,6 +17,12 @@
                         </div>
                         <div class="col-12 col-md-7">
                             <div class="p-4 p-lg-5">
+                                <div class="text-center mb-4">
+                                    <x-branding.logo
+                                        :href="route('admin.dashboard')"
+                                        style="width: 160px; height: auto; max-height: 80px; object-fit: contain;"
+                                    />
+                                </div>
                                 <div class="d-flex justify-content-center justify-content-md-end align-items-center gap-2 mb-3 small">
                                     <a class="admin-lang-link text-decoration-none {{ app()->getLocale() == 'en' ? 'active' : '' }}" href="{{ url('/lang/en') }}">EN</a>
                                     <span class="text-muted">|</span>

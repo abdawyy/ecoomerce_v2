@@ -10,7 +10,7 @@
         </button>
 
         <a class="navbar-brand" href="/">
-            <x-branding.logo style="width: 100px; height: auto;" />
+            <x-branding.logo style="width: 100px; height: auto; object-fit: contain;" />
         </a>
 
         <div class="collapse navbar-collapse">
