@@ -43,6 +43,10 @@ class SiteSettingsController extends Controller
             'pdf_thank_you_ar' => 'nullable|string|max:500',
             'invoice_notes_en' => 'nullable|string',
             'invoice_notes_ar' => 'nullable|string',
+            'cart_policy_title_en' => 'nullable|string|max:255',
+            'cart_policy_title_ar' => 'nullable|string|max:255',
+            'cart_policy_body_en' => 'nullable|string',
+            'cart_policy_body_ar' => 'nullable|string',
         ];
 
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
@@ -53,9 +57,15 @@ class SiteSettingsController extends Controller
 
         $settings = SiteSetting::current();
 
-        foreach (['invoice_notes_en', 'invoice_notes_ar'] as $notesField) {
+        foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar'] as $notesField) {
             if (array_key_exists($notesField, $validated)) {
                 $validated[$notesField] = trim(strip_tags($validated[$notesField] ?? '')) ?: null;
+            }
+        }
+
+        foreach (['cart_policy_title_en', 'cart_policy_title_ar'] as $titleField) {
+            if (array_key_exists($titleField, $validated)) {
+                $validated[$titleField] = trim(strip_tags($validated[$titleField] ?? '')) ?: null;
             }
         }
 
@@ -73,6 +83,8 @@ class SiteSettingsController extends Controller
             'primary_color', 'accent_color', 'support_email', 'support_phone',
             'pdf_footer_en', 'pdf_footer_ar', 'pdf_thank_you_en', 'pdf_thank_you_ar',
             'invoice_notes_en', 'invoice_notes_ar',
+            'cart_policy_title_en', 'cart_policy_title_ar',
+            'cart_policy_body_en', 'cart_policy_body_ar',
         ];
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
             $scalarFields[] = "{$platform}_url";

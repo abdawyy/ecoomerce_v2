@@ -65,6 +65,49 @@ class BrandingService
         return $this->settings()->support_phone ?: config('branding.defaults.support_phone');
     }
 
+    public function cartPolicyTitle(): string
+    {
+        $locale = app()->getLocale();
+        $settings = $this->settings();
+
+        $title = $locale === 'ar'
+            ? ($settings->cart_policy_title_ar ?: $settings->cart_policy_title_en)
+            : ($settings->cart_policy_title_en ?: $settings->cart_policy_title_ar);
+
+        return trim((string) $title) !== ''
+            ? trim((string) $title)
+            : __('cart.policy_title_default');
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function cartPolicyParagraphs(): array
+    {
+        $locale = app()->getLocale();
+        $settings = $this->settings();
+
+        $body = $locale === 'ar'
+            ? ($settings->cart_policy_body_ar ?: $settings->cart_policy_body_en)
+            : ($settings->cart_policy_body_en ?: $settings->cart_policy_body_ar);
+
+        $body = trim(strip_tags((string) $body));
+
+        if ($body === '') {
+            $body = __('cart.policy_body_default');
+        }
+
+        return array_values(array_filter(
+            array_map('trim', preg_split("/\r\n|\n|\r/", $body) ?: []),
+            fn ($line) => $line !== ''
+        ));
+    }
+
+    public function hasCartPolicy(): bool
+    {
+        return count($this->cartPolicyParagraphs()) > 0;
+    }
+
     /**
      * @return array<int, array{platform: string, url: string, label: string, icon: string}>
      */

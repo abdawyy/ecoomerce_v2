@@ -49,4 +49,12 @@ return [
     'social_telegram' => 'تلغرام',
     'social_pinterest' => 'بينترست',
     'social_snapchat' => 'سناب شات',
+    'cart_policy' => 'سياسة السلة (البيع والمعاينة)',
+    'cart_policy_hint' => 'تظهر في صفحة السلة. فقرة واحدة في كل سطر. اتركها فارغة لاستخدام النص الافتراضي.',
+    'cart_policy_title_en' => 'عنوان السياسة (إنجليزي)',
+    'cart_policy_title_ar' => 'عنوان السياسة (عربي)',
+    'cart_policy_body_en' => 'نص السياسة (إنجليزي)',
+    'cart_policy_body_ar' => 'نص السياسة (عربي)',
+    'cart_policy_placeholder' => 'فقرة واحدة في كل سطر…',
+    'load_cart_policy_sample' => 'تحميل السياسة النموذجية',
 ];

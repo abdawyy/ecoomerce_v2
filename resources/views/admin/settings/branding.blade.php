@@ -212,6 +212,40 @@
                             <a href="{{ route('admin.settings.pdf.preview', ['lang' => 'ar']) }}" class="btn btn-primary btn-sm" target="_blank">{{ __('pdf.preview_sample_invoice_ar') }}</a>
                         </div>
 
+                        <hr class="my-4">
+                        <h5>{{ __('branding.cart_policy') }}</h5>
+                        <p class="text-muted small">{{ __('branding.cart_policy_hint') }}</p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.cart_policy_title_en') }}</label>
+                                <input type="text" name="cart_policy_title_en" class="form-control"
+                                       value="{{ old('cart_policy_title_en', $settings->cart_policy_title_en) }}"
+                                       placeholder="{{ __('cart.policy_title_default', [], 'en') }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.cart_policy_title_ar') }}</label>
+                                <input type="text" name="cart_policy_title_ar" class="form-control" dir="rtl"
+                                       value="{{ old('cart_policy_title_ar', $settings->cart_policy_title_ar) }}"
+                                       placeholder="{{ __('cart.policy_title_default', [], 'ar') }}">
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label mb-0">{{ __('branding.cart_policy_body_en') }}</label>
+                                    <button type="button" class="btn btn-link btn-sm p-0" id="load-cart-policy-en">{{ __('branding.load_cart_policy_sample') }} (EN)</button>
+                                </div>
+                                <textarea name="cart_policy_body_en" id="cart_policy_body_en" class="form-control" rows="5"
+                                          placeholder="{{ __('branding.cart_policy_placeholder') }}">{{ old('cart_policy_body_en', $settings->cart_policy_body_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label mb-0">{{ __('branding.cart_policy_body_ar') }}</label>
+                                    <button type="button" class="btn btn-link btn-sm p-0" id="load-cart-policy-ar">{{ __('branding.load_cart_policy_sample') }} (AR)</button>
+                                </div>
+                                <textarea name="cart_policy_body_ar" id="cart_policy_body_ar" class="form-control" rows="5" dir="rtl"
+                                          placeholder="{{ __('branding.cart_policy_placeholder') }}">{{ old('cart_policy_body_ar', $settings->cart_policy_body_ar) }}</textarea>
+                            </div>
+                        </div>
+
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary">{{ __('branding.save') }}</button>
                         </div>
@@ -226,6 +260,11 @@
 (function () {
     const notesEn = @json(__('invoice_sample.notes_plain', [], 'en'));
     const notesAr = @json(__('invoice_sample.notes_plain', [], 'ar'));
+    const policyTitleEn = @json(__('cart.policy_title_default', [], 'en'));
+    const policyTitleAr = @json(__('cart.policy_title_default', [], 'ar'));
+    const policyBodyEn = @json(__('cart.policy_body_default', [], 'en'));
+    const policyBodyAr = @json(__('cart.policy_body_default', [], 'ar'));
+
     document.getElementById('load-invoice-notes-en')?.addEventListener('click', () => {
         if (confirm('Replace English invoice notes with the sample?')) {
             document.getElementById('invoice_notes_en').value = notesEn;
@@ -234,6 +273,18 @@
     document.getElementById('load-invoice-notes-ar')?.addEventListener('click', () => {
         if (confirm('Replace Arabic invoice notes with the sample?')) {
             document.getElementById('invoice_notes_ar').value = notesAr;
+        }
+    });
+    document.getElementById('load-cart-policy-en')?.addEventListener('click', () => {
+        if (confirm('Replace English cart policy with the sample?')) {
+            document.querySelector('input[name="cart_policy_title_en"]').value = policyTitleEn;
+            document.getElementById('cart_policy_body_en').value = policyBodyEn;
+        }
+    });
+    document.getElementById('load-cart-policy-ar')?.addEventListener('click', () => {
+        if (confirm('Replace Arabic cart policy with the sample?')) {
+            document.querySelector('input[name="cart_policy_title_ar"]').value = policyTitleAr;
+            document.getElementById('cart_policy_body_ar').value = policyBodyAr;
         }
     });
 })();

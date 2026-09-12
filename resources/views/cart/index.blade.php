@@ -188,6 +188,15 @@
                 </div>
             @endif
         </div>
+
+        @if ($branding->hasCartPolicy())
+            <div class="cart-policy-panel mt-4" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+                <h2 class="cart-policy-title">{{ $branding->cartPolicyTitle() }}</h2>
+                @foreach ($branding->cartPolicyParagraphs() as $paragraph)
+                    <p class="cart-policy-text">{{ $paragraph }}</p>
+                @endforeach
+            </div>
+        @endif
     </div>
 </section>
 

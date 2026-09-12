@@ -49,4 +49,12 @@ return [
     'social_telegram' => 'Telegram',
     'social_pinterest' => 'Pinterest',
     'social_snapchat' => 'Snapchat',
+    'cart_policy' => 'Cart policy (sales & inspection)',
+    'cart_policy_hint' => 'Shown on the cart page. One paragraph per line. Leave blank to use the default sample text.',
+    'cart_policy_title_en' => 'Policy title (EN)',
+    'cart_policy_title_ar' => 'Policy title (AR)',
+    'cart_policy_body_en' => 'Policy text (EN)',
+    'cart_policy_body_ar' => 'Policy text (AR)',
+    'cart_policy_placeholder' => 'One paragraph per line…',
+    'load_cart_policy_sample' => 'Load sample policy',
 ];
