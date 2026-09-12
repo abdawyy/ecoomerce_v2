@@ -370,18 +370,30 @@
     setInterval(pollLive, refreshMs);
 
     @if (in_array($tab, ['overview', 'traffic', 'sales', 'customers', 'categories']))
+    @php
+        $chartCategoryData = $categoryPerformance->pluck('views', 'category_name');
+        $chartDeviceData = $deviceBreakdown->pluck('sessions', 'device');
+        $chartSourceData = $trafficSources->pluck('sessions', 'traffic_source');
+        $chartWeekdayData = collect($salesByWeekday)->pluck('orders');
+        $chartWeekdayLabels = [
+            __('analytics.mon'),
+            __('analytics.tue'),
+            __('analytics.wed'),
+            __('analytics.thu'),
+            __('analytics.fri'),
+            __('analytics.sat'),
+            __('analytics.sun'),
+        ];
+    @endphp
     const traffic = @json($chartViews);
     const hours = @json($trafficByHour);
     const revenue = @json($chartRevenue);
     const funnel = @json($funnel);
-    const categories = @json($categoryPerformance->pluck('views', 'category_name'));
-    const devices = @json($deviceBreakdown->pluck('sessions', 'device'));
-    const sources = @json($trafficSources->pluck('sessions', 'traffic_source'));
-    const weekday = @json(collect($salesByWeekday)->pluck('orders'));
-    const weekdayLabels = @json([
-        __('analytics.mon'), __('analytics.tue'), __('analytics.wed'), __('analytics.thu'),
-        __('analytics.fri'), __('analytics.sat'), __('analytics.sun'),
-    ]);
+    const categories = @json($chartCategoryData);
+    const devices = @json($chartDeviceData);
+    const sources = @json($chartSourceData);
+    const weekday = @json($chartWeekdayData);
+    const weekdayLabels = @json($chartWeekdayLabels);
 
     if (document.getElementById('chartTraffic')) {
         new Chart(document.getElementById('chartTraffic'), {

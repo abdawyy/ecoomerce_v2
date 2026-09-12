@@ -431,16 +431,30 @@
     setInterval(pollLive, refreshMs);
 
     <?php if(in_array($tab, ['overview', 'traffic', 'sales', 'customers', 'categories'])): ?>
+    <?php
+        $chartCategoryData = $categoryPerformance->pluck('views', 'category_name');
+        $chartDeviceData = $deviceBreakdown->pluck('sessions', 'device');
+        $chartSourceData = $trafficSources->pluck('sessions', 'traffic_source');
+        $chartWeekdayData = collect($salesByWeekday)->pluck('orders');
+        $chartWeekdayLabels = [
+            __('analytics.mon'),
+            __('analytics.tue'),
+            __('analytics.wed'),
+            __('analytics.thu'),
+            __('analytics.fri'),
+            __('analytics.sat'),
+            __('analytics.sun'),
+        ];
+    ?>
     const traffic = <?php echo json_encode($chartViews, 15, 512) ?>;
     const hours = <?php echo json_encode($trafficByHour, 15, 512) ?>;
     const revenue = <?php echo json_encode($chartRevenue, 15, 512) ?>;
     const funnel = <?php echo json_encode($funnel, 15, 512) ?>;
-    const categories = <?php echo json_encode($categoryPerformance->pluck('views', 'category_name'), 512) ?>;
-    const devices = <?php echo json_encode($deviceBreakdown->pluck('sessions', 'device'), 512) ?>;
-    const sources = <?php echo json_encode($trafficSources->pluck('sessions', 'traffic_source'), 512) ?>;
-    const weekday = <?php echo json_encode(collect($salesByWeekday)->pluck('orders'), 15, 512) ?>;
-    const weekdayLabels = <?php echo json_encode([
-        __('analytics.mon'), __('analytics.tue'), __('analytics.wed')) ?>;
+    const categories = <?php echo json_encode($chartCategoryData, 15, 512) ?>;
+    const devices = <?php echo json_encode($chartDeviceData, 15, 512) ?>;
+    const sources = <?php echo json_encode($chartSourceData, 15, 512) ?>;
+    const weekday = <?php echo json_encode($chartWeekdayData, 15, 512) ?>;
+    const weekdayLabels = <?php echo json_encode($chartWeekdayLabels, 15, 512) ?>;
 
     if (document.getElementById('chartTraffic')) {
         new Chart(document.getElementById('chartTraffic'), {
