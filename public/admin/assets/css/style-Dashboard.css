@@ -115,6 +115,7 @@ a {
     transition: all 0.3s;
     transform: translateX(0);
     padding: 30px 30px 30px 20px;
+    overflow-x: hidden;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #bcbcbc transparent;

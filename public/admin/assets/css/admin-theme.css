@@ -584,6 +584,57 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
     margin: 0;
 }
 
+html:has(body.admin-body),
+body.admin-body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+body.admin-body.modal-open {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.sidebar {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar-nav .nav-link,
+.sidebar-nav .nav-content a {
+    min-width: 0;
+}
+
+.sidebar-nav .nav-link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#navbar.admin-navbar,
+.admin-navbar .container-fluid {
+    max-width: 100%;
+}
+
+.admin-navbar .badge.translate-middle.start-100 {
+    transform: translate(-30%, -40%);
+}
+
+[dir="rtl"] .admin-navbar .badge.translate-middle.start-100 {
+    transform: translate(30%, -40%);
+}
+
+#main {
+    overflow-x: clip;
+    max-width: 100%;
+    min-width: 0;
+}
+
+#main .container-fluid,
+#main .container {
+    max-width: 100%;
+}
+
 @media (max-width: 1199px) {
     body.toggle-sidebar {
         overflow: hidden;
