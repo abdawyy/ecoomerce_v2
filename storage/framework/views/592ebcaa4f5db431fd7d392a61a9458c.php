@@ -87,31 +87,6 @@
                                        value="<?php echo e(old('site_name', $settings->site_name ?? $branding->siteName())); ?>">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><?php echo e(__('branding.primary_color')); ?></label>
-                                <input type="color" name="primary_color" class="form-control form-control-color"
-                                       value="<?php echo e(old('primary_color', $settings->primary_color ?? $branding->primaryColor())); ?>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label"><?php echo e(__('branding.tagline_en')); ?></label>
-                                <input type="text" name="tagline_en" class="form-control"
-                                       value="<?php echo e(old('tagline_en', $settings->tagline_en)); ?>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label"><?php echo e(__('branding.tagline_ar')); ?></label>
-                                <input type="text" name="tagline_ar" class="form-control"
-                                       value="<?php echo e(old('tagline_ar', $settings->tagline_ar)); ?>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label"><?php echo e(__('branding.logo_alt_en')); ?></label>
-                                <input type="text" name="logo_alt_en" class="form-control"
-                                       value="<?php echo e(old('logo_alt_en', $settings->logo_alt_en)); ?>">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label"><?php echo e(__('branding.logo_alt_ar')); ?></label>
-                                <input type="text" name="logo_alt_ar" class="form-control"
-                                       value="<?php echo e(old('logo_alt_ar', $settings->logo_alt_ar)); ?>">
-                            </div>
-                            <div class="col-md-6">
                                 <label class="form-label"><?php echo e(__('branding.support_email')); ?></label>
                                 <input type="email" name="support_email" class="form-control"
                                        value="<?php echo e(old('support_email', $settings->support_email)); ?>">
@@ -155,47 +130,22 @@
                         <h5><?php echo e(__('branding.logos_media')); ?></h5>
                         <p class="text-muted small mb-3"><?php echo e(__('branding.logo_usage_hint')); ?></p>
                         <div class="row g-4">
-                            <?php $__currentLoopData = [
-                                'logo' => __('branding.logo'),
-                                'logo_dark' => __('branding.logo_dark'),
-                                'favicon' => __('branding.favicon'),
-                                'og_image' => __('branding.og_image'),
-                                'footer_logo' => __('branding.footer_logo'),
-                                'placeholder_product' => __('branding.placeholder_product'),
-                            ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="col-md-4">
-                                    <label class="form-label"><?php echo e($label); ?></label>
-                                    <?php
-                                        $pathColumn = $field === 'logo' ? 'logo_path' : ($field === 'logo_dark' ? 'logo_dark_path' : $field.'_path');
-                                        $pathColumn = match($field) {
-                                            'logo' => 'logo_path',
-                                            'logo_dark' => 'logo_dark_path',
-                                            'favicon' => 'favicon_path',
-                                            'og_image' => 'og_image_path',
-                                            'footer_logo' => 'footer_logo_path',
-                                            'placeholder_product' => 'placeholder_product_path',
-                                            default => $field.'_path',
-                                        };
-                                        $currentPath = $settings->{$pathColumn} ?? null;
-                                        $previewUrl = $currentPath
-                                            ? $branding->assetUrl($currentPath)
-                                            : ($field === 'logo' ? $branding->logoUrl() : null);
-                                    ?>
-                                    <?php if($previewUrl): ?>
-                                        <div class="mb-2">
-                                            <img src="<?php echo e($previewUrl); ?>" alt="" class="img-thumbnail" style="max-height:80px; object-fit: contain;">
-                                        </div>
-                                    <?php elseif($currentPath): ?>
-                                        <div class="mb-2">
-                                            <img src="<?php echo e($branding->assetUrl($currentPath)); ?>" alt="" class="img-thumbnail" style="max-height:80px">
-                                        </div>
-                                    <?php endif; ?>
-                                    <input type="file" name="<?php echo e($field); ?>" class="form-control" accept="image/*">
-                                    <?php if($field === 'logo'): ?>
-                                        <div class="form-text"><?php echo e(__('branding.logo_main_hint')); ?></div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-md-4">
+                                <label class="form-label"><?php echo e(__('branding.logo')); ?></label>
+                                <?php
+                                    $currentPath = $settings->logo_path ?? null;
+                                    $previewUrl = $currentPath
+                                        ? $branding->assetUrl($currentPath)
+                                        : $branding->logoUrl();
+                                ?>
+                                <?php if($previewUrl): ?>
+                                    <div class="mb-2">
+                                        <img src="<?php echo e($previewUrl); ?>" alt="" class="img-thumbnail" style="max-height:80px; object-fit: contain;">
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" name="logo" class="form-control" accept="image/*">
+                                <div class="form-text"><?php echo e(__('branding.logo_main_hint')); ?></div>
+                            </div>
                         </div>
 
                         <hr class="my-4" id="home-tiles">
