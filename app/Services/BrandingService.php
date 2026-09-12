@@ -250,6 +250,71 @@ class BrandingService
         );
     }
 
+    /**
+     * Two homepage category tiles: name, URL, and image from Branding & Media.
+     *
+     * @return array<int, array{name: string, url: string, image: string}>
+     */
+    public function homeCategoryTiles(): array
+    {
+        $settings = $this->settings();
+
+        return [
+            $this->homeCategoryTile(
+                1,
+                $settings->home_category_1_id ?? null,
+                $settings->home_tile_1_title_en ?? null,
+                $settings->home_tile_1_title_ar ?? null,
+                $this->categoryImage1Url(),
+                __('web.top'),
+                1
+            ),
+            $this->homeCategoryTile(
+                2,
+                $settings->home_category_2_id ?? null,
+                $settings->home_tile_2_title_en ?? null,
+                $settings->home_tile_2_title_ar ?? null,
+                $this->categoryImage2Url(),
+                __('web.Long Sleeve'),
+                5
+            ),
+        ];
+    }
+
+    /**
+     * @return array{name: string, url: string, image: string}
+     */
+    protected function homeCategoryTile(
+        int $slot,
+        mixed $categoryId,
+        ?string $titleEn,
+        ?string $titleAr,
+        string $image,
+        string $fallbackName,
+        int $fallbackCategoryId
+    ): array {
+        $category = null;
+        if ($categoryId) {
+            $category = \App\Models\Category::query()
+                ->where('is_active', 1)
+                ->find($categoryId);
+        }
+
+        $locale = app()->getLocale();
+        $custom = trim((string) ($locale === 'ar'
+            ? ($titleAr ?: $titleEn)
+            : ($titleEn ?: $titleAr)));
+
+        $name = $custom !== '' ? $custom : ($category?->name ?: $fallbackName);
+        $id = $category?->id ?: $fallbackCategoryId;
+
+        return [
+            'name' => $name,
+            'url' => route('product.List', ['id' => $id]),
+            'image' => $image,
+        ];
+    }
+
     public function assetUrl(?string $path): string
     {
         if (empty($path)) {

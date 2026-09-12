@@ -2,17 +2,36 @@
 
 <x-web.layout :seo="$seo ?? null" :title="__('checkout.shipping_address')">
 
-<section id="cart-page" class="pb-5 mb-5">
+<section id="cart-page" class="checkout-page pb-5 mb-5">
     <div class="container pb-5">
+        <div class="checkout-hero mb-4">
+            <img src="{{ $branding->heroImageUrl() }}" alt="{{ $branding->siteName() }}">
+            <div class="checkout-hero-overlay">
+                <p class="checkout-hero-kicker mb-1">{{ $branding->tagline() ?: __('web.promo_tagline') }}</p>
+                <h1 class="checkout-hero-title mb-0">{{ __('checkout.shipping_address') }}</h1>
+            </div>
+        </div>
+
         <x-web.checkout-stepper current="details" />
 
         <div class="row pt-2">
             <div class="col-12">
-                <h1 class="fw-bolder fs-3 mb-3">{{ __('checkout.shipping_address') }}</h1>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
             </div>
 
             <div class="col-12">
-                <form action="{{ route('checkout.order') }}" method="POST">
+                <form action="{{ route('checkout.order') }}" method="POST" id="checkout-order-form">
                     @csrf
                     <input type="hidden" name="checkout_token" value="{{ $checkoutToken }}">
                     @if (session('promo_code'))
@@ -136,7 +155,7 @@
                         </div>
 
                         <div class="col-12 col-lg-5">
-                            <div style="position: sticky; top: 100px;">
+                            <div class="checkout-summary-card">
                                 <h5 class="fw-bolder fs-4 mb-3">{{ __('checkout.summary') }}</h5>
                                 <div class="card shadow-sm rounded-3 border-0">
                                     <div class="card-body p-4">
@@ -178,7 +197,10 @@
                                             <h6 class="fw-bolder mb-0">{{ __('checkout.total') }}</h6>
                                             <h6 class="fw-bolder mb-0" id="checkout-total">LE {{ number_format($total, 2) }}</h6>
                                         </div>
-                                        <button class="btn btn-primary w-100 mt-3 py-2" type="submit">{{ __('checkout.confirm') }}</button>
+                                        <button class="btn btn-dark w-100 mt-3 py-3 fw-bold" type="submit" id="checkout-submit-btn">
+                                            {{ __('checkout.confirm') }}
+                                        </button>
+                                        <p class="small text-muted text-center mt-2 mb-0">{{ __('checkout.placing_hint') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -198,6 +220,8 @@
         const subtotalEl = document.getElementById('checkout-subtotal');
         const deliveryEl = document.getElementById('checkout-delivery');
         const totalEl = document.getElementById('checkout-total');
+        const form = document.getElementById('checkout-order-form');
+        const submitBtn = document.getElementById('checkout-submit-btn');
 
         function format(n) {
             return 'LE ' + n.toFixed(2);
@@ -225,6 +249,12 @@
                 citySelect.value = opt.dataset.city;
                 recalc();
             }
+        });
+
+        form?.addEventListener('submit', function () {
+            if (!submitBtn) return;
+            submitBtn.disabled = true;
+            submitBtn.textContent = @json(__('checkout.placing_order'));
         });
     })();
 </script>

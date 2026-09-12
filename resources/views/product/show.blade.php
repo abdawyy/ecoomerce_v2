@@ -1,18 +1,18 @@
 <x-web.layout :seo="$seo ?? null" :title="$product->name ?? null">
 @push('styles')
 <style>
-    :root { --brand-black: #111; --brand-green: #28a745; --brand-muted: #6b7280; }
     .pointer { cursor: pointer; }
 
     .page-wrap {
-        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 40%);
+        background: var(--brand-white);
         padding: 24px 0 60px;
     }
     .content-card {
-        background: #fff;
+        background: var(--brand-white);
         border-radius: 18px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-        border: 1px solid #eef2f7;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--brand-border);
+        color: var(--brand-black);
     }
     .section-title {
         font-size: 0.75rem;
@@ -21,55 +21,53 @@
         color: var(--brand-muted);
         font-weight: 700;
     }
-    
-    /* Image Gallery Fixes */
-    .img-main-container { border-radius: 14px; overflow: hidden; background: #f8f9fa; }
+
+    .img-main-container { border-radius: 14px; overflow: hidden; background: var(--brand-soft); }
     .img-oneProduct { width: 100%; object-fit: cover; aspect-ratio: 4 / 5; }
     .img-main-container img { transition: transform 0.3s ease; }
     .img-main-container:hover img { transform: scale(1.02); }
-    
-    /* Fix: Thumbnails Row - prevents cutting off at bottom */
-    .thumb-scroll-container { 
-        display: flex; 
-        gap: 10px; 
-        padding: 15px 0; /* Extra vertical padding so thumbnails aren't clipped */
-        overflow-x: auto; 
+
+    .thumb-scroll-container {
+        display: flex;
+        gap: 10px;
+        padding: 15px 0;
+        overflow-x: auto;
     }
-    .img-oneProduct-sub { 
-        width: 76px; 
-        height: 76px; 
-        border-radius: 10px; 
-        object-fit: cover; 
-        border: 2px solid transparent; 
+    .img-oneProduct-sub {
+        width: 76px;
+        height: 76px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid transparent;
         transition: 0.3s;
         box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
     .img-selected { border-color: var(--brand-black); }
 
-    /* UI Components */
     .stock-badge {
-        border: 1px solid var(--brand-green);
-        color: var(--brand-green);
+        border: 1px solid #28a745;
+        color: #28a745;
         border-radius: 50px;
         padding: 2px 12px;
         font-size: 0.75rem;
         font-weight: 600;
         display: inline-block;
-        background: #f2fff6;
+        background: rgba(40, 167, 69, 0.12);
     }
 
     .selector-label {
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--brand-border);
         padding: 8px 18px;
         border-radius: 10px;
         transition: 0.2s;
         cursor: pointer;
         font-weight: 600;
-        background: #fff;
+        background: var(--brand-white);
+        color: var(--brand-black);
     }
     .btn-check:checked + .selector-label {
         background-color: var(--brand-black);
-        color: white;
+        color: var(--brand-white);
         border-color: var(--brand-black);
     }
     .btn-check:disabled + .selector-label { opacity: 0.3; text-decoration: line-through; }
@@ -85,8 +83,8 @@
 
     .review-card {
         border-radius: 14px;
-        border: 1px solid #eef2f7;
-        background: #fff;
+        border: 1px solid var(--brand-border);
+        background: var(--brand-white);
     }
 
     .reviews-list {
@@ -101,10 +99,9 @@
         }
     }
 
-    /* Review Form Box Fix */
     .review-form-box {
-        background: #fdfdfd;
-        border: 1px solid #eee;
+        background: var(--brand-soft);
+        border: 1px solid var(--brand-border);
         border-radius: 14px;
         padding: 22px;
         margin-bottom: 30px;
@@ -226,8 +223,8 @@
                             <button class="btn btn-dark px-4" id="ajaxSubmitReview">Submit Review</button>
                         </div>
                     @else
-                        <div class="alert alert-light border mb-4 text-center">
-                            <p class="mb-0 small text-muted">Please <a href="{{ route('login') }}" class="text-dark fw-bold">Login</a> to leave a review.</p>
+                        <div class="alert alert-secondary border mb-4 text-center">
+                            <p class="mb-0 small text-muted">Please <a href="{{ route('login') }}" class="fw-bold">Login</a> to leave a review.</p>
                         </div>
                     @endauth
 
@@ -235,7 +232,7 @@
                         @forelse ($product->reviews as $review)
                             <div class="mb-3 pb-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold small text-dark">{{ $review->user->name }}</span>
+                                    <span class="fw-bold small">{{ $review->user->name }}</span>
                                     <div class="text-warning small">
                                         @for ($i = 1; $i <= 5; $i++)
                                             <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }}"></i>

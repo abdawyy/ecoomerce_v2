@@ -13,7 +13,7 @@
     }
 @endphp
 
-<nav class="checkout-stepper mb-4" aria-label="{{ __('checkout.progress') }}">
+<nav class="checkout-stepper mb-4 mb-md-5" aria-label="{{ __('checkout.progress') }}">
     @foreach ($steps as $key => $step)
         @php
             $index = $loop->index;

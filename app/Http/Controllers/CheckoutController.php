@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\AdminOrderNotificationMail;
-use App\Mail\OrderConfirmationMail;
+use App\Jobs\SendOrderConfirmation;
 use App\Models\addresses;
 use App\Models\Cities;
 use App\Models\discountCodes;
@@ -18,7 +17,6 @@ use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -61,7 +59,7 @@ class CheckoutController extends Controller
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|integer|exists:cities,id',
             'country' => 'nullable|string|max:100',
-            'phone_number' => 'required|numeric|digits_between:10,15',
+            'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
             'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
         ]);
 
@@ -76,10 +74,11 @@ class CheckoutController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $validatedData, $userId, $promoCodeValue, $city) {
-                $address = addresses::updateOrCreate(
-                    ['user_id' => $userId],
-                    $this->addressPayload($request, $userId, null)
-                );
+                $addressQuery = addresses::where('user_id', $userId)->first();
+                $payload = $this->addressPayload($request, $userId, null);
+                $address = $addressQuery
+                    ? tap($addressQuery)->update($payload)
+                    : addresses::create($payload);
 
                 $cart = new shoppingCart;
                 $total = $cart->totalPrice($userId, $city->price, $promoCodeValue->discount_percentage ?? 0);
@@ -125,7 +124,7 @@ class CheckoutController extends Controller
             'address_line2' => 'nullable|string|max:255',
             'city' => 'required|integer|exists:cities,id',
             'country' => 'nullable|string|max:100',
-            'phone_number' => 'required|numeric|digits_between:10,15',
+            'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
             'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
         ]);
 
@@ -138,10 +137,15 @@ class CheckoutController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $validatedData, $promoCodeValue, $city) {
-                $guestUser = GuestUser::updateOrCreate(
-                    ['email' => $validatedData['email']],
-                    ['name' => $validatedData['full_name']]
-                );
+                $guestUser = GuestUser::where('email', $validatedData['email'])->first();
+                if ($guestUser) {
+                    $guestUser->update(['name' => $validatedData['full_name']]);
+                } else {
+                    $guestUser = GuestUser::create([
+                        'email' => $validatedData['email'],
+                        'name' => $validatedData['full_name'],
+                    ]);
+                }
 
                 $address = addresses::create(array_merge(
                     $this->addressPayload($request, null, $guestUser->id),
@@ -209,24 +213,49 @@ class CheckoutController extends Controller
     protected function completeOrder(int $orderId, float $total, $deliveryFees)
     {
         session()->forget('checkout_token');
+        session([
+            'placed_order_id' => $orderId,
+            'placed_order_total' => $total,
+            'placed_order_delivery' => $deliveryFees,
+        ]);
 
-        $order = $this->loadOrderWithRelations($orderId);
-        $pdfPaths = self::generatePdfInvoice($order);
+        SendOrderConfirmation::dispatchAfterResponse($orderId);
 
-        $customerEmail = $order->user->email ?? $order->guestUser->email;
-        Mail::to($customerEmail)->send(new OrderConfirmationMail($order, $pdfPaths));
-        Mail::to(config('hayah.admin_email'))->send(new AdminOrderNotificationMail($order, $pdfPaths));
+        return redirect()->route('checkout.receipt', $orderId);
+    }
+
+    public function receipt(int $order)
+    {
+        $this->authorizeReceipt($order);
+
+        $orderModel = $this->loadOrderWithRelations($order);
+        $total = session('placed_order_total', $orderModel->total_amount);
+        $deliveryFees = session('placed_order_delivery', $orderModel->cities->price ?? 0);
 
         return view('checkout.receipt', [
-            'orderID' => $order->id,
+            'orderID' => $orderModel->id,
             'totalPrice' => $total,
             'deliveryFees' => $deliveryFees,
-            'isGuestCheckout' => $order->user_id === null,
-            'guestEmail' => $order->guestUser->email ?? null,
-            'guestName' => $order->guestUser->name ?? null,
-            'invoiceUrl' => URL::temporarySignedRoute('checkout.receipt.invoice', now()->addHours(48), ['order' => $order->id]),
-            'emailSent' => true,
+            'isGuestCheckout' => $orderModel->user_id === null,
+            'guestEmail' => $orderModel->guestUser->email ?? null,
+            'guestName' => $orderModel->guestUser->name ?? null,
+            'invoiceUrl' => URL::temporarySignedRoute('checkout.receipt.invoice', now()->addHours(48), ['order' => $orderModel->id]),
+            'emailSent' => false,
+            'emailPending' => true,
         ]);
+    }
+
+    protected function authorizeReceipt(int $orderId): void
+    {
+        if ((int) session('placed_order_id') === $orderId) {
+            return;
+        }
+
+        if (Auth::check() && orders::where('id', $orderId)->where('user_id', Auth::id())->exists()) {
+            return;
+        }
+
+        abort(403);
     }
 
     public function receiptInvoice(Request $request, int $order, PdfService $pdf)

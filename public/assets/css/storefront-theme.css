@@ -26,16 +26,27 @@
     background: #21262d;
 }
 
-[data-bs-theme="dark"] .checkout-step-dot {
+[data-bs-theme="dark"] .checkout-stepper {
     background: #161b22;
+    border-color: #30363d;
+}
+
+[data-bs-theme="dark"] .checkout-step-dot {
+    background: #0d1117;
     border-color: #30363d;
     color: #e6edf3;
 }
 
-[data-bs-theme="dark"] .checkout-step.is-current .checkout-step-dot {
+[data-bs-theme="dark"] .checkout-step.is-current .checkout-step-dot,
+[data-bs-theme="dark"] .checkout-step.is-done .checkout-step-dot {
     background: #e6edf3;
     color: #0d1117;
     border-color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .storefront-cart-btn .badge-cart {
+    background: #e6edf3;
+    color: #0d1117;
 }
 
 [data-bs-theme="dark"] .navbar-custom .text-dark {
@@ -217,4 +228,68 @@
 
 [data-bs-theme="dark"] .navbar {
     background-color: rgba(22, 27, 34, 0.92);
+}
+
+[data-bs-theme="dark"] .page-wrap {
+    background: #0d1117;
+}
+
+[data-bs-theme="dark"] .content-card,
+[data-bs-theme="dark"] .review-card,
+[data-bs-theme="dark"] .review-form-box {
+    background: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3;
+    box-shadow: none;
+}
+
+[data-bs-theme="dark"] .img-main-container {
+    background: #0d1117;
+}
+
+[data-bs-theme="dark"] .selector-label {
+    background: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .btn-check:checked + .selector-label {
+    background: #e6edf3;
+    color: #0d1117;
+    border-color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .pdp-sticky-bar {
+    background: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .alert-light,
+[data-bs-theme="dark"] .alert-secondary {
+    background: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .text-secondary {
+    color: #8b949e !important;
+}
+
+[data-bs-theme="dark"] #oneProduct hr,
+[data-bs-theme="dark"] .page-wrap hr {
+    border-color: #30363d;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .btn-dark {
+    background: #e6edf3;
+    border-color: #e6edf3;
+    color: #0d1117;
+}
+
+[data-bs-theme="dark"] .btn-dark:hover {
+    background: #fff;
+    border-color: #fff;
+    color: #0d1117;
 }

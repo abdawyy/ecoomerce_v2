@@ -208,6 +208,7 @@ Route::delete('/cart/{id}', [CartController::class, 'delete'])->middleware('auth
 Route::get('/checkout/address', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout/order', [CheckoutController::class, 'order'])->middleware('throttle:10,1')->name('checkout.order');
 Route::get('/checkout/receipt/{order}/invoice', [CheckoutController::class, 'receiptInvoice'])->name('checkout.receipt.invoice');
+Route::get('/checkout/receipt/{order}', [CheckoutController::class, 'receipt'])->name('checkout.receipt');
 Route::post('/cart/guest/{key}', [CartController::class, 'deleteGuest'])->name('cart.guest.delete');
 
 

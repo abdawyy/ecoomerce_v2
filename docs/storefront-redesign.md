@@ -32,10 +32,10 @@ This document is the **implementation map**. Visual rules live in [storefront-ui
 | Component | Path | Role |
 |-----------|------|------|
 | Layout | `components/web/layout.blade.php` | One document: SEO, fonts, skip link, slot, footer |
-| Navbar | `components/web/navbar.blade.php` | Promo, branding logo, search, bag, account, theme |
-| Footer | `components/web/footer.blade.php` | Logo + shop/help/legal/social |
+| Navbar | `components/web/navbar.blade.php` | Promo, branding logo, search, **SVG cart + count**, account, theme |
+| Footer | `components/web/footer.blade.php` | Shop / Help / Legal + tagline + social (no logo) |
 | Product card | `components/web/product-card.blade.php` | 4:5 image, sale badge, hover bag |
-| Checkout stepper | `components/web/checkout-stepper.blade.php` | Numbered Cart → Details → Confirm |
+| Checkout stepper | `components/web/checkout-stepper.blade.php` | Large 1 Cart → 2 Details → 3 Confirm |
 | Breadcrumb | `components/web/breadcrumb.blade.php` | PLP + PDP |
 | Social links | `components/web/social-links.blade.php` | Admin URLs + Bootstrap Icons |
 | Branding logo | `components/branding/logo.blade.php` | Same logo on storefront + admin |
@@ -76,7 +76,7 @@ Tokens: see [storefront-ui-ux.md](./storefront-ui-ux.md).
 ## Page-by-page
 
 ### Homepage ✅
-Admin hero/tagline, carousel, shared cards, category banners, RTL gradient, mobile swipe hint, tighter mobile hero padding.
+Admin hero/tagline, carousel, shared cards, **two category tiles** (name + category redirect from Branding), RTL gradient, mobile swipe hint, tighter mobile hero padding.
 
 ### PLP ✅
 Shared layout, sticky filters (on sale + sort), chips, 4-col grid, empty state, RTL filter drawer.
@@ -85,16 +85,16 @@ Shared layout, sticky filters (on sale + sort), chips, 4-col grid, empty state, 
 Gallery, sizes, color, reviews average, breadcrumb, related products, sticky Add to bag. Size-guide modal and review pagination remain optional.
 
 ### Cart ✅
-Sticky summary, promo, qty +/−, guest hint, featured empty state, numbered stepper, **admin-editable sales & inspection policy**.
+Sticky summary, promo, qty +/−, guest hint, featured empty state, large numbered stepper, **admin-editable sales & inspection policy**.
 
 ### Checkout ✅
-Stepper, saved addresses, city fees, create-account checkbox, promo from cart session.
+Homepage hero banner, large 1–2–3 stepper, saved addresses, city fees, create-account checkbox, promo from cart session. Confirm redirects immediately; PDF/email send after the page loads.
 
 ### Receipt ✅
-White card, order totals, invoice download, email note, shop CTA.
+Same hero banner, stepper on Confirm, order totals, invoice download, email-on-the-way note, shop CTA.
 
 ### Footer ✅
-Shop / Help / Legal + branding logo, tagline, generic social icons.
+Shop / Help / Legal + tagline, generic social icons, © 2026. No footer logo.
 
 ---
 
@@ -102,11 +102,12 @@ Shop / Help / Legal + branding logo, tagline, generic social icons.
 
 | Setting (Admin → Branding & Media) | Storefront use |
 |------------------------------------|----------------|
-| **Main logo** | Navbar, footer, auth cards, admin header |
+| **Main logo** | Navbar, auth cards, admin header (not footer) |
 | Favicon / OG / footer logo | Optional overrides |
 | Social URLs (10 platforms) | Footer + contact icons |
 | Cart policy title/body EN+AR | Cart page dark panel |
 | Hero + category images | Homepage |
+| **Two homepage tiles** | Category + optional EN/AR title for Top / Long Sleeve slots |
 
 ---
 

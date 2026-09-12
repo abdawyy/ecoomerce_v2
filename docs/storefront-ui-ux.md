@@ -42,8 +42,8 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 - Promo bar: 8px, uppercase, site name + tagline.
 - Sticky navbar with **frosted** background (`backdrop-filter`).
 - **Main logo** (`x-branding.logo`, not nested links).
-- Toolbar: theme, search, bag + count, account, EN/AR.
-- Icon buttons: 44×44px circle, soft hover fill.
+- Toolbar: theme, search, **SVG cart + count badge**, account, EN/AR.
+- Icon buttons: 44×44px circle, soft hover fill. Cart badge must stay visible (`overflow: visible` on the cart button).
 - Skip link: “Skip to content” → `#storefront-main`.
 - Mobile: hamburger → one offcanvas (`offcanvas-end` in Arabic).
 
@@ -64,22 +64,25 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 - Hero: cover image from branding, gradient that **flips in RTL**.
 - Mobile: shorter hero, full-width copy, smaller category tiles.
 - CTA: light pill button → PLP.
+- **Two category tiles:** name and destination come from Branding & Media (category + optional EN/AR title). Images stay the left/right banners.
 
 ---
 
 ## Cart & checkout
 
-- Numbered stepper (1 Cart → 2 Details → 3 Confirm). Current step is a filled black dot.
+- Checkout and receipt open with the **homepage hero image** as a banner (same branding image as home).
+- Large stepper in a soft panel: **1 Cart → 2 Details → 3 Confirm**. Current step is a filled 40px dot with the label under it. Shown on cart, checkout, and receipt.
 - Cart summary sticky on desktop.
 - **Sales & inspection policy**: dark rounded panel; title + paragraphs from admin (EN/AR). Empty admin fields fall back to lang defaults.
-- Checkout: saved address picker, city fees, promo, guest create-account checkbox.
+- Checkout: saved address picker, city fees, promo, guest create-account checkbox. Validation errors show at the top of the form.
+- Confirm does not wait for PDF/email; receipt appears first.
 
 ---
 
 ## Footer
 
 - Columns: Shop, Help, Legal.
-- Brand column: inverted **main logo**, tagline, social icons (only if URLs exist), copyright.
+- Brand column: tagline, social icons (only if URLs exist), copyright **© 2026**. No logo in the footer.
 - Social icons: Bootstrap Icons from `config/branding.php` platforms — never hardcoded Hayah URLs.
 
 ---

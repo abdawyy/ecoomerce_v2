@@ -23,7 +23,7 @@ return [
     'top' => 'توب',
     'tshirt' => 'تي شيرت',
     'see_details' => 'عرض التفاصيل',
-    'footer_rights' => '&copy; 2025 جميع الحقوق محفوظة لحياة',
+    'footer_rights' => '&copy; 2026 جميع الحقوق محفوظة لحياة',
     'terms' => 'الشروط',
     'privacy' => 'سياسة الخصوصية',
     'cookies' => 'تواصل معنا', // Note: The original text decoded to "Contact Us", though the key is "cookies".

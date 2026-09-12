@@ -162,30 +162,20 @@
 <section id="category" class="py-5 home-categories">
     <div class="container">
         <div class="row g-4 justify-content-center">
-            <div class="col-12 col-md-6">
-                <div class="category-box">
-                    <img src="<?php echo e($branding->categoryImage1Url()); ?>" class="category-img" alt="<?php echo e(__('web.top')); ?>">
-                    <div class="category-overlay">
-                        <h3 class="fw-bold text-white display-4 mb-3"><?php echo e(__('web.top')); ?></h3>
-                        <a href="<?php echo e(url('product/list/category/1')); ?>" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
-                            <?php echo e(__('web.see_details')); ?>
+            <?php $__currentLoopData = $branding->homeCategoryTiles(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <div class="col-12 col-md-6">
+                    <div class="category-box">
+                        <img src="<?php echo e($tile['image']); ?>" class="category-img" alt="<?php echo e($tile['name']); ?>">
+                        <div class="category-overlay">
+                            <h3 class="fw-bold text-white display-4 mb-3"><?php echo e($tile['name']); ?></h3>
+                            <a href="<?php echo e($tile['url']); ?>" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
+                                <?php echo e(__('web.see_details')); ?>
 
-                        </a>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="category-box">
-                    <img src="<?php echo e($branding->categoryImage2Url()); ?>" class="category-img" alt="<?php echo e(__('web.Long Sleeve')); ?>">
-                    <div class="category-overlay">
-                        <h3 class="fw-bold text-white display-4 mb-3"><?php echo e(__('web.Long Sleeve')); ?></h3>
-                        <a href="<?php echo e(url('product/list/category/5')); ?>" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
-                            <?php echo e(__('web.see_details')); ?>
-
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>

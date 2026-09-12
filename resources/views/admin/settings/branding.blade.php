@@ -178,6 +178,39 @@
                             @endforeach
                         </div>
 
+                        <h6 class="mt-4">{{ __('branding.home_tiles') }}</h6>
+                        <p class="text-muted small">{{ __('branding.home_tiles_hint') }}</p>
+                        <div class="row g-4">
+                            @foreach ([1, 2] as $slot)
+                                <div class="col-md-6">
+                                    <label class="form-label">{{ __('branding.home_tile_category', ['n' => $slot]) }}</label>
+                                    <select name="home_category_{{ $slot }}_id" class="form-select">
+                                        <option value="">{{ __('branding.home_tile_choose_category') }}</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}" @selected((string) old("home_category_{$slot}_id", $settings->{"home_category_{$slot}_id"}) === (string) $category->id)>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">{{ __('branding.home_tile_category_hint') }}</div>
+                                    <div class="row g-2 mt-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ __('branding.home_tile_title_en', ['n' => $slot]) }}</label>
+                                            <input type="text" name="home_tile_{{ $slot }}_title_en" class="form-control"
+                                                   value="{{ old("home_tile_{$slot}_title_en", $settings->{"home_tile_{$slot}_title_en"}) }}"
+                                                   placeholder="{{ __('branding.home_tile_title_placeholder') }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">{{ __('branding.home_tile_title_ar', ['n' => $slot]) }}</label>
+                                            <input type="text" name="home_tile_{{ $slot }}_title_ar" class="form-control" dir="rtl"
+                                                   value="{{ old("home_tile_{$slot}_title_ar", $settings->{"home_tile_{$slot}_title_ar"}) }}"
+                                                   placeholder="{{ __('branding.home_tile_title_placeholder') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
                         <hr class="my-4">
                         <h5>{{ __('branding.invoice_pdf') }}</h5>
                         <p class="text-muted small">{{ __('branding.invoice_notes_hint') }}</p>

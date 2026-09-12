@@ -29,28 +29,6 @@
             </div>
 
             <div class="col-12 col-md-3">
-                <a href="<?php echo e(route('home')); ?>" class="d-inline-block mb-3">
-                    <?php if (isset($component)) { $__componentOriginal8641339168305ca7d1df3ab05341c05a = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal8641339168305ca7d1df3ab05341c05a = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.branding.logo','data' => ['link' => false,'dark' => true,'style' => 'width: 120px; height: auto; max-height: 48px; object-fit: contain; filter: brightness(0) invert(1);']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
-<?php $component->withName('branding.logo'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
-<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['link' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(false),'dark' => true,'style' => 'width: 120px; height: auto; max-height: 48px; object-fit: contain; filter: brightness(0) invert(1);']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal8641339168305ca7d1df3ab05341c05a)): ?>
-<?php $attributes = $__attributesOriginal8641339168305ca7d1df3ab05341c05a; ?>
-<?php unset($__attributesOriginal8641339168305ca7d1df3ab05341c05a); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal8641339168305ca7d1df3ab05341c05a)): ?>
-<?php $component = $__componentOriginal8641339168305ca7d1df3ab05341c05a; ?>
-<?php unset($__componentOriginal8641339168305ca7d1df3ab05341c05a); ?>
-<?php endif; ?>
-                </a>
                 <?php if($branding->tagline()): ?>
                     <p class="small text-white-50 mb-3"><?php echo e($branding->tagline()); ?></p>
                 <?php endif; ?>

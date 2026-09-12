@@ -60,12 +60,56 @@ Aligned with boutique fashion UX (calm type, large tap targets, clearer journey)
 | Skip to content | Keyboard / a11y |
 | Numbered checkout stepper | Progress is obvious |
 | Product title is a link; bag visible on touch | Mobile shoppers can tap the card |
-| Footer branding logo + tagline | Identity at the bottom of every page |
+| Footer branding logo + tagline | Replaced: tagline + social only, no logo |
 | Softer cream `--brand-soft` | Less “admin grey”, more apparel |
 | Tighter mobile hero | Less empty black overlay on small screens |
 | `:focus-visible` rings | Keyboard users |
 
 Details: [storefront-ui-ux.md](./storefront-ui-ux.md).
+
+---
+
+## Place order (guest + logged-in)
+
+**Bug:** `GuestUser` and `addresses` use `Apptraits::updateOrCreate()`, which hid Eloquent’s static `updateOrCreate()`. Guest checkout crashed with “Non-static method cannot be called statically”. Mail/PDF errors after a successful insert also looked like a failed order.
+
+**Done**
+- Checkout creates/updates guest + address with normal Eloquent queries.
+- Phone accepts local formats (not digits-only 10–15).
+- Invoice email/PDF run **after** the receipt is shown (`SendOrderConfirmation` afterResponse), so Confirm is no longer stuck loading.
+- Checkout and receipt use the homepage hero image as a banner.
+- Checkout form lists validation errors at the top.
+
+---
+
+## Checkout stepper (Cart / Details / Confirm)
+
+Larger 40px numbered dots, labels under each step, soft panel, shown on cart, checkout, and receipt.
+
+---
+
+## Cart SVG + count badge
+
+Navbar uses an inline cart SVG. Count badge sits on the icon. `overflow: hidden` was clipping the badge; cart button is `overflow: visible`.
+
+---
+
+## Homepage tiles (Top / Long Sleeve)
+
+**Ask:** Change the two homepage names and where they go, from admin, two categories only.
+
+**Done**
+- Branding & Media → Homepage images → two category selects + optional EN/AR titles.
+- Blank title uses the category name.
+- Images remain the left/right banners.
+
+**Admin:** Branding & Media → Homepage category tiles (2).
+
+---
+
+## Footer
+
+Logo removed from the footer. Copyright year is **2026**.
 
 ---
 
@@ -76,6 +120,7 @@ Details: [storefront-ui-ux.md](./storefront-ui-ux.md).
 | `2026_06_04_000011_add_social_urls_to_site_settings.php` | First six social URL columns |
 | `2026_06_04_000012_add_more_social_urls_to_site_settings.php` | LinkedIn, Telegram, Pinterest, Snapchat |
 | `2026_06_04_000013_add_cart_policy_to_site_settings.php` | Cart policy title/body EN+AR |
+| `2026_06_04_000014_add_home_category_tiles_to_site_settings.php` | Two homepage category IDs + titles |
 
 Run `php artisan migrate` if any of these have not been applied.
 

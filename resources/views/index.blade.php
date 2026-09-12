@@ -131,28 +131,19 @@
 <section id="category" class="py-5 home-categories">
     <div class="container">
         <div class="row g-4 justify-content-center">
-            <div class="col-12 col-md-6">
-                <div class="category-box">
-                    <img src="{{ $branding->categoryImage1Url() }}" class="category-img" alt="{{ __('web.top') }}">
-                    <div class="category-overlay">
-                        <h3 class="fw-bold text-white display-4 mb-3">{{ __('web.top') }}</h3>
-                        <a href="{{ url('product/list/category/1') }}" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
-                            {{ __('web.see_details') }}
-                        </a>
+            @foreach ($branding->homeCategoryTiles() as $tile)
+                <div class="col-12 col-md-6">
+                    <div class="category-box">
+                        <img src="{{ $tile['image'] }}" class="category-img" alt="{{ $tile['name'] }}">
+                        <div class="category-overlay">
+                            <h3 class="fw-bold text-white display-4 mb-3">{{ $tile['name'] }}</h3>
+                            <a href="{{ $tile['url'] }}" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
+                                {{ __('web.see_details') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="category-box">
-                    <img src="{{ $branding->categoryImage2Url() }}" class="category-img" alt="{{ __('web.Long Sleeve') }}">
-                    <div class="category-overlay">
-                        <h3 class="fw-bold text-white display-4 mb-3">{{ __('web.Long Sleeve') }}</h3>
-                        <a href="{{ url('product/list/category/5') }}" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
-                            {{ __('web.see_details') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>

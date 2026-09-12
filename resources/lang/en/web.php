@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 return [
   'title' => 'Hayah - Modern Modest Fashion',
   'description' => 'Shop trendy modest clothing from Hayah.',
@@ -19,7 +19,7 @@ return [
   'top' => 'Top',
   'tshirt' => 'T-Shirt',
   'see_details' => 'See Details',
-  'footer_rights' => '&copy; 2025 Hayah Production',
+  'footer_rights' => '&copy; 2026 Hayah Production',
   'terms' => 'Terms',
   'privacy' => 'Privacy Policy',
   'cookies' => 'Contact Us',

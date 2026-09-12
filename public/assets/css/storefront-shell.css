@@ -18,6 +18,7 @@
     font-family: var(--font-body);
     color: var(--brand-black);
     background: var(--brand-white);
+    overflow-x: hidden;
 }
 
 .storefront-main {
@@ -52,6 +53,50 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    overflow: visible;
+    line-height: 1;
+    box-shadow: none;
+}
+
+.navbar-custom .navbar-toggler:focus,
+.navbar-custom .navbar-toggler:focus-visible {
+    box-shadow: none;
+    outline: 2px solid var(--brand-black);
+    outline-offset: 2px;
+}
+
+.navbar-custom .navbar-brand {
+    min-width: 0;
+}
+
+.navbar-custom > .container {
+    flex-wrap: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-custom .navbar-collapse {
+        display: none !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .navbar-custom .navbar-brand img {
+        width: 80px !important;
+        max-height: 36px !important;
+    }
+}
+
+body:has(.offcanvas.show),
+body:has(.modal.show) {
+    overflow: hidden !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+#mobileMenu.offcanvas {
+    overflow-x: hidden;
+    overscroll-behavior: contain;
 }
 
 .nav-link {
@@ -89,10 +134,35 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
 
 .badge-cart {
     font-size: 0.65rem;
-    background: #000;
+    background: #111;
     color: #fff;
     border-radius: 50px;
     padding: 2px 6px;
+    min-width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.storefront-cart-btn {
+    position: relative;
+}
+
+.storefront-cart-svg {
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.storefront-cart-btn .badge-cart {
+    position: absolute;
+    top: 2px;
+    inset-inline-end: 0;
+    transform: translate(35%, -20%);
+    z-index: 2;
 }
 
 .modal-search-overlay {
@@ -376,49 +446,66 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
 /* Checkout stepper */
 .checkout-stepper {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    max-width: 720px;
+    margin: 0 auto 1.5rem;
+    padding: 1.25rem 1.25rem 1.15rem;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-border);
+    border-radius: var(--radius-md);
 }
 
 .checkout-step {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    font-weight: 600;
+    gap: 0.45rem;
+    min-width: 4.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--brand-muted);
+    text-align: center;
 }
 
 .checkout-step-dot {
-    width: 26px;
-    height: 26px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 1px solid var(--brand-border);
+    border: 2px solid var(--brand-border);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 800;
     background: var(--brand-white);
+    color: var(--brand-black);
 }
 
 .checkout-step.is-current .checkout-step-dot {
     background: var(--brand-black);
-    color: #fff;
+    color: var(--brand-white);
     border-color: var(--brand-black);
 }
 
 .checkout-step.is-done .checkout-step-dot {
-    background: var(--brand-soft);
+    background: var(--brand-black);
     border-color: var(--brand-black);
-    color: var(--brand-black);
+    color: var(--brand-white);
+}
+
+.checkout-step-label,
+.checkout-step-link {
+    color: inherit;
+    text-decoration: none;
+    letter-spacing: 0.02em;
 }
 
 .checkout-step.is-current .checkout-step-label,
 .checkout-step.is-current .checkout-step-link {
     color: var(--brand-black);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .checkout-step.is-done .checkout-step-link {
@@ -428,14 +515,75 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
 
 .checkout-step-line {
     flex: 1;
-    min-width: 24px;
-    height: 2px;
+    min-width: 28px;
+    height: 3px;
     background: var(--brand-border);
-    max-width: 60px;
+    max-width: 120px;
+    margin-top: 18px;
 }
 
 .checkout-step-line.is-done {
     background: var(--brand-black);
+}
+
+.checkout-hero {
+    position: relative;
+    min-height: 220px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.checkout-hero img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.checkout-hero-overlay {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 2rem 1.75rem;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 70%, transparent 100%);
+    color: #fff;
+}
+
+[dir="rtl"] .checkout-hero-overlay {
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.2) 70%, transparent 100%);
+}
+
+.checkout-hero-kicker {
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.checkout-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+}
+
+.checkout-summary-card {
+    position: sticky;
+    top: 100px;
+}
+
+@media (max-width: 767.98px) {
+    .checkout-hero {
+        min-height: 180px;
+        border-radius: 16px;
+    }
+
+    .checkout-hero-overlay {
+        padding: 1.25rem 1.1rem;
+    }
 }
 
 /* PDP sticky bar */
@@ -445,11 +593,12 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     left: 0;
     right: 0;
     z-index: 1040;
-    background: #fff;
+    background: var(--brand-white);
     border-top: 1px solid var(--brand-border);
     padding: 0.75rem 1rem;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
     display: none;
+    color: var(--brand-black);
 }
 
 @media (max-width: 991.98px) {

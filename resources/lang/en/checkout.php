@@ -20,6 +20,8 @@ return [
     'subtotal' => 'Subtotal',
     'total' => 'Total',
     'confirm' => 'Confirm',
+    'placing_order' => 'Placing your order…',
+    'placing_hint' => 'Your order is saved first. The confirmation email follows in a moment.',
     'email' => 'Email Address',
     'cart_empty' => 'Your cart is empty. Add products before checkout.',
     'invalid_submission' => 'This checkout session expired. Please try again.',

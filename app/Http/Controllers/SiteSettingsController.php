@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\SiteSetting;
 use App\Services\BrandingService;
 use App\Services\PdfService;
@@ -13,6 +14,7 @@ class SiteSettingsController extends Controller
     {
         return view('admin.settings.branding', [
             'settings' => $branding->settings(),
+            'categories' => Category::where('is_active', 1)->orderBy('name')->get(),
         ]);
     }
 
@@ -47,6 +49,12 @@ class SiteSettingsController extends Controller
             'cart_policy_title_ar' => 'nullable|string|max:255',
             'cart_policy_body_en' => 'nullable|string',
             'cart_policy_body_ar' => 'nullable|string',
+            'home_category_1_id' => 'nullable|integer|exists:categories,id',
+            'home_category_2_id' => 'nullable|integer|exists:categories,id',
+            'home_tile_1_title_en' => 'nullable|string|max:80',
+            'home_tile_1_title_ar' => 'nullable|string|max:80',
+            'home_tile_2_title_en' => 'nullable|string|max:80',
+            'home_tile_2_title_ar' => 'nullable|string|max:80',
         ];
 
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
@@ -63,7 +71,7 @@ class SiteSettingsController extends Controller
             }
         }
 
-        foreach (['cart_policy_title_en', 'cart_policy_title_ar'] as $titleField) {
+        foreach (['cart_policy_title_en', 'cart_policy_title_ar', 'home_tile_1_title_en', 'home_tile_1_title_ar', 'home_tile_2_title_en', 'home_tile_2_title_ar'] as $titleField) {
             if (array_key_exists($titleField, $validated)) {
                 $validated[$titleField] = trim(strip_tags($validated[$titleField] ?? '')) ?: null;
             }
@@ -85,6 +93,9 @@ class SiteSettingsController extends Controller
             'invoice_notes_en', 'invoice_notes_ar',
             'cart_policy_title_en', 'cart_policy_title_ar',
             'cart_policy_body_en', 'cart_policy_body_ar',
+            'home_category_1_id', 'home_category_2_id',
+            'home_tile_1_title_en', 'home_tile_1_title_ar',
+            'home_tile_2_title_en', 'home_tile_2_title_ar',
         ];
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
             $scalarFields[] = "{$platform}_url";
