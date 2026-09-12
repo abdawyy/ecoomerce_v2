@@ -76,8 +76,7 @@ Details: [storefront-ui-ux.md](./storefront-ui-ux.md).
 **Done**
 - Checkout creates/updates guest + address with normal Eloquent queries.
 - Phone accepts local formats (not digits-only 10–15).
-- Invoice email/PDF run **after** the receipt is shown (`SendOrderConfirmation` afterResponse), so Confirm is no longer stuck loading.
-- Checkout and receipt use the homepage hero image as a banner.
+- Confirm redirects immediately; PDF/email are **not** in that request. The receipt page then pings `/checkout/receipt/{id}/notify` (beacon) to send a light HTML email with an invoice link. PDFs are built only when downloaded.
 - Checkout form lists validation errors at the top.
 
 ---
@@ -96,14 +95,15 @@ Navbar uses an inline cart SVG. Count badge sits on the icon. `overflow: hidden`
 
 ## Homepage tiles (Top / Long Sleeve)
 
-**Ask:** Change the two homepage names and where they go, from admin, two categories only.
+**Ask:** Change the two homepage names and where they go, from admin.
 
 **Done**
-- Branding & Media → Homepage images → two category selects + optional EN/AR titles.
-- Blank title uses the category name.
-- Images remain the left/right banners.
+- Branding & Media → **Homepage banners (Top & Long Sleeve)** — English/Arabic name + category redirect for each banner.
+- No hardcoded category IDs. Empty redirect goes to all products.
+- Names are prefilled (Top / Long Sleeve) so they are clearly editable.
+- Images remain the left/right homepage banners.
 
-**Admin:** Branding & Media → Homepage category tiles (2).
+**Admin:** Branding & Media (`#home-tiles`).
 
 ---
 

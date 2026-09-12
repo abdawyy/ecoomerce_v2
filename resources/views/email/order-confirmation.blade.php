@@ -156,7 +156,9 @@
         </table>
 
         <p><strong>Thank you for shopping with us!</strong></p>
-        <p class="text-muted small">Your invoice is attached in English and Arabic (invoice-en.pdf, invoice-ar.pdf).</p>
+        @if (!empty($invoiceUrl))
+            <p><a href="{{ $invoiceUrl }}" class="btn-primary">Download your invoice (PDF)</a></p>
+        @endif
     </div>
 </body>
 

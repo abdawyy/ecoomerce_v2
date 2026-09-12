@@ -53,4 +53,21 @@
     </div>
 </section>
 
+@if (!empty($notifyUrl))
+<script>
+    window.addEventListener('load', function () {
+        var url = @json($notifyUrl);
+        var token = document.querySelector('meta[name="csrf-token"]');
+        if (!url || !token) return;
+        var body = new FormData();
+        body.append('_token', token.getAttribute('content'));
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(url, body);
+            return;
+        }
+        fetch(url, { method: 'POST', body: body, credentials: 'same-origin', keepalive: true });
+    });
+</script>
+@endif
+
 </x-web.layout>

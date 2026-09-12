@@ -64,7 +64,7 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 - Hero: cover image from branding, gradient that **flips in RTL**.
 - Mobile: shorter hero, full-width copy, smaller category tiles.
 - CTA: light pill button → PLP.
-- **Two category tiles:** name and destination come from Branding & Media (category + optional EN/AR title). Images stay the left/right banners.
+- **Two category tiles:** name and destination are edited in Branding & Media → Homepage banners (Top & Long Sleeve). Images stay the left/right banners.
 
 ---
 

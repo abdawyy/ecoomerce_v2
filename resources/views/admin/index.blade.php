@@ -48,7 +48,7 @@
                     <a href="{{ route('admin.analytics') }}" class="action-strip-btn btn btn-sm btn-outline-dark">
                         <i class="bi bi-graph-up me-1"></i>{{ __('dashboard.full_analytics') }}
                     </a>
-                    <a href="{{ route('admin.settings.branding') }}" class="action-strip-btn btn btn-sm btn-outline-secondary">
+                    <a href="{{ route('admin.settings.branding') }}#home-tiles" class="action-strip-btn btn btn-sm btn-outline-secondary">
                         <i class="bi bi-palette me-1"></i>{{ __('dashboard.manage_home_images') }}
                     </a>
                     <span class="action-strip-live ms-auto badge bg-success fs-6 px-3 py-2">
@@ -203,7 +203,7 @@
                         <div class="card-body">
                             <h6 class="mb-2">{{ __('branding.home_images') }}</h6>
                             <p class="small text-muted mb-3">{{ __('branding.home_images_hint') }}</p>
-                            <a href="{{ route('admin.settings.branding') }}" class="btn btn-outline-dark w-100">{{ __('dashboard.manage_home_images') }}</a>
+                            <a href="{{ route('admin.settings.branding') }}#home-tiles" class="btn btn-outline-dark w-100">{{ __('dashboard.manage_home_images') }}</a>
                         </div>
                     </div>
                 </div>

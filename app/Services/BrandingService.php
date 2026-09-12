@@ -261,22 +261,18 @@ class BrandingService
 
         return [
             $this->homeCategoryTile(
-                1,
                 $settings->home_category_1_id ?? null,
                 $settings->home_tile_1_title_en ?? null,
                 $settings->home_tile_1_title_ar ?? null,
                 $this->categoryImage1Url(),
-                __('web.top'),
-                1
+                __('web.top')
             ),
             $this->homeCategoryTile(
-                2,
                 $settings->home_category_2_id ?? null,
                 $settings->home_tile_2_title_en ?? null,
                 $settings->home_tile_2_title_ar ?? null,
                 $this->categoryImage2Url(),
-                __('web.Long Sleeve'),
-                5
+                __('web.Long Sleeve')
             ),
         ];
     }
@@ -285,20 +281,15 @@ class BrandingService
      * @return array{name: string, url: string, image: string}
      */
     protected function homeCategoryTile(
-        int $slot,
         mixed $categoryId,
         ?string $titleEn,
         ?string $titleAr,
         string $image,
-        string $fallbackName,
-        int $fallbackCategoryId
+        string $fallbackName
     ): array {
-        $category = null;
-        if ($categoryId) {
-            $category = \App\Models\Category::query()
-                ->where('is_active', 1)
-                ->find($categoryId);
-        }
+        $category = $categoryId
+            ? \App\Models\Category::query()->find($categoryId)
+            : null;
 
         $locale = app()->getLocale();
         $custom = trim((string) ($locale === 'ar'
@@ -306,13 +297,11 @@ class BrandingService
             : ($titleEn ?: $titleAr)));
 
         $name = $custom !== '' ? $custom : ($category?->name ?: $fallbackName);
-        $id = $category?->id ?: $fallbackCategoryId;
+        $url = $category
+            ? route('product.List', ['id' => $category->id])
+            : route('product.List');
 
-        return [
-            'name' => $name,
-            'url' => route('product.List', ['id' => $id]),
-            'image' => $image,
-        ];
+        return compact('name', 'url', 'image');
     }
 
     public function assetUrl(?string $path): string

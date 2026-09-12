@@ -50,6 +50,7 @@
         align-items: flex-end;
         background: var(--brand-soft);
         transition: transform 0.5s ease;
+        color: inherit;
     }
 
     .category-overlay {
@@ -164,16 +165,16 @@
         <div class="row g-4 justify-content-center">
             <?php $__currentLoopData = $branding->homeCategoryTiles(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-12 col-md-6">
-                    <div class="category-box">
+                    <a href="<?php echo e($tile['url']); ?>" class="category-box text-decoration-none d-block">
                         <img src="<?php echo e($tile['image']); ?>" class="category-img" alt="<?php echo e($tile['name']); ?>">
                         <div class="category-overlay">
                             <h3 class="fw-bold text-white display-4 mb-3"><?php echo e($tile['name']); ?></h3>
-                            <a href="<?php echo e($tile['url']); ?>" class="btn btn-light px-4 py-2 rounded-pill fw-bold">
+                            <span class="btn btn-light px-4 py-2 rounded-pill fw-bold">
                                 <?php echo e(__('web.see_details')); ?>
 
-                            </a>
+                            </span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>

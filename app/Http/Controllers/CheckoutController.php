@@ -219,8 +219,6 @@ class CheckoutController extends Controller
             'placed_order_delivery' => $deliveryFees,
         ]);
 
-        SendOrderConfirmation::dispatchAfterResponse($orderId);
-
         return redirect()->route('checkout.receipt', $orderId);
     }
 
@@ -228,7 +226,10 @@ class CheckoutController extends Controller
     {
         $this->authorizeReceipt($order);
 
-        $orderModel = $this->loadOrderWithRelations($order);
+        $orderModel = orders::query()
+            ->with(['guestUser:id,email,name', 'cities:id,price'])
+            ->findOrFail($order);
+
         $total = session('placed_order_total', $orderModel->total_amount);
         $deliveryFees = session('placed_order_delivery', $orderModel->cities->price ?? 0);
 
@@ -240,9 +241,31 @@ class CheckoutController extends Controller
             'guestEmail' => $orderModel->guestUser->email ?? null,
             'guestName' => $orderModel->guestUser->name ?? null,
             'invoiceUrl' => URL::temporarySignedRoute('checkout.receipt.invoice', now()->addHours(48), ['order' => $orderModel->id]),
+            'notifyUrl' => route('checkout.receipt.notify', $orderModel->id),
             'emailSent' => false,
             'emailPending' => true,
         ]);
+    }
+
+    public function notifyReceipt(int $order)
+    {
+        $this->authorizeReceipt($order);
+
+        $cacheKey = 'order-confirmation-sent-'.$order;
+        if (cache()->has($cacheKey)) {
+            return response()->json(['ok' => true]);
+        }
+
+        cache()->put($cacheKey, 1, now()->addDay());
+
+        try {
+            (new SendOrderConfirmation($order))->handle();
+        } catch (\Throwable $e) {
+            cache()->forget($cacheKey);
+            report($e);
+        }
+
+        return response()->json(['ok' => true]);
     }
 
     protected function authorizeReceipt(int $orderId): void

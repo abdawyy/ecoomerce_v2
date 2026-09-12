@@ -14,7 +14,8 @@ class SiteSettingsController extends Controller
     {
         return view('admin.settings.branding', [
             'settings' => $branding->settings(),
-            'categories' => Category::where('is_active', 1)->orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
+            'branding' => $branding,
         ]);
     }
 
@@ -22,19 +23,9 @@ class SiteSettingsController extends Controller
     {
         $rules = [
             'site_name' => 'nullable|string|max:255',
-            'tagline_en' => 'nullable|string|max:500',
-            'tagline_ar' => 'nullable|string|max:500',
-            'logo_alt_en' => 'nullable|string|max:255',
-            'logo_alt_ar' => 'nullable|string|max:255',
-            'primary_color' => 'nullable|string|max:20',
             'support_email' => 'nullable|email|max:255',
             'support_phone' => 'nullable|string|max:50',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'logo_dark' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico,svg|max:2048',
-            'og_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
-            'footer_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'placeholder_product' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'hero_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -62,8 +53,11 @@ class SiteSettingsController extends Controller
         }
 
         $validated = $request->validate($rules);
-
         $settings = SiteSetting::current();
+
+        foreach (['home_category_1_id', 'home_category_2_id'] as $idField) {
+            $validated[$idField] = $request->filled($idField) ? (int) $request->input($idField) : null;
+        }
 
         foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar'] as $notesField) {
             if (array_key_exists($notesField, $validated)) {
@@ -87,8 +81,7 @@ class SiteSettingsController extends Controller
         }
 
         $scalarFields = [
-            'site_name', 'tagline_en', 'tagline_ar', 'logo_alt_en', 'logo_alt_ar',
-            'primary_color', 'accent_color', 'support_email', 'support_phone',
+            'site_name', 'accent_color', 'support_email', 'support_phone',
             'pdf_footer_en', 'pdf_footer_ar', 'pdf_thank_you_en', 'pdf_thank_you_ar',
             'invoice_notes_en', 'invoice_notes_ar',
             'cart_policy_title_en', 'cart_policy_title_ar',
@@ -109,11 +102,6 @@ class SiteSettingsController extends Controller
 
         $fileMap = [
             'logo' => 'logo_path',
-            'logo_dark' => 'logo_dark_path',
-            'favicon' => 'favicon_path',
-            'og_image' => 'og_image_path',
-            'footer_logo' => 'footer_logo_path',
-            'placeholder_product' => 'placeholder_product_path',
             'hero_image' => 'hero_image_path',
             'category_image_1' => 'category_image_1_path',
             'category_image_2' => 'category_image_2_path',
@@ -129,7 +117,7 @@ class SiteSettingsController extends Controller
         $settings->save();
         $branding->clearCache();
 
-        return redirect()->route('admin.settings.branding')->with('success', __('branding.saved'));
+        return redirect()->to(route('admin.settings.branding').'#home-tiles')->with('success', __('branding.saved'));
     }
 
     public function pdfPreview(Request $request, PdfService $pdf)

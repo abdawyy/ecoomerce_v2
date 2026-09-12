@@ -73,30 +73,39 @@ class orders extends Model
     }
     public function addOrderItems($userId, $isGuest = false)
     {
-        DB::beginTransaction();
+        $ownsTransaction = DB::transactionLevel() === 0;
+
+        if ($ownsTransaction) {
+            DB::beginTransaction();
+        }
 
         try {
-            // Get cart items based on user type
             $cartItems = $isGuest
                 ? self::getGuestCartItems()
                 : shoppingCart::getCartItemsByUserId($userId);
 
             if (empty($cartItems) || (is_countable($cartItems) && count($cartItems) === 0)) {
+                if ($ownsTransaction) {
+                    DB::rollBack();
+                }
+
                 return ['success' => false, 'message' => 'Cart is empty.'];
             }
 
-            // Step 1: Deduct stock and create order items
             $this->deductProductQuantitiesAndCreateOrderItems($cartItems);
-
-            // Step 2: Clear cart after processing
             $this->clearCart($userId, $isGuest);
 
-            DB::commit();
-            return ['success' => true, 'message' => 'Order items added successfully.'];
+            if ($ownsTransaction) {
+                DB::commit();
+            }
 
+            return ['success' => true, 'message' => 'Order items added successfully.'];
         } catch (\Exception $e) {
-            DB::rollBack();
-            return ['success' => false, 'message' => 'Failed to add order items: ' . $e->getMessage()];
+            if ($ownsTransaction) {
+                DB::rollBack();
+            }
+
+            return ['success' => false, 'message' => 'Failed to add order items: '.$e->getMessage()];
         }
     }
 

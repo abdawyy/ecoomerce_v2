@@ -5,17 +5,14 @@ namespace App\Jobs;
 use App\Mail\AdminOrderNotificationMail;
 use App\Mail\OrderConfirmationMail;
 use App\Models\orders;
-use App\Services\PdfService;
-use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class SendOrderConfirmation
 {
-    use Dispatchable;
-
     public function __construct(public int $orderId) {}
 
-    public function handle(PdfService $pdf): void
+    public function handle(): void
     {
         $order = orders::with([
             'user',
@@ -23,7 +20,6 @@ class SendOrderConfirmation
             'discountCodes',
             'cities',
             'orderItems.product',
-            'orderItems.productItems',
             'payments',
             'address',
         ])->find($this->orderId);
@@ -32,25 +28,21 @@ class SendOrderConfirmation
             return;
         }
 
-        $pdfPaths = [];
-        try {
-            $pdfPaths = $pdf->saveInvoices($order);
-        } catch (\Throwable $e) {
-            report($e);
-        }
+        $invoiceUrl = URL::temporarySignedRoute(
+            'checkout.receipt.invoice',
+            now()->addHours(48),
+            ['order' => $order->id]
+        );
 
         $customerEmail = $order->user->email ?? $order->guestUser->email ?? null;
 
-        try {
-            if ($customerEmail) {
-                Mail::to($customerEmail)->send(new OrderConfirmationMail($order, $pdfPaths));
-            }
-            $adminEmail = config('hayah.admin_email');
-            if ($adminEmail) {
-                Mail::to($adminEmail)->send(new AdminOrderNotificationMail($order, $pdfPaths));
-            }
-        } catch (\Throwable $e) {
-            report($e);
+        if ($customerEmail) {
+            Mail::to($customerEmail)->send(new OrderConfirmationMail($order, $invoiceUrl));
+        }
+
+        $adminEmail = config('hayah.admin_email');
+        if ($adminEmail) {
+            Mail::to($adminEmail)->send(new AdminOrderNotificationMail($order, $invoiceUrl));
         }
     }
 }

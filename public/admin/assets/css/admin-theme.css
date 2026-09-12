@@ -495,6 +495,59 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
     color: var(--admin-text);
 }
 
+[data-bs-theme="dark"] .bg-light {
+    background-color: var(--admin-surface-2) !important;
+    color: var(--admin-text);
+}
+
+.admin-nested-panel {
+    background-color: var(--admin-surface-2);
+    color: var(--admin-text);
+    border-color: var(--admin-border-strong) !important;
+}
+
+.admin-nested-panel .form-label,
+.admin-nested-panel h6,
+.admin-nested-panel .form-text {
+    color: var(--admin-text);
+}
+
+.admin-nested-panel .form-text {
+    color: var(--admin-text-muted);
+}
+
+.admin-nested-panel-live,
+.admin-nested-panel-live a {
+    color: var(--admin-accent);
+}
+
+.admin-nested-panel-live a:hover {
+    color: var(--admin-accent-hover);
+}
+
+.admin-image-preview {
+    height: 100px;
+    background: var(--admin-surface-2);
+}
+
+.admin-image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+[data-bs-theme="dark"] #main .form-control,
+[data-bs-theme="dark"] #main .form-select {
+    background-color: var(--admin-surface);
+    border-color: var(--admin-border-strong);
+    color: var(--admin-text);
+}
+
+[data-bs-theme="dark"] #main .form-select option {
+    background-color: var(--admin-surface);
+    color: var(--admin-text);
+}
+
 [data-bs-theme="dark"] .shadow-sm,
 [data-bs-theme="dark"] .shadow-lg {
     box-shadow: var(--admin-shadow) !important;

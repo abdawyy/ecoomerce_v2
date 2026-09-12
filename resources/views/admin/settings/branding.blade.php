@@ -30,31 +30,6 @@
                                        value="{{ old('site_name', $settings->site_name ?? $branding->siteName()) }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.primary_color') }}</label>
-                                <input type="color" name="primary_color" class="form-control form-control-color"
-                                       value="{{ old('primary_color', $settings->primary_color ?? $branding->primaryColor()) }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.tagline_en') }}</label>
-                                <input type="text" name="tagline_en" class="form-control"
-                                       value="{{ old('tagline_en', $settings->tagline_en) }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.tagline_ar') }}</label>
-                                <input type="text" name="tagline_ar" class="form-control"
-                                       value="{{ old('tagline_ar', $settings->tagline_ar) }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.logo_alt_en') }}</label>
-                                <input type="text" name="logo_alt_en" class="form-control"
-                                       value="{{ old('logo_alt_en', $settings->logo_alt_en) }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.logo_alt_ar') }}</label>
-                                <input type="text" name="logo_alt_ar" class="form-control"
-                                       value="{{ old('logo_alt_ar', $settings->logo_alt_ar) }}">
-                            </div>
-                            <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.support_email') }}</label>
                                 <input type="email" name="support_email" class="form-control"
                                        value="{{ old('support_email', $settings->support_email) }}">
@@ -97,45 +72,67 @@
                         <h5>{{ __('branding.logos_media') }}</h5>
                         <p class="text-muted small mb-3">{{ __('branding.logo_usage_hint') }}</p>
                         <div class="row g-4">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ __('branding.logo') }}</label>
+                                @php
+                                    $currentPath = $settings->logo_path ?? null;
+                                    $previewUrl = $currentPath
+                                        ? $branding->assetUrl($currentPath)
+                                        : $branding->logoUrl();
+                                @endphp
+                                @if ($previewUrl)
+                                    <div class="mb-2">
+                                        <img src="{{ $previewUrl }}" alt="" class="img-thumbnail" style="max-height:80px; object-fit: contain;">
+                                    </div>
+                                @endif
+                                <input type="file" name="logo" class="form-control" accept="image/*">
+                                <div class="form-text">{{ __('branding.logo_main_hint') }}</div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" id="home-tiles">
+                        <h5>{{ __('branding.home_tiles') }}</h5>
+                        <p class="text-muted">{{ __('branding.home_tiles_hint') }}</p>
+                        @php
+                            $categories = $categories ?? collect();
+                            $liveTiles = $branding->homeCategoryTiles();
+                        @endphp
+                        @if ($categories->isEmpty())
+                            <div class="alert alert-warning">{{ __('branding.home_tiles_no_categories') }}</div>
+                        @endif
+                        <div class="row g-4">
                             @foreach ([
-                                'logo' => __('branding.logo'),
-                                'logo_dark' => __('branding.logo_dark'),
-                                'favicon' => __('branding.favicon'),
-                                'og_image' => __('branding.og_image'),
-                                'footer_logo' => __('branding.footer_logo'),
-                                'placeholder_product' => __('branding.placeholder_product'),
-                            ] as $field => $label)
-                                <div class="col-md-4">
-                                    <label class="form-label">{{ $label }}</label>
-                                    @php
-                                        $pathColumn = $field === 'logo' ? 'logo_path' : ($field === 'logo_dark' ? 'logo_dark_path' : $field.'_path');
-                                        $pathColumn = match($field) {
-                                            'logo' => 'logo_path',
-                                            'logo_dark' => 'logo_dark_path',
-                                            'favicon' => 'favicon_path',
-                                            'og_image' => 'og_image_path',
-                                            'footer_logo' => 'footer_logo_path',
-                                            'placeholder_product' => 'placeholder_product_path',
-                                            default => $field.'_path',
-                                        };
-                                        $currentPath = $settings->{$pathColumn} ?? null;
-                                        $previewUrl = $currentPath
-                                            ? $branding->assetUrl($currentPath)
-                                            : ($field === 'logo' ? $branding->logoUrl() : null);
-                                    @endphp
-                                    @if ($previewUrl)
-                                        <div class="mb-2">
-                                            <img src="{{ $previewUrl }}" alt="" class="img-thumbnail" style="max-height:80px; object-fit: contain;">
-                                        </div>
-                                    @elseif ($currentPath)
-                                        <div class="mb-2">
-                                            <img src="{{ $branding->assetUrl($currentPath) }}" alt="" class="img-thumbnail" style="max-height:80px">
-                                        </div>
-                                    @endif
-                                    <input type="file" name="{{ $field }}" class="form-control" accept="image/*">
-                                    @if ($field === 'logo')
-                                        <div class="form-text">{{ __('branding.logo_main_hint') }}</div>
-                                    @endif
+                                1 => ['en' => __('web.top'), 'ar' => __('web.top', [], 'ar')],
+                                2 => ['en' => trim(__('web.Long Sleeve')), 'ar' => trim(__('web.Long Sleeve', [], 'ar'))],
+                            ] as $slot => $defaults)
+                                <div class="col-md-6">
+                                    <div class="admin-nested-panel border rounded-3 p-3 h-100">
+                                        <h6 class="fw-bold mb-3">{{ __('branding.home_tile_heading', ['n' => $slot, 'name' => $defaults['en']]) }}</h6>
+                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_name_en') }}</label>
+                                        <input type="text" name="home_tile_{{ $slot }}_title_en" class="form-control mb-2"
+                                               value="{{ old("home_tile_{$slot}_title_en", $settings->{"home_tile_{$slot}_title_en"} ?: $defaults['en']) }}">
+                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_name_ar') }}</label>
+                                        <input type="text" name="home_tile_{{ $slot }}_title_ar" class="form-control mb-3" dir="rtl"
+                                               value="{{ old("home_tile_{$slot}_title_ar", $settings->{"home_tile_{$slot}_title_ar"} ?: $defaults['ar']) }}">
+                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_redirect') }}</label>
+                                        <select name="home_category_{{ $slot }}_id" class="form-select">
+                                            <option value="">{{ __('branding.home_tile_all_products') }}</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" @selected((string) old("home_category_{$slot}_id", $settings->{"home_category_{$slot}_id"}) === (string) $category->id)>
+                                                    {{ $category->name }}@if (! $category->is_active) ({{ __('branding.inactive') }})@endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="form-text">{{ __('branding.home_tile_redirect_hint') }}</div>
+                                        @php $live = $liveTiles[$slot - 1] ?? null; @endphp
+                                        @if ($live)
+                                            <p class="admin-nested-panel-live small mb-0 mt-3 text-break">
+                                                {{ __('branding.home_tile_live') }}:
+                                                <strong>{{ $live['name'] }}</strong>
+                                                → <a href="{{ $live['url'] }}" target="_blank" rel="noopener">{{ $live['url'] }}</a>
+                                            </p>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -169,44 +166,11 @@
                                             };
                                     @endphp
                                     @if ($previewUrl)
-                                        <div class="mb-2 rounded overflow-hidden" style="height:100px;background:#f5f5f5">
-                                            <img src="{{ $previewUrl }}" alt="" style="width:100%;height:100%;object-fit:cover">
+                                        <div class="admin-image-preview mb-2 rounded overflow-hidden">
+                                            <img src="{{ $previewUrl }}" alt="">
                                         </div>
                                     @endif
                                     <input type="file" name="{{ $field }}" class="form-control" accept="image/*">
-                                </div>
-                            @endforeach
-                        </div>
-
-                        <h6 class="mt-4">{{ __('branding.home_tiles') }}</h6>
-                        <p class="text-muted small">{{ __('branding.home_tiles_hint') }}</p>
-                        <div class="row g-4">
-                            @foreach ([1, 2] as $slot)
-                                <div class="col-md-6">
-                                    <label class="form-label">{{ __('branding.home_tile_category', ['n' => $slot]) }}</label>
-                                    <select name="home_category_{{ $slot }}_id" class="form-select">
-                                        <option value="">{{ __('branding.home_tile_choose_category') }}</option>
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->id }}" @selected((string) old("home_category_{$slot}_id", $settings->{"home_category_{$slot}_id"}) === (string) $category->id)>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="form-text">{{ __('branding.home_tile_category_hint') }}</div>
-                                    <div class="row g-2 mt-2">
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __('branding.home_tile_title_en', ['n' => $slot]) }}</label>
-                                            <input type="text" name="home_tile_{{ $slot }}_title_en" class="form-control"
-                                                   value="{{ old("home_tile_{$slot}_title_en", $settings->{"home_tile_{$slot}_title_en"}) }}"
-                                                   placeholder="{{ __('branding.home_tile_title_placeholder') }}">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">{{ __('branding.home_tile_title_ar', ['n' => $slot]) }}</label>
-                                            <input type="text" name="home_tile_{{ $slot }}_title_ar" class="form-control" dir="rtl"
-                                                   value="{{ old("home_tile_{$slot}_title_ar", $settings->{"home_tile_{$slot}_title_ar"}) }}"
-                                                   placeholder="{{ __('branding.home_tile_title_placeholder') }}">
-                                        </div>
-                                    </div>
                                 </div>
                             @endforeach
                         </div>
