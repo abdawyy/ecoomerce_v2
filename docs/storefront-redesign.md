@@ -1,309 +1,162 @@
 # Hayah — Storefront Redesign
 
-> **Status: ✅ Implemented** (June 2026)  
+> **Status: ✅ Implemented + UI/UX polish (Sept 2026)**  
 > Scope: Public shop (homepage, PLP, PDP, cart, checkout, footer, global shell)  
-> Related: [user-panel-redesign.md](./user-panel-redesign.md) · [user-panel-redesign-checklist.md](./user-panel-redesign-checklist.md)
+> Related: [storefront-ui-ux.md](./storefront-ui-ux.md) · [storefront-changelog.md](./storefront-changelog.md) · [user-panel-redesign.md](./user-panel-redesign.md)
 
 ---
 
 ## Overview
 
-The Hayah storefront targets a **boutique homewear / fashion** feel. The redesign unified layout, tokens, and customer journey across all shop pages.
+The Hayah storefront is a **boutique homewear** shop: one valid HTML shell, shared product cards, bilingual EN/AR (RTL), and a complete path from browse → bag → checkout → receipt → My Account.
+
+This document is the **implementation map**. Visual rules live in [storefront-ui-ux.md](./storefront-ui-ux.md). Recent storefront work (logo, social, cart policy, UX polish) is listed in [storefront-changelog.md](./storefront-changelog.md).
 
 ---
 
-## Current storefront map (after redesign)
+## Current storefront map
 
-| Page | View | Layout pattern | Status |
-|------|------|----------------|--------|
+| Page | View | Layout | Status |
+|------|------|--------|--------|
 | **Home** | `index.blade.php` | `x-web.layout` + `x-web.product-card` | ✅ |
-| **Product list (PLP)** | `product/list.blade.php` | `x-web.layout` + sticky filters + mobile drawer | ✅ |
-| **Product detail (PDP)** | `product/show.blade.php` | `x-web.layout` + sticky mobile CTA | ✅ |
-| **Cart** | `cart/index.blade.php` | `x-web.layout` + checkout stepper | ✅ |
-| **Checkout** | `checkout/address.blade.php` | `x-web.layout` + stepper + saved addresses | ✅ |
-| **Receipt** | `checkout/receipt.blade.php` | White confirmation card + invoice link | ✅ |
-| **Guides** | `guides/index.blade.php` | `x-web.layout` | ✅ |
-| **Contact / Legal** | `contact_us.blade.php`, `legal.blade.php` | `x-web.layout` | ✅ |
-| **My Account** | `account/*` | `x-account.layout` inside `x-web.layout` | ✅ |
+| **PLP** | `product/list.blade.php` | Filters, sort, chips, mobile drawer | ✅ |
+| **PDP** | `product/show.blade.php` | Gallery, sticky mobile CTA, related | ✅ |
+| **Cart** | `cart/index.blade.php` | Stepper, promo, **sales policy panel** | ✅ |
+| **Checkout** | `checkout/address.blade.php` | Stepper, saved addresses | ✅ |
+| **Receipt** | `checkout/receipt.blade.php` | Confirmation card + invoice | ✅ |
+| **Guides / Contact / Legal** | `guides/*`, `contact_us`, `legal` | Shared shell | ✅ |
+| **My Account** | `account/*` | `x-account.layout` in `x-web.layout` | ✅ |
 
 ### Key components
 
-| Component | Path | Role | Status |
-|-----------|------|------|--------|
-| Layout | `components/web/layout.blade.php` | Single `<html>`, SEO, fonts, scripts | ✅ |
-| Navbar | `components/web/navbar.blade.php` | Promo bar, nav, search, account, offcanvas | ✅ |
-| Footer | `components/web/footer.blade.php` | 4 columns + social + toastr | ✅ |
-| Product card | `components/web/product-card.blade.php` | Shared grid card + hover bag link | ✅ |
-| Checkout stepper | `components/web/checkout-stepper.blade.php` | Cart → Details → Confirm | ✅ |
-| Breadcrumb | `components/web/breadcrumb.blade.php` | PLP + PDP | ✅ |
-| Social links | `components/web/social-links.blade.php` | Admin-configurable URLs | ✅ |
-| Header (legacy) | `components/web/header.blade.php` | Deprecated stub | ✅ |
-| Sidebar (legacy) | `components/web/sidebar.blade.php` | Deprecated stub | ✅ |
+| Component | Path | Role |
+|-----------|------|------|
+| Layout | `components/web/layout.blade.php` | One document: SEO, fonts, skip link, slot, footer |
+| Navbar | `components/web/navbar.blade.php` | Promo, branding logo, search, bag, account, theme |
+| Footer | `components/web/footer.blade.php` | Logo + shop/help/legal/social |
+| Product card | `components/web/product-card.blade.php` | 4:5 image, sale badge, hover bag |
+| Checkout stepper | `components/web/checkout-stepper.blade.php` | Numbered Cart → Details → Confirm |
+| Breadcrumb | `components/web/breadcrumb.blade.php` | PLP + PDP |
+| Social links | `components/web/social-links.blade.php` | Admin URLs + Bootstrap Icons |
+| Branding logo | `components/branding/logo.blade.php` | Same logo on storefront + admin |
 
 ---
 
-## Critical structural issues — ✅ All resolved
+## Structural issues — resolved
 
 | # | Issue | Status |
 |---|--------|--------|
-| 1 | Invalid HTML (nested documents) | ✅ Fixed — single `x-web.layout` |
-| 2 | Three parallel design systems | ✅ Fixed — `storefront-shell.css` + theme; some page inline CSS remains (acceptable) |
-| 3 | Duplicate mobile navigation | ✅ Fixed — one `#mobileMenu` offcanvas |
-| 4 | No account entry in navbar | ✅ Fixed — login + auth dropdown |
-| 5 | Footer underbuilt | ✅ Fixed — shop / help / legal / social columns |
-| 6 | RTL inconsistency | ✅ Fixed — RTL bootstrap + RTL filter offcanvas on PLP |
-| 7 | Global `box-shadow: none !important` | ✅ Fixed — removed from `style.css` |
+| 1 | Nested HTML documents | ✅ `x-web.layout` only |
+| 2 | Parallel CSS systems | ✅ Tokens in `storefront-shell.css` |
+| 3 | Dual mobile menus | ✅ One `#mobileMenu` offcanvas |
+| 4 | No account in navbar | ✅ Login + auth dropdown |
+| 5 | Thin footer | ✅ Four columns + logo + social |
+| 6 | RTL Bootstrap unused | ✅ Loaded when `dir="rtl"` |
+| 7 | Global `box-shadow: none !important` | ✅ Removed |
+| 8 | Hardcoded Hayah social URLs | ✅ Branding settings |
+| 9 | Hardcoded logo files | ✅ Branding **Main logo** |
 
 ---
 
-## Design direction — ✅ Implemented
+## Design direction
 
-**“Boutique homewear”** patterns in production:
+Boutique homewear:
 
-- ✅ Portrait product ratio (`aspect-ratio: 4/5`)
-- ✅ Hover reveal bag button (`x-web.product-card`)
-- ✅ Full-bleed category blocks with gradient overlay
-- ✅ Black promo bar + uppercase nav links
-- ✅ Rounded corners (15–20px), minimal borders
-- ✅ Cairo + El Messiri everywhere (no Inter duplicates)
+- Portrait product ratio `4 / 5`
+- Hover bag on cards (always visible on touch)
+- Full-bleed category blocks
+- Black promo bar, uppercase nav, 44px icon buttons
+- Frosted sticky header
+- Cairo (body) + El Messiri (headings)
 
-### Design tokens — ✅ in `storefront-shell.css`
-
-```css
-:root {
-  --brand-black: #111111;
-  --brand-white: #ffffff;
-  --brand-muted: #6b7280;
-  --brand-soft: #f9f9f9;
-  --brand-sale: #ff4b2b;
-  --brand-accent: #2aaee7;
-  --radius-lg: 20px;
-  --radius-md: 12px;
-  --font-display: "El Messiri", serif;
-  --font-body: "Cairo", sans-serif;
-}
-```
-
-Dark mode overrides: `storefront-theme.css`
+Tokens: see [storefront-ui-ux.md](./storefront-ui-ux.md).
 
 ---
 
-## Global shell — ✅ Done
+## Page-by-page
 
-```
-x-web.layout
-├── <head> (once): SEO, fonts, storefront CSS, bootstrap [+ RTL]
-├── promo-bar
-├── navbar (nav + icons + account + theme toggle)
-├── mobile offcanvas (single menu)
-├── search modal
-├── {{ $slot }}
-└── footer + scripts (once)
-```
+### Homepage ✅
+Admin hero/tagline, carousel, shared cards, category banners, RTL gradient, mobile swipe hint, tighter mobile hero padding.
 
-| Navbar element | Status |
-|----------------|--------|
-| Search modal | ✅ |
-| Bag + cart count | ✅ |
-| Language EN / AR | ✅ |
-| Account (guest → login; auth → dropdown) | ✅ |
-| Sticky header | ✅ |
+### PLP ✅
+Shared layout, sticky filters (on sale + sort), chips, 4-col grid, empty state, RTL filter drawer.
 
----
+### PDP ✅
+Gallery, sizes, color, reviews average, breadcrumb, related products, sticky Add to bag. Size-guide modal and review pagination remain optional.
 
-## Page-by-page status
+### Cart ✅
+Sticky summary, promo, qty +/−, guest hint, featured empty state, numbered stepper, **admin-editable sales & inspection policy**.
 
-### Homepage — ✅ Done
+### Checkout ✅
+Stepper, saved addresses, city fees, create-account checkbox, promo from cart session.
 
-| Item | Status |
-|------|--------|
-| Admin-editable hero | ✅ |
-| Product carousel + sale badges | ✅ |
-| Hover bag button on cards | ✅ |
-| Category images from branding | ✅ |
-| Hero tagline from branding / lang | ✅ |
-| `x-web.product-card` partial | ✅ |
-| Mobile carousel swipe hint | ✅ |
-| RTL hero gradient | ✅ |
+### Receipt ✅
+White card, order totals, invoice download, email note, shop CTA.
 
-### PLP — ✅ Done
-
-| Area | Status |
-|------|--------|
-| Shared layout (not standalone HTML) | ✅ |
-| Desktop sticky filter column | ✅ |
-| Filters: category, price, type, color, size, stock, **on sale** | ✅ |
-| Mobile filter offcanvas (RTL-aware) | ✅ |
-| Sort: newest, price ↑↓ | ✅ |
-| Shared `product-card` (4 cols desktop, 2 mobile) | ✅ |
-| Active filter chips | ✅ |
-| Title + product count + breadcrumb | ✅ |
-| Empty state + clear filters | ✅ (text; no illustration) |
-
-### PDP — ✅ Mostly done
-
-| Area | Status |
-|------|--------|
-| Image gallery + thumbnails | ✅ |
-| Size selectors + disabled states | ✅ |
-| Color display (when set on product) | ✅ |
-| Reviews + guest login prompt | ✅ |
-| Mobile sticky bottom bar | ✅ |
-| Breadcrumb | ✅ |
-| Related products (4, same category) | ✅ |
-| Review star average + count | ✅ |
-| SEO / JSON-LD | ✅ |
-| Size guide modal | ⏸️ Product guide PDF link only (optional) |
-| Review pagination | ⏸️ Deferred |
-
-### Cart — ✅ Done
-
-| Area | Status |
-|------|--------|
-| Line items + sticky summary | ✅ |
-| Larger images, +/- qty, delete confirm | ✅ |
-| Promo code field | ✅ |
-| Empty cart + featured products | ✅ |
-| Trust line under summary | ✅ |
-| Guest vs auth hint + login prompt | ✅ |
-| Checkout stepper | ✅ |
-
-### Checkout — ✅ Done
-
-| Area | Status |
-|------|--------|
-| Stepper (Cart → Details → Confirm) | ✅ |
-| Pre-fill name (logged-in) | ✅ |
-| Saved addresses dropdown | ✅ |
-| City dropdown from admin `cities` | ✅ |
-| Sticky order summary | ✅ |
-| Guest “Create account after order” checkbox | ✅ |
-| Inline validation errors | ✅ |
-| Promo code (cart session + checkout field) | ✅ |
-
-### Receipt — ✅ Done
-
-| Area | Status |
-|------|--------|
-| White confirmation card (no hero overlay) | ✅ |
-| Order #, total, delivery fee | ✅ |
-| Back to shop | ✅ |
-| View order (when logged in) | ✅ |
-| Download invoice (signed URL, 48h) | ✅ |
-| Email confirmation message on page | ✅ |
-
-### Footer — ✅ Done (optional items deferred)
-
-| Column | Status |
-|--------|--------|
-| **Shop** — categories, all products | ✅ |
-| **Help** — contact, guides, cart, orders/login | ✅ |
-| **Legal** — terms, privacy, cookies | ✅ |
-| **Social** — admin-configurable links | ✅ |
-| FAQ link | ⏸️ Optional — not added |
-| Newsletter | ⏸️ Future |
-
-### Secondary pages
-
-| Page | Status |
-|------|--------|
-| **Guides** — card grid | ✅ |
-| **Contact** — form + toastr | ✅ |
-| **Contact** — map | ⏸️ Deferred |
-| **Legal** — prose width + sticky in-page nav | ✅ |
+### Footer ✅
+Shop / Help / Legal + branding logo, tagline, generic social icons.
 
 ---
 
-## Customer journey — ✅ Complete
+## Branding-driven storefront (latest)
+
+| Setting (Admin → Branding & Media) | Storefront use |
+|------------------------------------|----------------|
+| **Main logo** | Navbar, footer, auth cards, admin header |
+| Favicon / OG / footer logo | Optional overrides |
+| Social URLs (10 platforms) | Footer + contact icons |
+| Cart policy title/body EN+AR | Cart page dark panel |
+| Hero + category images | Homepage |
+
+---
+
+## Customer journey
 
 ```
-Browse (home / PLP)
-    → Product (PDP)
-    → Cart
-    → Checkout
-    → Receipt
-    → My Account → Order detail + invoice
+Home / PLP → PDP → Cart (+ policy) → Checkout → Receipt → My Account
 ```
 
 ---
 
-## Mobile-first checklist — ✅ All done
+## Mobile-first checklist
 
-- [x] Single offcanvas menu (RTL: `offcanvas-end` for Arabic nav; PLP filter RTL-aware)
-- [x] Sticky header with cart count
-- [x] Sticky “Add to bag” on PDP
-- [x] Filter drawer on PLP
-- [x] Touch-friendly qty controls in cart (+/− buttons)
-- [x] Category dropdown hover (desktop) / tap (mobile)
-- [x] Load `bootstrap.rtl.min.css` when `dir="rtl"`
-
----
-
-## Rollout plan — ✅ All phases complete
-
-| Phase | Focus | Status |
-|-------|--------|--------|
-| **1** | `x-web.layout`, theme CSS, fix HTML duplication | ✅ |
-| **2** | `product-card` partial; refactor PLP | ✅ |
-| **3** | PDP sticky CTA + breadcrumbs + related products | ✅ |
-| **4** | Cart/checkout summary + discount code UI | ✅ |
-| **5** | Navbar account links + footer columns | ✅ |
-| **6** | RTL pass + remove duplicate sidebar | ✅ |
+- [x] Single offcanvas (RTL-aware)
+- [x] Sticky header + cart badge
+- [x] 44px toolbar tap targets
+- [x] Sticky Add to bag on PDP
+- [x] PLP filter drawer
+- [x] Cart qty +/−
+- [x] Product overlay visible on touch
+- [x] Skip to content
+- [x] `bootstrap.rtl.min.css` when Arabic
 
 ---
 
-## Quick wins vs larger refactors — ✅ Done
+## Optional / deferred
 
-| Quick win | Status |
-|-----------|--------|
-| Footer links wired | ✅ |
-| Login/account icon in navbar | ✅ |
-| Shared `product-card` partial | ✅ |
-| Centralized tokens (`storefront-shell.css`) | ✅ |
-| Branding text on hero | ✅ |
-
-| Larger refactor | Status |
-|-----------------|--------|
-| Full `x-web.layout` extraction | ✅ |
-| PLP off standalone HTML | ✅ |
-| Customer `/account/*` section | ✅ |
-| Related products | ✅ |
-| Newsletter, wishlist, compare | ⏸️ Future |
-
----
-
-## Optional / deferred (not blocking “done”)
-
-- FAQ page and footer link
-- Newsletter signup
-- Contact page map embed
-- PDP review pagination for long lists
-- Dedicated homewear size-guide modal (product guide PDF exists)
-- PLP empty-state illustration asset
+- FAQ, newsletter, contact map
+- PDP review pagination, dedicated size-guide modal
+- PLP empty-state illustration
+- Wishlist / compare
 
 ---
 
 ## Technical reference
 
-| Asset / file | Purpose |
-|--------------|---------|
-| `public/assets/css/storefront-shell.css` | Layout tokens, product card, stepper, receipt |
-| `public/assets/css/storefront-theme.css` | Dark mode overrides |
-| `public/assets/css/style.css` | Legacy storefront components |
-| `public/assets/css/plp.css` | PLP filter sidebar |
-| `public/assets/css/account.css` | My Account area |
-| `resources/views/components/web/*` | Layout components |
-| `app/Services/BrandingService.php` | Hero, images, social links |
-| `app/Services/SeoService.php` | Meta, sitemap, JSON-LD |
-| `resources/lang/en\|ar/web.php` | Storefront copy |
+| File | Purpose |
+|------|---------|
+| `public/assets/css/storefront-shell.css` | Tokens, header, cards, stepper, cart policy |
+| `public/assets/css/storefront-theme.css` | Dark mode |
+| `public/assets/css/plp.css` | Filter sidebar |
+| `app/Services/BrandingService.php` | Logo, social, cart policy, images |
 
 ---
 
 ## Summary
 
-1. ✅ **Unified shell** — one layout, shared tokens, valid HTML.
-2. ✅ **Reused homepage patterns** — product card across PLP, cart empty, related products.
-3. ✅ **Complete journey** — account in navbar, footer columns, checkout steps, receipt + invoice.
-4. ✅ **RTL and duplication fixed** — one mobile menu, consistent Bootstrap + RTL CSS.
+1. Unified shell and product card.
+2. Complete purchase journey including policy on cart.
+3. Generic branding: one logo, configurable social, editable cart copy.
+4. UI/UX polish: frosted header, numbered stepper, touch-friendly controls.
 
-Customer account details: [user-panel-redesign.md](./user-panel-redesign.md)
+Visual spec: [storefront-ui-ux.md](./storefront-ui-ux.md)

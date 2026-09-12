@@ -9,8 +9,8 @@
             <i class="fa-solid fa-bars-staggered"></i>
         </button>
 
-        <a class="navbar-brand" href="/">
-            <x-branding.logo style="width: 100px; height: auto; object-fit: contain;" />
+        <a class="navbar-brand d-inline-flex align-items-center py-0" href="{{ route('home') }}">
+            <x-branding.logo :link="false" style="width: 104px; height: auto; max-height: 44px; object-fit: contain;" />
         </a>
 
         <div class="collapse navbar-collapse">
@@ -32,27 +32,27 @@
             </ul>
         </div>
 
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-1 gap-md-2 storefront-toolbar">
             <button type="button" class="storefront-icon-btn" data-storefront-theme-toggle
                 data-label-light="{{ __('account.theme_light') }}"
                 data-label-dark="{{ __('account.theme_dark') }}"
                 aria-label="{{ __('account.theme_dark') }}">
-                <i class="bi bi-moon-stars-fill fs-5"></i>
+                <i class="bi bi-moon-stars-fill"></i>
             </button>
 
-            <a href="#" class="storefront-icon-btn" data-bs-toggle="modal" data-bs-target="#searchModal">
-                <i class="fa-solid fa-magnifying-glass fs-5"></i>
+            <a href="#" class="storefront-icon-btn" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="{{ __('web.search') }}">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </a>
 
-            <a href="{{ route('cart.index') }}" class="storefront-icon-btn position-relative">
-                <i class="fa-solid fa-bag-shopping fs-5"></i>
+            <a href="{{ route('cart.index') }}" class="storefront-icon-btn position-relative" aria-label="{{ __('web.footer_cart') }}">
+                <i class="fa-solid fa-bag-shopping"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge-cart cart-count">{{ $cartCount ?? 0 }}</span>
             </a>
 
             @auth
                 <div class="dropdown">
                     <a href="#" class="storefront-icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('account.account_menu') }}">
-                        <i class="fa-solid fa-user fs-5"></i>
+                        <i class="fa-solid fa-user"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li class="dropdown-header small">{{ Auth::user()->name }}</li>
@@ -69,8 +69,8 @@
                     </ul>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="storefront-icon-btn d-none d-md-inline" title="{{ __('account.login') }}">
-                    <i class="fa-solid fa-user fs-5"></i>
+                <a href="{{ route('login') }}" class="storefront-icon-btn d-none d-md-inline-flex" title="{{ __('account.login') }}">
+                    <i class="fa-solid fa-user"></i>
                 </a>
             @endauth
 

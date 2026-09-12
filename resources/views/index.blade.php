@@ -39,16 +39,22 @@
         overflow: hidden;
         display: flex;
         align-items: flex-end;
+        background: var(--brand-soft);
         transition: transform 0.5s ease;
     }
 
     .category-overlay {
         position: relative;
         z-index: 2;
-        background: linear-gradient(to top, rgba(0,0,0,0.8) 10%, transparent 100%);
+        background: linear-gradient(to top, rgba(0,0,0,0.88) 8%, rgba(0,0,0,0.35) 48%, transparent 100%);
         width: 100%;
         padding: 40px;
         transition: padding 0.4s ease;
+    }
+
+    .category-overlay h3 {
+        color: #fff !important;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
     }
 
     .category-box:hover .category-overlay {
@@ -91,7 +97,7 @@
                 <h2 class="fw-bold display-5 mb-0">{{ __('web.new_collection') }}</h2>
                 <p class="text-muted mt-2">{{ __('web.new_collection_desc') }}</p>
             </div>
-            <a href="{{ route('product.List') }}" class="text-dark fw-bold text-decoration-none border-bottom border-2 border-dark pb-1 d-none d-md-block">
+            <a href="{{ route('product.List') }}" class="home-show-all fw-bold text-decoration-none d-none d-md-block">
                 {{ __('web.show_all') }}
             </a>
         </div>
@@ -122,7 +128,7 @@
     </div>
 </section>
 
-<section id="category" class="py-5 bg-light">
+<section id="category" class="py-5 home-categories">
     <div class="container">
         <div class="row g-4 justify-content-center">
             <div class="col-12 col-md-6">

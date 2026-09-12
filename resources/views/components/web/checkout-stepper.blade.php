@@ -21,6 +21,7 @@
             $isCurrent = $index === $currentIndex;
         @endphp
         <div class="checkout-step {{ $isDone ? 'is-done' : '' }} {{ $isCurrent ? 'is-current' : '' }}">
+            <span class="checkout-step-dot" aria-hidden="true">{{ $index + 1 }}</span>
             @if ($isDone && $step['route'])
                 <a href="{{ $step['route'] }}" class="checkout-step-link">{{ $step['label'] }}</a>
             @else

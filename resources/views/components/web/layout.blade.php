@@ -38,9 +38,10 @@
     <script src="{{ asset('assets/js/storefront-theme.js') }}"></script>
 </head>
 <body class="storefront-body">
+    <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>
     <x-web.navbar />
 
-    <div class="storefront-main">
+    <div class="storefront-main" id="storefront-main">
         {{ $slot }}
     </div>
 

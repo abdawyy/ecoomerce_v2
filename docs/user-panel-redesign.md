@@ -162,4 +162,5 @@ Operations
 2. ✅ **Admin user/guest** CRM-style profiles — built.
 3. ✅ Order status visuals and bilingual patterns unified across shop and admin.
 
-For storefront shell details, see [storefront-redesign.md](./storefront-redesign.md).
+For storefront shell details, see [storefront-redesign.md](./storefront-redesign.md).  
+Visual rules: [storefront-ui-ux.md](./storefront-ui-ux.md). Recent shop work: [storefront-changelog.md](./storefront-changelog.md).

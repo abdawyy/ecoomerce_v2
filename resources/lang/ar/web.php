@@ -88,4 +88,5 @@ return [
     'footer_cookies' => 'الكوكيز',
     'shop_now' => 'تسوق الآن',
     'continue_shopping' => 'متابعة التسوق',
+    'skip_to_content' => 'تخطي إلى المحتوى',
 ];

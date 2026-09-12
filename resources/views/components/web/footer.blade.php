@@ -28,7 +28,13 @@
                 <a href="{{ route('legal') }}#cookies" class="footer-link">{{ __('web.footer_cookies') }}</a>
             </div>
 
-            <div class="col-6 col-md-3">
+            <div class="col-12 col-md-3">
+                <a href="{{ route('home') }}" class="d-inline-block mb-3">
+                    <x-branding.logo :link="false" :dark="true" style="width: 120px; height: auto; max-height: 48px; object-fit: contain; filter: brightness(0) invert(1);" />
+                </a>
+                @if ($branding->tagline())
+                    <p class="small text-white-50 mb-3">{{ $branding->tagline() }}</p>
+                @endif
                 @if (count($branding->socialLinks()) > 0)
                     <h6 class="footer-heading">{{ __('web.footer_social') }}</h6>
                     <x-web.social-links class="d-flex gap-3 mb-3" />

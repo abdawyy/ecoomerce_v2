@@ -30,8 +30,10 @@
         @endif
     </div>
 
-    <div class="pt-3">
-        <h6 class="fw-bold mb-1 product-card-title">{{ $product->name }}</h6>
+    <div class="pt-3 product-card-meta">
+        <h6 class="fw-bold mb-1 product-card-title">
+            <a href="{{ route('product.show', $product->id) }}" class="product-card-name">{{ $product->name }}</a>
+        </h6>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             @if ($salePrice !== null)
                 <span class="fw-bold text-danger">{{ number_format($salePrice, 2) }} LE</span>

@@ -14,12 +14,28 @@
 }
 
 [data-bs-theme="dark"] .navbar-custom {
-    background: #161b22;
+    background: rgba(22, 27, 34, 0.92);
     border-color: #30363d;
 }
 
 [data-bs-theme="dark"] .storefront-icon-btn {
     color: #e6edf3 !important;
+}
+
+[data-bs-theme="dark"] .storefront-icon-btn:hover {
+    background: #21262d;
+}
+
+[data-bs-theme="dark"] .checkout-step-dot {
+    background: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .checkout-step.is-current .checkout-step-dot {
+    background: #e6edf3;
+    color: #0d1117;
+    border-color: #e6edf3;
 }
 
 [data-bs-theme="dark"] .navbar-custom .text-dark {
@@ -165,4 +181,40 @@
 [data-bs-theme="dark"] .account-default-badge {
     background: #238636;
     color: #fff;
+}
+
+/* Bootstrap color names do not follow dark theme — remap on the storefront */
+[data-bs-theme="dark"] .bg-light {
+    background-color: #161b22 !important;
+}
+
+[data-bs-theme="dark"] .text-dark {
+    color: #e6edf3 !important;
+}
+
+[data-bs-theme="dark"] .border-dark {
+    border-color: #30363d !important;
+}
+
+[data-bs-theme="dark"] .home-categories {
+    background: #161b22;
+}
+
+[data-bs-theme="dark"] .section-title h2,
+[data-bs-theme="dark"] .product-card-title,
+[data-bs-theme="dark"] .product-card-name,
+[data-bs-theme="dark"] .home-show-all {
+    color: #e6edf3 !important;
+}
+
+[data-bs-theme="dark"] .home-show-all {
+    border-bottom-color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .category-box {
+    background: #0d1117;
+}
+
+[data-bs-theme="dark"] .navbar {
+    background-color: rgba(22, 27, 34, 0.92);
 }

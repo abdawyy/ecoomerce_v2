@@ -84,5 +84,6 @@ return [
   'footer_cookies' => 'Cookies',
   'shop_now' => 'Shop now',
   'continue_shopping' => 'Continue shopping',
+  'skip_to_content' => 'Skip to content',
 ];
 

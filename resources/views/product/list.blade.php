@@ -14,112 +14,11 @@
                     </div>
                     
                     <form method="GET" action="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="filter-form">
-                        <!-- Categories -->
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('web.category') }}</h6>
-                            <nav class="nav flex-column nav-pills">
-                                <a href="{{ route('product.List') }}" class="nav-link {{ !$id ? 'active' : '' }}">
-                                    {{ __('web.all_products') }}
-                                </a>
-                                @foreach ($categories as $category)
-                                    <a href="{{ route('product.List', ['id' => $category->id]) }}" 
-                                       class="nav-link {{ $id == $category->id ? 'active' : '' }}">
-                                        {{ $category->name }}
-                                    </a>
-                                @endforeach
-                            </nav>
-                        </div>
+                        @include('product.partials.filters', ['idPrefix' => 'd', 'linkDismiss' => false])
 
-                        <!-- Price Range -->
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('web.price') }}</h6>
-                            <div class="price-inputs">
-                                <input type="number" name="min_price" placeholder="Min" value="{{ request('min_price') }}" min="0">
-                                <span class="price-separator">-</span>
-                                <input type="number" name="max_price" placeholder="Max" value="{{ request('max_price') }}" min="0" max="{{ $maxProductPrice }}">
-                            </div>
-                        </div>
-
-                        <!-- Type -->
-                        @if(is_array($types) && count($types) || (is_object($types) && $types->count()))
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('products.type') }}</h6>
-                            @foreach ($types as $type)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="type_id" value="{{ $type->id }}" 
-                                           id="type-{{ $type->id }}" {{ request('type_id') == $type->id ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="type-{{ $type->id }}">
-                                        {{ $type->name }}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        <!-- Color -->
-                        @if(is_array($colors) && count($colors) || (is_object($colors) && $colors->count()))
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('web.color') }}</h6>
-                            @foreach ($colors as $c)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="color" value="{{ $c }}" 
-                                           id="color-{{ $c }}" {{ request('color') == $c ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="color-{{ $c }}">
-                                        {{ $c }}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        <!-- Size -->
-                        @if(is_array($sizes) && count($sizes) || (is_object($sizes) && $sizes->count()))
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('web.size') }}</h6>
-                            @foreach ($sizes as $s)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="size" value="{{ $s }}" 
-                                           id="size-{{ $s }}" {{ request('size') == $s ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="size-{{ $s }}">
-                                        {{ $s }}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        <!-- Stock Status -->
-                        <div class="filter-section">
-                            <h6 class="filter-section-title">{{ __('web.stock') }}</h6>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="stock_status" value="in_stock" 
-                                       id="in-stock" {{ request('stock_status') == 'in_stock' ? 'checked' : '' }}>
-                                <label class="form-check-label" for="in-stock">
-                                    {{ __('web.in_stock') }}
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="stock_status" value="out_of_stock" 
-                                       id="out-stock" {{ request('stock_status') == 'out_of_stock' ? 'checked' : '' }}>
-                                <label class="form-check-label" for="out-stock">
-                                    {{ __('web.out_of_stock') }}
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- On sale -->
-                        <div class="filter-section">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="on_sale" value="1" id="on-sale"
-                                       {{ ($onSale ?? false) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="on-sale">{{ __('web.on_sale') }}</label>
-                            </div>
-                        </div>
-
-                        <!-- Filter Buttons -->
                         <div class="filter-buttons">
-                            <button type="submit" class="btn-filter apply">Filter</button>
-                            <a href="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="btn-filter clear">Clear</a>
+                            <button type="submit" class="btn-filter apply">{{ __('web.filter') }}</button>
+                            <a href="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="btn-filter clear">{{ __('web.clear_filters') }}</a>
                         </div>
                     </form>
                 </div>
@@ -224,112 +123,11 @@
     </div>
     <div class="offcanvas-body p-0">
         <form method="GET" action="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="filter-form">
-            <!-- All Filter Sections in Mobile -->
-            
-            <!-- Categories -->
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('web.category') }}</h6>
-                <nav class="nav flex-column nav-pills">
-                    <a href="{{ route('product.List') }}" class="nav-link" data-bs-dismiss="offcanvas">
-                        {{ __('web.all_products') }}
-                    </a>
-                    @foreach ($categories as $category)
-                        <a href="{{ route('product.List', ['id' => $category->id]) }}" class="nav-link" data-bs-dismiss="offcanvas">
-                            {{ $category->name }}
-                        </a>
-                    @endforeach
-                </nav>
-            </div>
+            @include('product.partials.filters', ['idPrefix' => 'm', 'linkDismiss' => true])
 
-            <!-- Price Range -->
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('web.price') }}</h6>
-                <div class="price-inputs">
-                    <input type="number" name="min_price" placeholder="Min" value="{{ request('min_price') }}" min="0">
-                    <span class="price-separator">-</span>
-                    <input type="number" name="max_price" placeholder="Max" value="{{ request('max_price') }}" min="0" max="{{ $maxProductPrice }}">
-                </div>
-            </div>
-
-            <!-- Type -->
-            @if(is_array($types) && count($types) || (is_object($types) && $types->count()))
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('products.type') }}</h6>
-                @foreach ($types as $type)
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="type_id" value="{{ $type->id }}" 
-                               id="m-type-{{ $type->id }}" {{ request('type_id') == $type->id ? 'checked' : '' }}>
-                        <label class="form-check-label" for="m-type-{{ $type->id }}">
-                            {{ $type->name }}
-                        </label>
-                    </div>
-                @endforeach
-            </div>
-            @endif
-
-            <!-- Color -->
-            @if(is_array($colors) && count($colors) || (is_object($colors) && $colors->count()))
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('web.color') }}</h6>
-                @foreach ($colors as $c)
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="color" value="{{ $c }}" 
-                               id="m-color-{{ $c }}" {{ request('color') == $c ? 'checked' : '' }}>
-                        <label class="form-check-label" for="m-color-{{ $c }}">
-                            {{ $c }}
-                        </label>
-                    </div>
-                @endforeach
-            </div>
-            @endif
-
-            <!-- Size -->
-            @if(is_array($sizes) && count($sizes) || (is_object($sizes) && $sizes->count()))
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('web.size') }}</h6>
-                @foreach ($sizes as $s)
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="size" value="{{ $s }}" 
-                               id="m-size-{{ $s }}" {{ request('size') == $s ? 'checked' : '' }}>
-                        <label class="form-check-label" for="m-size-{{ $s }}">
-                            {{ $s }}
-                        </label>
-                    </div>
-                @endforeach
-            </div>
-            @endif
-
-            <!-- Stock Status -->
-            <div class="filter-section">
-                <h6 class="filter-section-title">{{ __('web.stock') }}</h6>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="stock_status" value="in_stock"
-                           id="m-in-stock" {{ request('stock_status') == 'in_stock' ? 'checked' : '' }}>
-                    <label class="form-check-label" for="m-in-stock">
-                        {{ __('web.in_stock') }}
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="stock_status" value="out_of_stock"
-                           id="m-out-stock" {{ request('stock_status') == 'out_of_stock' ? 'checked' : '' }}>
-                    <label class="form-check-label" for="m-out-stock">
-                        {{ __('web.out_of_stock') }}
-                    </label>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="on_sale" value="1" id="m-on-sale"
-                           {{ ($onSale ?? false) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="m-on-sale">{{ __('web.on_sale') }}</label>
-                </div>
-            </div>
-
-            <!-- Filter Buttons -->
             <div class="filter-buttons p-3 border-top">
-                <button type="submit" class="btn-filter apply">Filter</button>
-                <a href="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="btn-filter clear">Clear</a>
+                <button type="submit" class="btn-filter apply">{{ __('web.filter') }}</button>
+                <a href="{{ route('product.List', ($id ? ['id' => $id] : [])) }}" class="btn-filter clear">{{ __('web.clear_filters') }}</a>
             </div>
         </form>
     </div>

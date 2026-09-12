@@ -53,7 +53,7 @@
 
 ## Storefront shell — ✅ Complete
 
-See [storefront-redesign.md](./storefront-redesign.md) for full storefront checklist.
+See [storefront-redesign.md](./storefront-redesign.md) for the page map, [storefront-ui-ux.md](./storefront-ui-ux.md) for visual rules, and [storefront-changelog.md](./storefront-changelog.md) for logo / social / cart policy.
 
 | Item | Status | Notes |
 |------|--------|-------|
