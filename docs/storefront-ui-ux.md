@@ -64,7 +64,7 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 - Hero: cover image from branding, gradient that **flips in RTL**.
 - Mobile: shorter hero, full-width copy, smaller category tiles.
 - CTA: light pill button → PLP.
-- **Two category tiles:** name and destination are edited in Branding & Media → Homepage banners (Top & Long Sleeve). Images stay the left/right banners.
+- **Two category tiles:** name (EN/AR) and destination are edited in Branding & Media → Homepage banners (Top & Long Sleeve). Empty destination = all products. The whole tile is clickable. Images stay the left/right banners.
 
 ---
 
@@ -103,11 +103,14 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 
 **Do**
 - Change the logo only in Branding & Media (Main logo).
+- Change Top / Long Sleeve names and redirects only in Homepage banners.
 - Add social platforms in `config/branding.php` + a URL column if needed.
 - Keep product cards on a 4:5 ratio.
 
 **Don’t**
 - Hardcode `assets/img/logo.png` or Flaticon social images.
+- Hardcode homepage tile category IDs (do not fall back to 1 / 5).
+- Use Bootstrap `bg-light` in admin nested cards (breaks dark mode).
 - Add a second mobile menu.
 - Wrap `x-branding.logo` in another `<a>` without `:link="false"`.
 
@@ -118,7 +121,9 @@ Dark mode remaps the same tokens in `storefront-theme.css`.
 | Change | Files |
 |--------|--------|
 | Color / radius / header | `public/assets/css/storefront-shell.css` |
-| Dark mode | `public/assets/css/storefront-theme.css` |
+| Storefront dark mode | `public/assets/css/storefront-theme.css` |
+| Admin dark mode / nested panels | `public/admin/assets/css/admin-theme.css` |
 | PLP filters | `public/assets/css/plp.css` |
 | Account pages | `public/assets/css/account.css` |
 | Nav / footer / cards | `resources/views/components/web/*` |
+| Homepage banners | `app/Services/BrandingService.php`, `resources/views/index.blade.php`, `resources/views/admin/settings/branding.blade.php` |

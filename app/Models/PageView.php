@@ -9,7 +9,7 @@ class PageView extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'page_key', 'path', 'user_id', 'session_id', 'ip_hash', 'locale', 'viewed_at',
+        'page_key', 'path', 'user_id', 'session_id', 'ip_hash', 'locale', 'referrer', 'device', 'traffic_source', 'viewed_at',
     ];
 
     protected $casts = [

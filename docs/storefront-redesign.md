@@ -10,7 +10,7 @@
 
 The Hayah storefront is a **boutique homewear** shop: one valid HTML shell, shared product cards, bilingual EN/AR (RTL), and a complete path from browse → bag → checkout → receipt → My Account.
 
-This document is the **implementation map**. Visual rules live in [storefront-ui-ux.md](./storefront-ui-ux.md). Recent storefront work (logo, social, cart policy, UX polish) is listed in [storefront-changelog.md](./storefront-changelog.md).
+This document is the **implementation map**. Visual rules live in [storefront-ui-ux.md](./storefront-ui-ux.md). Recent storefront and admin branding work is listed in [storefront-changelog.md](./storefront-changelog.md).
 
 ---
 
@@ -76,7 +76,7 @@ Tokens: see [storefront-ui-ux.md](./storefront-ui-ux.md).
 ## Page-by-page
 
 ### Homepage ✅
-Admin hero/tagline, carousel, shared cards, **two category tiles** (name + category redirect from Branding), RTL gradient, mobile swipe hint, tighter mobile hero padding.
+Admin hero image, carousel, shared cards, **two category tiles** (EN/AR name + category redirect from Branding; empty redirect = all products; whole tile is a link), RTL gradient, mobile swipe hint, tighter mobile hero padding.
 
 ### PLP ✅
 Shared layout, sticky filters (on sale + sort), chips, 4-col grid, empty state, RTL filter drawer.
@@ -103,11 +103,15 @@ Shop / Help / Legal + tagline, generic social icons, © 2026. No footer logo.
 | Setting (Admin → Branding & Media) | Storefront use |
 |------------------------------------|----------------|
 | **Main logo** | Navbar, auth cards, admin header (not footer) |
-| Favicon / OG / footer logo | Optional overrides |
+| Site name, support email/phone | Shell / contact |
 | Social URLs (10 platforms) | Footer + contact icons |
 | Cart policy title/body EN+AR | Cart page dark panel |
 | Hero + category images | Homepage |
-| **Two homepage tiles** | Category + optional EN/AR title for Top / Long Sleeve slots |
+| **Homepage banners (Top & Long Sleeve)** | EN/AR title + category redirect (or all products) |
+
+**Removed from the admin form** (values still used if already stored, else config defaults): primary color, taglines, logo alt, dark logo, favicon, OG image, footer logo, product placeholder.
+
+**Admin dark mode:** homepage banner cards use `.admin-nested-panel`, not `bg-light`.
 
 ---
 
@@ -149,7 +153,9 @@ Home / PLP → PDP → Cart (+ policy) → Checkout → Receipt → My Account
 | `public/assets/css/storefront-shell.css` | Tokens, header, cards, stepper, cart policy |
 | `public/assets/css/storefront-theme.css` | Dark mode |
 | `public/assets/css/plp.css` | Filter sidebar |
-| `app/Services/BrandingService.php` | Logo, social, cart policy, images |
+| `app/Services/BrandingService.php` | Logo, social, cart policy, images, homepage tiles |
+| `public/admin/assets/css/admin-theme.css` | Admin dark mode, nested branding panels |
+| `app/Http/Controllers/SiteSettingsController.php` | Branding save (logo, tiles, images, social, policy) |
 
 ---
 
@@ -157,7 +163,8 @@ Home / PLP → PDP → Cart (+ policy) → Checkout → Receipt → My Account
 
 1. Unified shell and product card.
 2. Complete purchase journey including policy on cart.
-3. Generic branding: one logo, configurable social, editable cart copy.
+3. Generic branding: one logo, configurable social, editable cart copy, editable homepage banners.
 4. UI/UX polish: frosted header, numbered stepper, touch-friendly controls.
+5. Admin Branding form trimmed; homepage banner cards work in dark mode.
 
 Visual spec: [storefront-ui-ux.md](./storefront-ui-ux.md)

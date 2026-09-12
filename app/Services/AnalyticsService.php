@@ -3,10 +3,14 @@
 namespace App\Services;
 
 use App\Models\AnalyticsDaily;
+use App\Models\CustomerEvent;
+use App\Models\GuestUser;
 use App\Models\orders;
 use App\Models\PageView;
+use App\Models\payments;
 use App\Models\ProductView;
 use App\Models\products;
+use App\Models\User;
 use App\Models\VisitorPresence;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,6 +20,16 @@ use Illuminate\Support\Str;
 
 class AnalyticsService
 {
+    public const EVENT_ADD_TO_CART = 'add_to_cart';
+
+    public const EVENT_CHECKOUT_START = 'checkout_start';
+
+    public const EVENT_PURCHASE = 'purchase';
+
+    public const EVENT_SEARCH = 'search';
+
+    public const EVENT_REGISTER = 'register';
+
     public function sessionId(Request $request): string
     {
         if (! $request->session()->has('analytics_session_id')) {
@@ -25,9 +39,110 @@ class AnalyticsService
         return $request->session()->get('analytics_session_id');
     }
 
+    public function deviceFromUserAgent(?string $userAgent): string
+    {
+        $ua = strtolower((string) $userAgent);
+        if ($ua === '') {
+            return 'unknown';
+        }
+        if (preg_match('/ipad|tablet|playbook|silk/i', $ua)) {
+            return 'tablet';
+        }
+        if (preg_match('/mobile|iphone|ipod|android.*mobile|windows phone/i', $ua)) {
+            return 'mobile';
+        }
+
+        return 'desktop';
+    }
+
+    public function trafficSource(?string $referrer, Request $request): string
+    {
+        $utm = strtolower(trim((string) $request->query('utm_source', '')));
+        if ($utm !== '') {
+            return Str::limit(preg_replace('/[^a-z0-9._-]/', '', $utm) ?: 'campaign', 32, '');
+        }
+
+        $host = strtolower((string) parse_url((string) $referrer, PHP_URL_HOST));
+        if ($host === '' || $host === strtolower((string) $request->getHost())) {
+            return 'direct';
+        }
+        if (str_contains($host, 'google.') || str_contains($host, 'bing.') || str_contains($host, 'yahoo.') || str_contains($host, 'duckduckgo.')) {
+            return 'search';
+        }
+        if (str_contains($host, 'facebook.') || str_contains($host, 'fb.') || str_contains($host, 'instagram.') || str_contains($host, 'tiktok.') || str_contains($host, 'twitter.') || str_contains($host, 'x.com') || str_contains($host, 'snapchat.') || str_contains($host, 'pinterest.') || str_contains($host, 't.me') || str_contains($host, 'linkedin.')) {
+            return 'social';
+        }
+
+        return 'referral';
+    }
+
+    public function isBot(?string $userAgent): bool
+    {
+        return (bool) preg_match('/bot|crawl|spider|slurp|bingpreview|facebookexternalhit/i', (string) $userAgent);
+    }
+
+    /**
+     * @param  array<string, mixed>  $properties
+     */
+    public function recordEvent(string $eventName, Request $request, array $properties = [], ?int $productId = null, ?int $orderId = null, ?int $guestId = null): void
+    {
+        if (! Schema::hasTable('customer_events')) {
+            return;
+        }
+
+        try {
+            $referrer = Str::limit($request->headers->get('referer', ''), 500);
+            CustomerEvent::create([
+                'event_name' => $eventName,
+                'session_id' => $this->sessionId($request),
+                'user_id' => auth()->id(),
+                'guest_id' => $guestId,
+                'product_id' => $productId,
+                'order_id' => $orderId,
+                'device' => $this->deviceFromUserAgent($request->userAgent()),
+                'traffic_source' => $this->trafficSource($referrer, $request),
+                'locale' => app()->getLocale(),
+                'properties' => $properties ?: null,
+                'occurred_at' => now(),
+            ]);
+        } catch (\Throwable) {
+            // Collection must never block checkout or cart.
+        }
+    }
+
+    public function recordSearch(Request $request, string $query): void
+    {
+        $term = Str::limit(trim($query), 80, '');
+        if ($term === '' || mb_strlen($term) < 2) {
+            return;
+        }
+
+        if (! Schema::hasTable('customer_events')) {
+            return;
+        }
+
+        $sessionId = $this->sessionId($request);
+        $recent = CustomerEvent::query()
+            ->where('event_name', self::EVENT_SEARCH)
+            ->where('session_id', $sessionId)
+            ->where('occurred_at', '>=', now()->subMinutes(10))
+            ->latest('occurred_at')
+            ->first();
+
+        if ($recent && ($recent->properties['q'] ?? null) === $term) {
+            return;
+        }
+
+        $this->recordEvent(self::EVENT_SEARCH, $request, ['q' => $term]);
+    }
+
     public function recordProductView(products $product, Request $request): void
     {
         if (! Schema::hasTable('product_views')) {
+            return;
+        }
+
+        if ($this->isBot($request->userAgent())) {
             return;
         }
 
@@ -61,7 +176,14 @@ class AnalyticsService
             return;
         }
 
-        PageView::create([
+        if ($this->isBot($request->userAgent())) {
+            $this->touchPresence($request, $pageKey, $productId);
+
+            return;
+        }
+
+        $referrer = Str::limit($request->headers->get('referer', ''), 500);
+        $payload = [
             'page_key' => $pageKey,
             'path' => $request->path(),
             'user_id' => auth()->id(),
@@ -69,7 +191,19 @@ class AnalyticsService
             'ip_hash' => hash('sha256', $request->ip().config('app.key')),
             'locale' => app()->getLocale(),
             'viewed_at' => now(),
-        ]);
+        ];
+
+        if (Schema::hasColumn('page_views', 'referrer')) {
+            $payload['referrer'] = $referrer;
+        }
+        if (Schema::hasColumn('page_views', 'device')) {
+            $payload['device'] = $this->deviceFromUserAgent($request->userAgent());
+        }
+        if (Schema::hasColumn('page_views', 'traffic_source')) {
+            $payload['traffic_source'] = $this->trafficSource($referrer, $request);
+        }
+
+        PageView::create($payload);
 
         $this->touchPresence($request, $pageKey, $productId);
     }
@@ -483,5 +617,255 @@ class AnalyticsService
             ->sortByDesc('views')
             ->take($limit)
             ->values();
+    }
+
+    public function eventCount(string $eventName, Carbon $start, Carbon $end): int
+    {
+        if (! Schema::hasTable('customer_events')) {
+            return 0;
+        }
+
+        return CustomerEvent::query()
+            ->where('event_name', $eventName)
+            ->whereBetween('occurred_at', [$start, $end])
+            ->count();
+    }
+
+    public function customerOverview(Carbon $start, Carbon $end): array
+    {
+        $ordersInRange = orders::query()->whereBetween('created_at', [$start, $end]);
+        $completed = (clone $ordersInRange)->whereIn('status', ['Completed', 'completed']);
+
+        $guestOrders = (clone $ordersInRange)->whereNull('user_id')->count();
+        $registeredOrders = (clone $ordersInRange)->whereNotNull('user_id')->count();
+
+        $buyers = orders::query()
+            ->whereBetween('created_at', [$start, $end])
+            ->whereIn('status', ['Completed', 'completed'])
+            ->selectRaw('COALESCE(user_id, CONCAT("g-", guest_id)) as buyer_key, COUNT(*) as order_count, SUM(total_amount) as revenue')
+            ->groupBy('buyer_key')
+            ->get();
+
+        $firstOrders = orders::query()
+            ->whereIn('status', ['Completed', 'completed'])
+            ->selectRaw('COALESCE(user_id, CONCAT("g-", guest_id)) as buyer_key, MIN(created_at) as first_at')
+            ->groupBy('buyer_key')
+            ->pluck('first_at', 'buyer_key');
+
+        $newCustomers = 0;
+        $returningCustomers = 0;
+        foreach ($buyers as $buyer) {
+            $firstAt = $firstOrders[$buyer->buyer_key] ?? $start;
+            if (Carbon::parse($firstAt)->lt($start)) {
+                $returningCustomers++;
+            } else {
+                $newCustomers++;
+            }
+        }
+
+        $repeatBuyers = $buyers->filter(fn ($b) => (int) $b->order_count >= 2)->count();
+        $uniqueBuyers = $buyers->count();
+
+        $newAccounts = Schema::hasTable('users')
+            ? User::whereBetween('created_at', [$start, $end])->count()
+            : 0;
+        $newGuests = Schema::hasTable('guest_users')
+            ? GuestUser::whereBetween('created_at', [$start, $end])->count()
+            : 0;
+
+        $addToCart = $this->eventCount(self::EVENT_ADD_TO_CART, $start, $end);
+        $checkoutStarts = $this->eventCount(self::EVENT_CHECKOUT_START, $start, $end);
+        $purchases = $this->eventCount(self::EVENT_PURCHASE, $start, $end);
+        $searches = $this->eventCount(self::EVENT_SEARCH, $start, $end);
+        $registers = $this->eventCount(self::EVENT_REGISTER, $start, $end);
+
+        $productViewSessions = Schema::hasTable('product_views')
+            ? ProductView::whereBetween('viewed_at', [$start, $end])->distinct('session_id')->count('session_id')
+            : 0;
+        $atcSessions = Schema::hasTable('customer_events')
+            ? CustomerEvent::where('event_name', self::EVENT_ADD_TO_CART)->whereBetween('occurred_at', [$start, $end])->distinct('session_id')->count('session_id')
+            : 0;
+
+        return [
+            'guest_orders' => $guestOrders,
+            'registered_orders' => $registeredOrders,
+            'new_customers' => $newCustomers,
+            'returning_customers' => $returningCustomers,
+            'unique_buyers' => $uniqueBuyers,
+            'repeat_buyers' => $repeatBuyers,
+            'repeat_rate' => $uniqueBuyers > 0 ? round(($repeatBuyers / $uniqueBuyers) * 100, 1) : 0,
+            'new_accounts' => $newAccounts,
+            'new_guests' => $newGuests,
+            'add_to_cart' => $addToCart,
+            'checkout_starts' => $checkoutStarts,
+            'purchases' => $purchases ?: (int) $completed->count(),
+            'searches' => $searches,
+            'registers' => $registers ?: $newAccounts,
+            'atc_rate' => $productViewSessions > 0 ? round(($atcSessions / $productViewSessions) * 100, 1) : 0,
+            'checkout_rate' => $atcSessions > 0 ? round(($checkoutStarts / $atcSessions) * 100, 1) : 0,
+            'purchase_rate' => $checkoutStarts > 0 ? round((($purchases ?: (int) $completed->count()) / $checkoutStarts) * 100, 1) : 0,
+        ];
+    }
+
+    public function deviceBreakdown(Carbon $start, Carbon $end)
+    {
+        if (Schema::hasTable('customer_events') && CustomerEvent::whereBetween('occurred_at', [$start, $end])->exists()) {
+            return CustomerEvent::query()
+                ->select('device', DB::raw('COUNT(*) as events'), DB::raw('COUNT(DISTINCT session_id) as sessions'))
+                ->whereBetween('occurred_at', [$start, $end])
+                ->whereNotNull('device')
+                ->groupBy('device')
+                ->orderByDesc('sessions')
+                ->get();
+        }
+
+        if (! Schema::hasTable('page_views') || ! Schema::hasColumn('page_views', 'device')) {
+            return collect();
+        }
+
+        return PageView::query()
+            ->select('device', DB::raw('COUNT(*) as events'), DB::raw('COUNT(DISTINCT session_id) as sessions'))
+            ->whereBetween('viewed_at', [$start, $end])
+            ->whereNotNull('device')
+            ->groupBy('device')
+            ->orderByDesc('sessions')
+            ->get();
+    }
+
+    public function trafficSourceBreakdown(Carbon $start, Carbon $end)
+    {
+        if (Schema::hasTable('customer_events') && CustomerEvent::whereBetween('occurred_at', [$start, $end])->exists()) {
+            return CustomerEvent::query()
+                ->select('traffic_source', DB::raw('COUNT(*) as events'), DB::raw('COUNT(DISTINCT session_id) as sessions'))
+                ->whereBetween('occurred_at', [$start, $end])
+                ->whereNotNull('traffic_source')
+                ->groupBy('traffic_source')
+                ->orderByDesc('sessions')
+                ->get();
+        }
+
+        if (! Schema::hasTable('page_views') || ! Schema::hasColumn('page_views', 'traffic_source')) {
+            return collect();
+        }
+
+        return PageView::query()
+            ->select('traffic_source', DB::raw('COUNT(*) as events'), DB::raw('COUNT(DISTINCT session_id) as sessions'))
+            ->whereBetween('viewed_at', [$start, $end])
+            ->whereNotNull('traffic_source')
+            ->groupBy('traffic_source')
+            ->orderByDesc('sessions')
+            ->get();
+    }
+
+    public function topSearchTerms(Carbon $start, Carbon $end, int $limit = 15)
+    {
+        if (! Schema::hasTable('customer_events')) {
+            return collect();
+        }
+
+        $rows = CustomerEvent::query()
+            ->where('event_name', self::EVENT_SEARCH)
+            ->whereBetween('occurred_at', [$start, $end])
+            ->get(['properties']);
+
+        return $rows
+            ->map(fn ($row) => strtolower(trim((string) ($row->properties['q'] ?? ''))))
+            ->filter()
+            ->countBy()
+            ->sortDesc()
+            ->take($limit)
+            ->map(fn ($count, $term) => (object) ['term' => $term, 'searches' => $count])
+            ->values();
+    }
+
+    public function topCustomers(Carbon $start, Carbon $end, int $limit = 15)
+    {
+        $rows = orders::query()
+            ->whereBetween('created_at', [$start, $end])
+            ->whereIn('status', ['Completed', 'completed'])
+            ->selectRaw('user_id, guest_id, COUNT(*) as orders_count, SUM(total_amount) as revenue, MAX(created_at) as last_order_at')
+            ->groupBy('user_id', 'guest_id')
+            ->orderByDesc('revenue')
+            ->limit($limit)
+            ->get();
+
+        $userIds = $rows->pluck('user_id')->filter()->unique();
+        $guestIds = $rows->pluck('guest_id')->filter()->unique();
+        $users = $userIds->isNotEmpty() ? User::whereIn('id', $userIds)->get(['id', 'name'])->keyBy('id') : collect();
+        $guests = $guestIds->isNotEmpty() && Schema::hasTable('guest_users')
+            ? GuestUser::whereIn('id', $guestIds)->get(['id', 'name'])->keyBy('id')
+            : collect();
+
+        return $rows->map(function ($row) use ($users, $guests) {
+            if ($row->user_id) {
+                $row->customer_name = $users[$row->user_id]->name ?? ('#'.$row->user_id);
+                $row->customer_type = 'registered';
+            } else {
+                $row->customer_name = $guests[$row->guest_id]->name ?? __('analytics.guest');
+                $row->customer_type = 'guest';
+            }
+
+            return $row;
+        });
+    }
+
+    public function salesByWeekday(Carbon $start, Carbon $end): array
+    {
+        $days = array_fill(0, 7, ['orders' => 0, 'revenue' => 0.0]);
+        $rows = orders::query()
+            ->whereBetween('created_at', [$start, $end])
+            ->whereIn('status', ['Completed', 'completed'])
+            ->selectRaw('WEEKDAY(created_at) as wd, COUNT(*) as cnt, SUM(total_amount) as rev')
+            ->groupBy('wd')
+            ->get();
+
+        foreach ($rows as $row) {
+            $days[(int) $row->wd] = [
+                'orders' => (int) $row->cnt,
+                'revenue' => (float) $row->rev,
+            ];
+        }
+
+        return $days;
+    }
+
+    public function paymentMethodBreakdown(Carbon $start, Carbon $end)
+    {
+        if (! Schema::hasTable('payments')) {
+            return collect();
+        }
+
+        return payments::query()
+            ->join('orders', 'orders.id', '=', 'payments.orders_id')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->select('payments.payment_method', DB::raw('COUNT(*) as cnt'), DB::raw('SUM(payments.amount) as amount'))
+            ->groupBy('payments.payment_method')
+            ->orderByDesc('cnt')
+            ->get();
+    }
+
+    public function customerExportRows(Carbon $start, Carbon $end): array
+    {
+        $overview = $this->customerOverview($start, $end);
+        $rows = [
+            ['metric', 'value'],
+            ['guest_orders', $overview['guest_orders']],
+            ['registered_orders', $overview['registered_orders']],
+            ['new_customers', $overview['new_customers']],
+            ['returning_customers', $overview['returning_customers']],
+            ['unique_buyers', $overview['unique_buyers']],
+            ['repeat_rate_pct', $overview['repeat_rate']],
+            ['new_accounts', $overview['new_accounts']],
+            ['add_to_cart', $overview['add_to_cart']],
+            ['searches', $overview['searches']],
+            ['atc_rate_pct', $overview['atc_rate']],
+        ];
+
+        $rows[] = ['customer', 'type', 'orders', 'revenue'];
+        foreach ($this->topCustomers($start, $end, 200) as $c) {
+            $rows[] = [$c->customer_name, $c->customer_type, $c->orders_count, $c->revenue];
+        }
+
+        return $rows;
     }
 }

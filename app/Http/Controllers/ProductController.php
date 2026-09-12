@@ -309,6 +309,7 @@ class ProductController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
+            app(AnalyticsService::class)->recordSearch($request, $search);
         }
 
         // Apply type filter

@@ -35,6 +35,14 @@ class CreateNewUser implements CreatesNewUsers
 
         app(GuestAccountMergeService::class)->mergeForUser($user);
 
+        try {
+            app(\App\Services\AnalyticsService::class)->recordEvent(
+                \App\Services\AnalyticsService::EVENT_REGISTER,
+                request()
+            );
+        } catch (\Throwable) {
+        }
+
         return $user;
     }
 }

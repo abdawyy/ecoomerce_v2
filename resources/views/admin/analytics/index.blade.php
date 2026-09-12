@@ -44,19 +44,19 @@
                             <div class="col-md-2"><input type="date" name="to" class="form-control" value="{{ $to }}"></div>
                         @endif
                         <div class="col-md-2">
-                            <a href="{{ route('admin.analytics.export', request()->query()) }}" class="btn btn-outline-secondary w-100">{{ __('analytics.export') }}</a>
+                            <a href="{{ route('admin.analytics.export', array_merge(request()->query(), ['type' => $tab === 'customers' ? 'customers' : 'products'])) }}" class="btn btn-outline-secondary w-100">{{ __('analytics.export') }}</a>
                         </div>
                     </form>
                 </div>
             </div>
 
             <ul class="nav nav-tabs mb-3 flex-wrap">
-                @foreach (['overview','products','traffic','categories','sales','live'] as $t)
+                @foreach (['overview','products','traffic','categories','sales','customers','live'] as $t)
                     <li class="nav-item"><a class="nav-link {{ $tab === $t ? 'active' : '' }}" href="{{ $tabUrl($t) }}">{{ __('analytics.tab_'.$t) }}</a></li>
                 @endforeach
             </ul>
 
-            @if (in_array($tab, ['overview', 'products', 'traffic', 'categories', 'sales']))
+            @if (in_array($tab, ['overview', 'products', 'traffic', 'categories', 'sales', 'customers']))
                 <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <div class="card h-100"><div class="card-body">
@@ -235,6 +235,102 @@
                 </div>
             @endif
 
+            @if ($tab === 'customers')
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                        <h6 class="text-muted">{{ __('analytics.new_customers') }}</h6>
+                        <h3 class="mb-0">{{ number_format($customerOverview['new_customers']) }}</h3>
+                    </div></div></div>
+                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                        <h6 class="text-muted">{{ __('analytics.returning_customers') }}</h6>
+                        <h3 class="mb-0">{{ number_format($customerOverview['returning_customers']) }}</h3>
+                    </div></div></div>
+                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                        <h6 class="text-muted">{{ __('analytics.repeat_rate') }}</h6>
+                        <h3 class="mb-0">{{ $customerOverview['repeat_rate'] }}%</h3>
+                    </div></div></div>
+                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                        <h6 class="text-muted">{{ __('analytics.atc_rate') }}</h6>
+                        <h3 class="mb-0">{{ $customerOverview['atc_rate'] }}%</h3>
+                    </div></div></div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.guest_orders') }}</h6><h3>{{ $customerOverview['guest_orders'] }}</h3></div></div>
+                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.registered_orders') }}</h6><h3>{{ $customerOverview['registered_orders'] }}</h3></div></div>
+                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.new_accounts') }}</h6><h3>{{ $customerOverview['new_accounts'] }}</h3></div></div>
+                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.add_to_cart') }}</h6><h3>{{ $customerOverview['add_to_cart'] }}</h3></div></div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-4">
+                        <div class="card h-100"><div class="card-header">{{ __('analytics.devices') }}</div>
+                            <div class="card-body"><canvas id="chartDevices" height="140"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-100"><div class="card-header">{{ __('analytics.traffic_sources') }}</div>
+                            <div class="card-body"><canvas id="chartSources" height="140"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-100"><div class="card-header">{{ __('analytics.sales_by_weekday') }}</div>
+                            <div class="card-body"><canvas id="chartWeekday" height="140"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card">
+                            <div class="card-header">{{ __('analytics.top_customers') }}</div>
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead><tr><th>{{ __('analytics.customer') }}</th><th>{{ __('analytics.customer_type') }}</th><th>{{ __('analytics.orders') }}</th><th>{{ __('analytics.revenue') }}</th></tr></thead>
+                                    <tbody>
+                                        @forelse ($topCustomers as $c)
+                                            <tr>
+                                                <td>{{ $c->customer_name }}</td>
+                                                <td>{{ __('analytics.type_'.$c->customer_type) }}</td>
+                                                <td>{{ $c->orders_count }}</td>
+                                                <td>{{ number_format($c->revenue, 2) }} EGP</td>
+                                            </tr>
+                                        @empty
+                                            <tr><td colspan="4" class="text-center text-muted">{{ __('analytics.no_data') }}</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-3">
+                            <div class="card-header">{{ __('analytics.top_searches') }}</div>
+                            <table class="table mb-0">
+                                <thead><tr><th>{{ __('analytics.search_term') }}</th><th>{{ __('analytics.searches') }}</th></tr></thead>
+                                <tbody>
+                                    @forelse ($topSearchTerms as $s)
+                                        <tr><td>{{ $s->term }}</td><td>{{ $s->searches }}</td></tr>
+                                    @empty
+                                        <tr><td colspan="2" class="text-center text-muted">{{ __('analytics.no_data') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">{{ __('analytics.payment_methods') }}</div>
+                            <table class="table mb-0">
+                                <thead><tr><th>{{ __('analytics.payment_method') }}</th><th>{{ __('analytics.orders') }}</th><th>{{ __('analytics.revenue') }}</th></tr></thead>
+                                <tbody>
+                                    @forelse ($paymentMethods as $p)
+                                        <tr><td>{{ $p->payment_method ?: '—' }}</td><td>{{ $p->cnt }}</td><td>{{ number_format($p->amount, 2) }} EGP</td></tr>
+                                    @empty
+                                        <tr><td colspan="3" class="text-center text-muted">{{ __('analytics.no_data') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if ($tab === 'live')
                 <div class="card">
                     <div class="card-body table-responsive">
@@ -273,12 +369,19 @@
     }
     setInterval(pollLive, refreshMs);
 
-    @if (in_array($tab, ['overview', 'traffic', 'sales']))
+    @if (in_array($tab, ['overview', 'traffic', 'sales', 'customers', 'categories']))
     const traffic = @json($chartViews);
     const hours = @json($trafficByHour);
     const revenue = @json($chartRevenue);
     const funnel = @json($funnel);
     const categories = @json($categoryPerformance->pluck('views', 'category_name'));
+    const devices = @json($deviceBreakdown->pluck('sessions', 'device'));
+    const sources = @json($trafficSources->pluck('sessions', 'traffic_source'));
+    const weekday = @json(collect($salesByWeekday)->pluck('orders'));
+    const weekdayLabels = @json([
+        __('analytics.mon'), __('analytics.tue'), __('analytics.wed'), __('analytics.thu'),
+        __('analytics.fri'), __('analytics.sat'), __('analytics.sun'),
+    ]);
 
     if (document.getElementById('chartTraffic')) {
         new Chart(document.getElementById('chartTraffic'), {
@@ -331,6 +434,35 @@
                 labels: Object.keys(categories),
                 datasets: [{ data: Object.values(categories), backgroundColor: ['#0d6efd','#6610f2','#6f42c1','#d63384','#fd7e14','#198754'] }]
             }
+        });
+    }
+    if (document.getElementById('chartDevices')) {
+        new Chart(document.getElementById('chartDevices'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(devices),
+                datasets: [{ data: Object.values(devices), backgroundColor: ['#0d6efd','#198754','#fd7e14','#6c757d'] }]
+            }
+        });
+    }
+    if (document.getElementById('chartSources')) {
+        new Chart(document.getElementById('chartSources'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(sources),
+                datasets: [{ label: '{{ __('analytics.sessions') }}', data: Object.values(sources), backgroundColor: '#6610f2' }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+    }
+    if (document.getElementById('chartWeekday')) {
+        new Chart(document.getElementById('chartWeekday'), {
+            type: 'bar',
+            data: {
+                labels: weekdayLabels,
+                datasets: [{ label: '{{ __('analytics.orders') }}', data: weekday, backgroundColor: '#20c997' }]
+            },
+            options: { plugins: { legend: { display: false } } }
         });
     }
     @endif

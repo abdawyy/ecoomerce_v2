@@ -13,6 +13,7 @@ use App\Models\products;
 use App\Models\shoppingCart;
 use App\Rules\ValidPromoCode;
 use App\Services\PdfService;
+use App\Services\AnalyticsService;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,23 @@ class CheckoutController extends Controller
 
     public function index()
     {
+        try {
+            $analytics = app(AnalyticsService::class);
+            $request = request();
+            if (\Illuminate\Support\Facades\Schema::hasTable('customer_events')) {
+                $sessionId = $analytics->sessionId($request);
+                $recent = \App\Models\CustomerEvent::query()
+                    ->where('event_name', AnalyticsService::EVENT_CHECKOUT_START)
+                    ->where('session_id', $sessionId)
+                    ->where('occurred_at', '>=', now()->subMinutes(30))
+                    ->exists();
+                if (! $recent) {
+                    $analytics->recordEvent(AnalyticsService::EVENT_CHECKOUT_START, $request);
+                }
+            }
+        } catch (\Throwable) {
+        }
+
         if (auth()->check()) {
             return $this->renderAuthIndex();
         }
@@ -218,6 +236,22 @@ class CheckoutController extends Controller
             'placed_order_total' => $total,
             'placed_order_delivery' => $deliveryFees,
         ]);
+
+        try {
+            $order = orders::find($orderId);
+            app(AnalyticsService::class)->recordEvent(
+                AnalyticsService::EVENT_PURCHASE,
+                request(),
+                [
+                    'total' => $total,
+                    'guest' => $order?->user_id === null,
+                ],
+                null,
+                $orderId,
+                $order?->guest_id
+            );
+        } catch (\Throwable) {
+        }
 
         return redirect()->route('checkout.receipt', $orderId);
     }

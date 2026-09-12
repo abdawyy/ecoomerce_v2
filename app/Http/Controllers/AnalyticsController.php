@@ -45,6 +45,13 @@ class AnalyticsController extends Controller
             'windowShoppers' => $analytics->windowShoppers($start, $end, 10),
             'chartViews' => $analytics->viewsTrend($start, $end),
             'chartRevenue' => $analytics->revenueTrend($start, $end),
+            'customerOverview' => $analytics->customerOverview($start, $end),
+            'deviceBreakdown' => $analytics->deviceBreakdown($start, $end),
+            'trafficSources' => $analytics->trafficSourceBreakdown($start, $end),
+            'topSearchTerms' => $analytics->topSearchTerms($start, $end, 15),
+            'topCustomers' => $analytics->topCustomers($start, $end, 15),
+            'salesByWeekday' => $analytics->salesByWeekday($start, $end),
+            'paymentMethods' => $analytics->paymentMethodBreakdown($start, $end),
         ]);
     }
 
@@ -70,6 +77,27 @@ class AnalyticsController extends Controller
             $request->get('from'),
             $request->get('to')
         );
+
+        $type = $request->get('type', 'products');
+
+        if ($type === 'customers') {
+            $csv = '';
+            foreach ($analytics->customerExportRows($start, $end) as $row) {
+                $csv .= collect($row)->map(function ($cell) {
+                    $value = (string) $cell;
+                    if (str_contains($value, ',') || str_contains($value, '"')) {
+                        return '"'.str_replace('"', '""', $value).'"';
+                    }
+
+                    return $value;
+                })->implode(',')."\n";
+            }
+
+            return ResponseFacade::make($csv, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="customer-analytics.csv"',
+            ]);
+        }
 
         $rows = $analytics->topProducts($start, $end, 500);
         $csv = "product_id,product_name,views,unique_visitors\n";

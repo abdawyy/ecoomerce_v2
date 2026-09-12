@@ -95,15 +95,74 @@ Navbar uses an inline cart SVG. Count badge sits on the icon. `overflow: hidden`
 
 ## Homepage tiles (Top / Long Sleeve)
 
-**Ask:** Change the two homepage names and where they go, from admin.
+**Ask:** Change the two homepage names and where they go, from admin. Names and redirects were still static.
 
 **Done**
-- Branding & Media → **Homepage banners (Top & Long Sleeve)** — English/Arabic name + category redirect for each banner.
-- No hardcoded category IDs. Empty redirect goes to all products.
+- Branding & Media → **Homepage banners (Top & Long Sleeve)** (`#home-tiles`): English name, Arabic name, and category redirect for each banner.
+- Stopped falling back to hardcoded category IDs `1` and `5`. Empty redirect opens **all products**.
+- Category dropdown lists every category (inactive ones are marked), not only `is_active = 1`.
 - Names are prefilled (Top / Long Sleeve) so they are clearly editable.
-- Images remain the left/right homepage banners.
+- Admin shows a **Live now** name + URL after save.
+- Whole homepage tile is a link (not only the button).
+- Images remain the left/right homepage banners (`category_image_1/2`).
 
-**Admin:** Branding & Media (`#home-tiles`).
+**Admin:** Branding & Media → Homepage banners. Dashboard “manage home images” jumps to `#home-tiles`.
+
+**Code:** `BrandingService::homeCategoryTiles()`, `SiteSettingsController`, `resources/views/admin/settings/branding.blade.php`, `resources/views/index.blade.php`.
+
+---
+
+## Admin dark mode — homepage banners
+
+**Ask:** Homepage banners block was unreadable in admin dark mode.
+
+**Cause:** Nested cards used Bootstrap `bg-light`, which stays pale while dark-mode text is light.
+
+**Done**
+- Cards use `.admin-nested-panel` (theme tokens) instead of `bg-light`.
+- Admin dark mode remaps `.bg-light`, form controls inside `#main`, select options, and image previews.
+- Cache-bust query on `admin-theme.css`.
+
+**Files:** `public/admin/assets/css/admin-theme.css`, `resources/views/admin/settings/branding.blade.php`, `resources/views/components/admin/header.blade.php`.
+
+---
+
+## Branding form — fields removed from admin
+
+**Ask:** Remove unused branding fields from the admin portal.
+
+**Removed from Branding & Media (no longer editable):**
+- Primary color
+- Tagline (English / Arabic)
+- Logo alt text (English / Arabic)
+- Logo (dark background)
+- Favicon
+- Product placeholder image
+- Footer logo
+- Default social share image
+
+**Still on the form:** site name, support email/phone, social URLs, **main logo**, homepage banners, homepage images (hero + two category images), invoice PDF copy, cart policy.
+
+Existing stored values and `config/branding.php` defaults still feed the storefront; they just cannot be changed from this screen.
+
+**Files:** `resources/views/admin/settings/branding.blade.php`, `app/Http/Controllers/SiteSettingsController.php`.
+
+---
+
+## Customer analytics (data collection)
+
+**Ask:** Collect more customer behaviour for analytics.
+
+**Done**
+- Event stream table `customer_events`: add to cart, checkout start, purchase, search, register.
+- Page views now store device (mobile/tablet/desktop) and traffic source (direct / search / social / referral / UTM).
+- Bots are skipped for page/product views. Events never block cart or checkout.
+- Admin → Analytics → **Customers** tab: new vs returning buyers, guest vs account orders, repeat rate, add-to-cart rate, devices, traffic sources, weekday sales, top customers, search terms, payment methods.
+- CSV export on the Customers tab (`type=customers`).
+
+**Collection points:** cart add, checkout page, order complete, product search, new account.
+
+Run `php artisan migrate` for `2026_09_12_000015_create_customer_events_table.php`.
 
 ---
 
@@ -121,6 +180,7 @@ Logo removed from the footer. Copyright year is **2026**.
 | `2026_06_04_000012_add_more_social_urls_to_site_settings.php` | LinkedIn, Telegram, Pinterest, Snapchat |
 | `2026_06_04_000013_add_cart_policy_to_site_settings.php` | Cart policy title/body EN+AR |
 | `2026_06_04_000014_add_home_category_tiles_to_site_settings.php` | Two homepage category IDs + titles |
+| `2026_09_12_000015_create_customer_events_table.php` | Customer event stream + page-view device/source |
 
 Run `php artisan migrate` if any of these have not been applied.
 

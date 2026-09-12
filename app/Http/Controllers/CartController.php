@@ -6,6 +6,7 @@ use App\Models\discountCodes;
 use App\Models\productItems;
 use App\Models\products;
 use App\Models\shoppingCart;
+use App\Services\AnalyticsService;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -149,6 +150,8 @@ class CartController extends Controller
 
         $cartCount = shoppingCart::where('user_id', $userId)->count();
 
+        $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
+
         return response()->json([
             'success' => true,
             'message' => $message,
@@ -186,11 +189,23 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
+        $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
+
         return response()->json([
             'success' => true,
             'message' => 'Product added to cart successfully.',
             'cartCount' => count($cart),
         ]);
+    }
+
+    private function trackAddToCart(Request $request, int $productId, int $quantity): void
+    {
+        app(AnalyticsService::class)->recordEvent(
+            AnalyticsService::EVENT_ADD_TO_CART,
+            $request,
+            ['qty' => $quantity],
+            $productId
+        );
     }
 
     private function stockLimitResponse($productItem, $availableStock)

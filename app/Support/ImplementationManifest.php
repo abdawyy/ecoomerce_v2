@@ -35,6 +35,8 @@ class ImplementationManifest
             'app/Models/PageView.php' => 'PageView model',
             'app/Models/VisitorPresence.php' => 'VisitorPresence model',
             'app/Models/AnalyticsDaily.php' => 'AnalyticsDaily model',
+            'app/Models/CustomerEvent.php' => 'CustomerEvent model',
+            'database/migrations/2026_09_12_000015_create_customer_events_table.php' => 'customer events migration',
             'app/Services/AnalyticsService.php' => 'AnalyticsService',
             'app/Http/Controllers/AnalyticsController.php' => 'AnalyticsController',
             'app/Http/Middleware/TrackAnalytics.php' => 'TrackAnalytics middleware',

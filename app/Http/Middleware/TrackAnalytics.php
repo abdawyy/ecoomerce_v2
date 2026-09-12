@@ -37,11 +37,15 @@ class TrackAnalytics
             'legal' => 'legal',
             'cart.index' => 'cart',
             'checkout', 'checkout.index' => 'checkout',
+            'checkout.receipt' => 'receipt',
             'product.show' => 'product',
             'product.slug' => 'product',
             'product.List' => 'product_list',
             'guides.index' => 'guides',
             'guides.download' => 'guide_download',
+            'account.dashboard' => 'account',
+            'account.orders' => 'account_orders',
+            'account.profile' => 'account',
             default => null,
         };
     }
