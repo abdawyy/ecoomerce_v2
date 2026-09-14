@@ -1,6 +1,7 @@
 <x-admin.header />
 <x-admin.aside />
 <x-admin.navbar />
+@php $isRtl = app()->getLocale() === 'ar'; @endphp
 
 <main id="main">
     <div class="container">
