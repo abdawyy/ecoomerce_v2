@@ -322,7 +322,8 @@ section {
     }
 
     .category-box {
-        height: 380px;
+        height: auto;
+        aspect-ratio: 4 / 3;
     }
 
     .btn {

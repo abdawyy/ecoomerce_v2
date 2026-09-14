@@ -794,7 +794,9 @@ body:has(.modal.show) {
     }
 
     .category-box {
-        height: 340px !important;
+        aspect-ratio: 4 / 3;
+        height: auto !important;
+        min-height: 240px;
     }
 }
 

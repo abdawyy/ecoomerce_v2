@@ -184,6 +184,8 @@ Logo removed from the footer. Copyright year is **2026**.
 
 Run `php artisan migrate` if any of these have not been applied.
 
+On Hostinger / phpMyAdmin, you can instead run **`database/safe-schema.sql`** once. It creates missing tables and columns only (`IF NOT EXISTS`). It does not drop or overwrite data. Safe to run more than once.
+
 ---
 
 ## Docs

@@ -25,8 +25,28 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        max-width: none;
+        max-height: none;
         object-position: center;
+    }
+
+    .hero-img {
+        object-fit: cover;
+    }
+
+    .category-img {
+        object-fit: contain;
+        z-index: 1;
+    }
+
+    .category-img-fill {
+        position: absolute;
+        inset: -16%;
+        background-size: cover;
+        background-position: center;
+        filter: blur(22px) saturate(1.08);
+        transform: scale(1.12);
+        pointer-events: none;
     }
 
     .hero-content {
@@ -42,13 +62,15 @@
     }
 
     .category-box {
-        height: 500px;
+        height: auto;
+        aspect-ratio: 4 / 3;
+        min-height: 280px;
         border-radius: var(--radius-lg);
         position: relative;
         overflow: hidden;
         display: flex;
         align-items: flex-end;
-        background: var(--brand-soft);
+        background: #111;
         transition: transform 0.5s ease;
         color: inherit;
     }
@@ -166,6 +188,7 @@
             <?php $__currentLoopData = $branding->homeCategoryTiles(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tile): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-12 col-md-6">
                     <a href="<?php echo e($tile['url']); ?>" class="category-box text-decoration-none d-block">
+                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('<?php echo e($tile['image']); ?>')"></span>
                         <img src="<?php echo e($tile['image']); ?>" class="category-img" alt="<?php echo e($tile['name']); ?>">
                         <div class="category-overlay">
                             <h3 class="fw-bold text-white display-4 mb-3"><?php echo e($tile['name']); ?></h3>
