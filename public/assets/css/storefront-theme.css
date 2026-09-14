@@ -45,8 +45,8 @@
 }
 
 [data-bs-theme="dark"] .storefront-cart-btn .badge-cart {
-    background: #e6edf3;
-    color: #0d1117;
+    background: var(--brand-sale, #e24b2d);
+    color: #fff;
 }
 
 [data-bs-theme="dark"] .navbar-custom .text-dark {

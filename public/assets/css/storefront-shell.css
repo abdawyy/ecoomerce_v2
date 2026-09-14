@@ -159,10 +159,18 @@ body:has(.modal.show) {
 
 .storefront-cart-btn .badge-cart {
     position: absolute;
-    top: 2px;
+    top: 0;
     inset-inline-end: 0;
-    transform: translate(35%, -20%);
-    z-index: 2;
+    transform: none;
+    z-index: 3;
+    background: var(--brand-sale, #e24b2d);
+    color: #fff;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 0.7rem;
+    line-height: 18px;
+    pointer-events: none;
 }
 
 .modal-search-overlay {
@@ -203,6 +211,17 @@ body:has(.modal.show) {
     flex-shrink: 0;
     overflow: hidden;
     transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.storefront-icon-btn.storefront-cart-btn {
+    overflow: visible;
+    position: relative;
+}
+
+.storefront-toolbar {
+    overflow: visible;
+    position: relative;
+    z-index: 2;
 }
 
 .storefront-icon-btn i {
