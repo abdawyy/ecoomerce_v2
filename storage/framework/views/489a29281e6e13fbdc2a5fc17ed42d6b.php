@@ -75,8 +75,7 @@
 ?>
 
 <main id="main">
-    <div class="container-fluid">
-        <div class="row pt-4">
+    <div class="container-fluid admin-page pt-3 pt-md-4">
             <div class="pagetitle mb-3">
                 <h1><?php echo e(__('dashboard.dashboard')); ?></h1>
                 <nav>
@@ -87,8 +86,7 @@
             </div>
 
             
-            <div class="col-12 mb-4">
-                <div class="action-strip admin-card d-flex flex-wrap gap-2 align-items-center p-3">
+            <div class="action-strip admin-card d-flex flex-wrap gap-2 align-items-stretch align-items-md-center p-3 mb-4">
                     <a href="<?php echo e(route('order.list')); ?>?status=Pending" class="action-strip-btn btn btn-sm btn-warning">
                         <i class="bi bi-cart3 me-1"></i>
                         <?php echo e(__('dashboard.pending_orders')); ?>
@@ -113,22 +111,21 @@
                         <i class="bi bi-palette me-1"></i><?php echo e(__('dashboard.manage_home_images')); ?>
 
                     </a>
-                    <span class="action-strip-live ms-auto badge bg-success fs-6 px-3 py-2">
+                    <span class="action-strip-live ms-md-auto badge bg-success fs-6 px-3 py-2">
                         <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>
                         <?php echo e(__('dashboard.live_now')); ?>: <span id="live-count"><?php echo e($liveCount); ?></span>
                     </span>
-                </div>
             </div>
 
             
             <div class="row g-3 mb-4">
                 <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100 border-success border-opacity-25">
+                    <div class="admin-card admin-kpi-card card h-100 border-success border-opacity-25">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1"><?php echo e(__('dashboard.live_now')); ?></h6>
-                                    <h3 class="mb-0 text-success" id="live-count-card"><?php echo e($liveCount); ?></h3>
+                                    <h3 class="mb-0 text-success text-break" id="live-count-card"><?php echo e($liveCount); ?></h3>
                                 </div>
                                 <span class="admin-kpi-icon text-success bg-success bg-opacity-10"><i class="bi bi-broadcast"></i></span>
                             </div>
@@ -136,12 +133,12 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1"><?php echo e(__('dashboard.today_revenue')); ?></h6>
-                                    <h3 class="mb-0" id="today-revenue"><?php echo e(number_format($todaySales['revenue'], 0)); ?></h3>
+                                    <h3 class="mb-0 text-break" id="today-revenue"><?php echo e(number_format($todaySales['revenue'], 0)); ?></h3>
                                     <small class="text-muted"><?php echo e(__('dashboard.currency')); ?></small>
                                     <?php echo $changeBadge($todayKpis['change']['revenue'] ?? null); ?>
 
@@ -152,12 +149,12 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1"><?php echo e(__('dashboard.today_orders')); ?></h6>
-                                    <h3 class="mb-0" id="today-orders"><?php echo e($todaySales['orders']); ?></h3>
+                                    <h3 class="mb-0 text-break" id="today-orders"><?php echo e($todaySales['orders']); ?></h3>
                                     <?php echo $changeBadge($todayKpis['change']['orders'] ?? null); ?>
 
                                 </div>
@@ -167,12 +164,12 @@
                     </div>
                 </div>
                 <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1"><?php echo e(__('dashboard.pending_orders')); ?></h6>
-                                    <h3 class="mb-0 text-warning" id="pending-count-card"><?php echo e($pendingOrders); ?></h3>
+                                    <h3 class="mb-0 text-warning text-break" id="pending-count-card"><?php echo e($pendingOrders); ?></h3>
                                 </div>
                                 <span class="admin-kpi-icon text-warning bg-warning bg-opacity-10"><i class="bi bi-hourglass-split"></i></span>
                             </div>
@@ -183,22 +180,26 @@
 
             
             <div class="row g-3 mb-4">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8 min-w-0">
                     <div class="admin-card card h-100">
-                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <span><?php echo e(__('dashboard.last_7_days')); ?> — <?php echo e(__('dashboard.revenue_chart')); ?></span>
                             <a href="<?php echo e(route('admin.analytics')); ?>" class="btn btn-sm btn-outline-primary"><?php echo e(__('dashboard.full_analytics')); ?></a>
                         </div>
                         <div class="card-body">
-                            <canvas id="chartRevenue" height="100"></canvas>
+                            <div class="admin-chart-wrap">
+                                <canvas id="chartRevenue"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4 min-w-0">
                     <div class="admin-card card h-100">
                         <div class="card-header bg-white border-bottom"><?php echo e(__('dashboard.traffic_chart')); ?></div>
                         <div class="card-body">
-                            <canvas id="chartTraffic" height="160"></canvas>
+                            <div class="admin-chart-wrap admin-chart-wrap--sm">
+                                <canvas id="chartTraffic"></canvas>
+                            </div>
                             <div class="mt-3 small text-muted">
                                 <div><?php echo e(__('dashboard.page_views_today')); ?>: <strong><?php echo e(number_format($todayKpis['current']['page_views'])); ?></strong></div>
                                 <div><?php echo e(__('dashboard.num_orders')); ?> (7d): <strong><?php echo e($weekSales['orders']); ?></strong></div>
@@ -211,9 +212,9 @@
 
             
             <div class="row g-3">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8 min-w-0">
                     <div class="admin-card card">
-                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <span><i class="bi bi-activity me-1"></i><?php echo e(__('dashboard.activity_feed')); ?></span>
                             <a href="<?php echo e(route('order.list')); ?>" class="btn btn-sm btn-outline-secondary"><?php echo e(__('dashboard.view_all_orders')); ?></a>
                         </div>
@@ -228,7 +229,7 @@
                                             <div class="fw-semibold"><?php echo e($entry['title']); ?></div>
                                             <div class="small text-muted text-truncate"><?php echo e($entry['subtitle']); ?></div>
                                         </div>
-                                        <span class="small text-muted text-nowrap"><?php echo e($entry['at']?->diffForHumans()); ?></span>
+                                        <span class="activity-feed-time small text-muted text-nowrap"><?php echo e($entry['at']?->diffForHumans()); ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -237,7 +238,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4 min-w-0">
                     <div class="admin-card card mb-3">
                         <div class="card-header bg-white border-bottom"><?php echo e(__('dashboard.quick_actions')); ?></div>
                         <div class="card-body d-grid gap-2">
@@ -278,7 +279,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </main>
 
@@ -329,9 +329,10 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+                        x: { ticks: { color: c.text, maxRotation: 0, autoSkip: true }, grid: { color: c.grid } },
                         y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
                     }
                 }
@@ -351,9 +352,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom', labels: { color: c.text } } },
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: c.text, boxWidth: 12 } } },
                     scales: {
-                        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+                        x: { ticks: { color: c.text, maxRotation: 0, autoSkip: true }, grid: { color: c.grid } },
                         y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
                     }
                 }

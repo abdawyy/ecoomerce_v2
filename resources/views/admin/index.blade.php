@@ -18,8 +18,7 @@
 @endphp
 
 <main id="main">
-    <div class="container-fluid">
-        <div class="row pt-4">
+    <div class="container-fluid admin-page pt-3 pt-md-4">
             <div class="pagetitle mb-3">
                 <h1>{{ __('dashboard.dashboard') }}</h1>
                 <nav>
@@ -30,8 +29,7 @@
             </div>
 
             {{-- Action strip --}}
-            <div class="col-12 mb-4">
-                <div class="action-strip admin-card d-flex flex-wrap gap-2 align-items-center p-3">
+            <div class="action-strip admin-card d-flex flex-wrap gap-2 align-items-stretch align-items-md-center p-3 mb-4">
                     <a href="{{ route('order.list') }}?status=Pending" class="action-strip-btn btn btn-sm btn-warning">
                         <i class="bi bi-cart3 me-1"></i>
                         {{ __('dashboard.pending_orders') }}
@@ -51,35 +49,34 @@
                     <a href="{{ route('admin.settings.branding') }}#home-tiles" class="action-strip-btn btn btn-sm btn-outline-secondary">
                         <i class="bi bi-palette me-1"></i>{{ __('dashboard.manage_home_images') }}
                     </a>
-                    <span class="action-strip-live ms-auto badge bg-success fs-6 px-3 py-2">
+                    <span class="action-strip-live ms-md-auto badge bg-success fs-6 px-3 py-2">
                         <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>
                         {{ __('dashboard.live_now') }}: <span id="live-count">{{ $liveCount }}</span>
                     </span>
-                </div>
             </div>
 
             {{-- KPI cards --}}
             <div class="row g-3 mb-4">
-                <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100 border-success border-opacity-25">
+                <div class="col-6 col-md-3">
+                    <div class="admin-card admin-kpi-card card h-100 border-success border-opacity-25">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.live_now') }}</h6>
-                                    <h3 class="mb-0 text-success" id="live-count-card">{{ $liveCount }}</h3>
+                                    <h3 class="mb-0 text-success text-break" id="live-count-card">{{ $liveCount }}</h3>
                                 </div>
                                 <span class="admin-kpi-icon text-success bg-success bg-opacity-10"><i class="bi bi-broadcast"></i></span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                <div class="col-6 col-md-3">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.today_revenue') }}</h6>
-                                    <h3 class="mb-0" id="today-revenue">{{ number_format($todaySales['revenue'], 0) }}</h3>
+                                    <h3 class="mb-0 text-break" id="today-revenue">{{ number_format($todaySales['revenue'], 0) }}</h3>
                                     <small class="text-muted">{{ __('dashboard.currency') }}</small>
                                     {!! $changeBadge($todayKpis['change']['revenue'] ?? null) !!}
                                 </div>
@@ -88,13 +85,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                <div class="col-6 col-md-3">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.today_orders') }}</h6>
-                                    <h3 class="mb-0" id="today-orders">{{ $todaySales['orders'] }}</h3>
+                                    <h3 class="mb-0 text-break" id="today-orders">{{ $todaySales['orders'] }}</h3>
                                     {!! $changeBadge($todayKpis['change']['orders'] ?? null) !!}
                                 </div>
                                 <span class="admin-kpi-icon text-info bg-info bg-opacity-10"><i class="bi bi-bag-check"></i></span>
@@ -102,13 +99,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 col-lg-3">
-                    <div class="admin-card card h-100">
+                <div class="col-6 col-md-3">
+                    <div class="admin-card admin-kpi-card card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.pending_orders') }}</h6>
-                                    <h3 class="mb-0 text-warning" id="pending-count-card">{{ $pendingOrders }}</h3>
+                                    <h3 class="mb-0 text-warning text-break" id="pending-count-card">{{ $pendingOrders }}</h3>
                                 </div>
                                 <span class="admin-kpi-icon text-warning bg-warning bg-opacity-10"><i class="bi bi-hourglass-split"></i></span>
                             </div>
@@ -119,22 +116,26 @@
 
             {{-- Charts --}}
             <div class="row g-3 mb-4">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8 min-w-0">
                     <div class="admin-card card h-100">
-                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <span>{{ __('dashboard.last_7_days') }} — {{ __('dashboard.revenue_chart') }}</span>
                             <a href="{{ route('admin.analytics') }}" class="btn btn-sm btn-outline-primary">{{ __('dashboard.full_analytics') }}</a>
                         </div>
                         <div class="card-body">
-                            <canvas id="chartRevenue" height="100"></canvas>
+                            <div class="admin-chart-wrap">
+                                <canvas id="chartRevenue"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4 min-w-0">
                     <div class="admin-card card h-100">
                         <div class="card-header bg-white border-bottom">{{ __('dashboard.traffic_chart') }}</div>
                         <div class="card-body">
-                            <canvas id="chartTraffic" height="160"></canvas>
+                            <div class="admin-chart-wrap admin-chart-wrap--sm">
+                                <canvas id="chartTraffic"></canvas>
+                            </div>
                             <div class="mt-3 small text-muted">
                                 <div>{{ __('dashboard.page_views_today') }}: <strong>{{ number_format($todayKpis['current']['page_views']) }}</strong></div>
                                 <div>{{ __('dashboard.num_orders') }} (7d): <strong>{{ $weekSales['orders'] }}</strong></div>
@@ -147,9 +148,9 @@
 
             {{-- Activity feed + quick actions --}}
             <div class="row g-3">
-                <div class="col-lg-8">
+                <div class="col-12 col-lg-8 min-w-0">
                     <div class="admin-card card">
-                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <span><i class="bi bi-activity me-1"></i>{{ __('dashboard.activity_feed') }}</span>
                             <a href="{{ route('order.list') }}" class="btn btn-sm btn-outline-secondary">{{ __('dashboard.view_all_orders') }}</a>
                         </div>
@@ -164,7 +165,7 @@
                                             <div class="fw-semibold">{{ $entry['title'] }}</div>
                                             <div class="small text-muted text-truncate">{{ $entry['subtitle'] }}</div>
                                         </div>
-                                        <span class="small text-muted text-nowrap">{{ $entry['at']?->diffForHumans() }}</span>
+                                        <span class="activity-feed-time small text-muted text-nowrap">{{ $entry['at']?->diffForHumans() }}</span>
                                     </a>
                                 </li>
                             @empty
@@ -173,7 +174,7 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-12 col-lg-4 min-w-0">
                     <div class="admin-card card mb-3">
                         <div class="card-header bg-white border-bottom">{{ __('dashboard.quick_actions') }}</div>
                         <div class="card-body d-grid gap-2">
@@ -208,7 +209,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </main>
 
@@ -259,9 +259,10 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+                        x: { ticks: { color: c.text, maxRotation: 0, autoSkip: true }, grid: { color: c.grid } },
                         y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
                     }
                 }
@@ -281,9 +282,10 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom', labels: { color: c.text } } },
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: c.text, boxWidth: 12 } } },
                     scales: {
-                        x: { ticks: { color: c.text }, grid: { color: c.grid } },
+                        x: { ticks: { color: c.text, maxRotation: 0, autoSkip: true }, grid: { color: c.grid } },
                         y: { beginAtZero: true, ticks: { color: c.text }, grid: { color: c.grid } }
                     }
                 }

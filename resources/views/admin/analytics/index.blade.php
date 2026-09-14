@@ -15,10 +15,9 @@
 <x-admin.navbar />
 
 <main id="main">
-    <div class="container-fluid">
-        <div class="row pt-4">
+    <div class="container-fluid admin-page pt-3 pt-md-4">
             <div class="pagetitle d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
+                <div class="min-w-0">
                     <h1>{{ __('analytics.title') }}</h1>
                     <p class="text-muted mb-0">{{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}</p>
                 </div>
@@ -27,11 +26,11 @@
                 </div>
             </div>
 
-            <div class="card mb-3">
+            <div class="card admin-card mb-3">
                 <div class="card-body">
                     <form method="GET" class="row g-2 align-items-end">
                         <input type="hidden" name="tab" value="{{ $tab }}">
-                        <div class="col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <label class="form-label">{{ __('analytics.range') }}</label>
                             <select name="range" class="form-select" onchange="this.form.submit()">
                                 @foreach (['today','yesterday','last_7','last_30','this_month','last_month','this_year','last_year','all','custom'] as $preset)
@@ -40,17 +39,17 @@
                             </select>
                         </div>
                         @if ($range === 'custom')
-                            <div class="col-md-2"><input type="date" name="from" class="form-control" value="{{ $from }}"></div>
-                            <div class="col-md-2"><input type="date" name="to" class="form-control" value="{{ $to }}"></div>
+                            <div class="col-6 col-lg-2"><input type="date" name="from" class="form-control" value="{{ $from }}"></div>
+                            <div class="col-6 col-lg-2"><input type="date" name="to" class="form-control" value="{{ $to }}"></div>
                         @endif
-                        <div class="col-md-2">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <a href="{{ route('admin.analytics.export', array_merge(request()->query(), ['type' => $tab === 'customers' ? 'customers' : 'products'])) }}" class="btn btn-outline-secondary w-100">{{ __('analytics.export') }}</a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <ul class="nav nav-tabs mb-3 flex-wrap">
+            <ul class="nav nav-tabs admin-tabs-scroll mb-3">
                 @foreach (['overview','products','traffic','categories','sales','customers','live'] as $t)
                     <li class="nav-item"><a class="nav-link {{ $tab === $t ? 'active' : '' }}" href="{{ $tabUrl($t) }}">{{ __('analytics.tab_'.$t) }}</a></li>
                 @endforeach
@@ -58,31 +57,31 @@
 
             @if (in_array($tab, ['overview', 'products', 'traffic', 'categories', 'sales', 'customers']))
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted">{{ __('analytics.page_views') }}</h6>
-                            <h3 class="mb-0">{{ number_format($pageViews) }}</h3>
+                            <h3 class="mb-0 text-break">{{ number_format($pageViews) }}</h3>
                             {!! $changeBadge($change['page_views'] ?? 0) !!}
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted">{{ __('analytics.product_views') }}</h6>
-                            <h3 class="mb-0">{{ number_format($productViews) }}</h3>
+                            <h3 class="mb-0 text-break">{{ number_format($productViews) }}</h3>
                             {!! $changeBadge($change['product_views'] ?? 0) !!}
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted">{{ __('analytics.uniques') }}</h6>
-                            <h3 class="mb-0">{{ number_format($uniqueVisitors) }}</h3>
+                            <h3 class="mb-0 text-break">{{ number_format($uniqueVisitors) }}</h3>
                             {!! $changeBadge($change['unique_visitors'] ?? 0) !!}
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted">{{ __('analytics.revenue') }}</h6>
-                            <h3 class="mb-0">{{ number_format($sales['revenue'], 2) }} EGP</h3>
+                            <h3 class="mb-0 text-break">{{ number_format($sales['revenue'], 2) }} EGP</h3>
                             {!! $changeBadge($change['revenue'] ?? 0) !!}
                         </div></div>
                     </div>
@@ -91,14 +90,22 @@
 
             @if ($tab === 'overview' || $tab === 'traffic')
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-8">
-                        <div class="card h-100"><div class="card-header">{{ __('analytics.chart_traffic') }}</div>
-                            <div class="card-body"><canvas id="chartTraffic" height="120"></canvas></div>
+                    <div class="col-12 col-lg-8 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header">{{ __('analytics.chart_traffic') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartTraffic"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header">{{ __('analytics.chart_hours') }}</div>
-                            <div class="card-body"><canvas id="chartHours" height="120"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header">{{ __('analytics.chart_hours') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap admin-chart-wrap--sm">
+                                    <canvas id="chartHours"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,21 +113,29 @@
 
             @if ($tab === 'overview' || $tab === 'sales')
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header">{{ __('analytics.chart_revenue') }}</div>
-                            <div class="card-body"><canvas id="chartRevenue" height="120"></canvas></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header">{{ __('analytics.chart_revenue') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartRevenue"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header">{{ __('analytics.funnel') }}</div>
-                            <div class="card-body"><canvas id="chartFunnel" height="120"></canvas></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header">{{ __('analytics.funnel') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartFunnel"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endif
 
             @if ($tab === 'overview' || $tab === 'products')
-                <div class="card mb-4">
+                <div class="card admin-card mb-4">
                     <div class="card-header">{{ __('analytics.top_products') }}</div>
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
@@ -142,7 +157,7 @@
                 </div>
 
                 @if ($windowShoppers->isNotEmpty())
-                    <div class="card mb-4 border-warning">
+                    <div class="card admin-card mb-4 border-warning">
                         <div class="card-header">{{ __('analytics.window_shoppers') }}</div>
                         <div class="table-responsive">
                             <table class="table mb-0">
@@ -164,8 +179,9 @@
 
             @if ($tab === 'traffic')
                 <div class="row g-3">
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header">{{ __('analytics.top_pages') }}</div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header">{{ __('analytics.top_pages') }}</div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th>{{ __('analytics.page') }}</th><th>{{ __('analytics.views') }}</th><th>{{ __('analytics.uniques') }}</th></tr></thead>
                                 <tbody>
@@ -176,10 +192,12 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header">{{ __('analytics.locales') }}</div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header">{{ __('analytics.locales') }}</div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th>{{ __('analytics.locale') }}</th><th>{{ __('analytics.views') }}</th></tr></thead>
                                 <tbody>
@@ -190,13 +208,14 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endif
 
             @if ($tab === 'categories')
-                <div class="card mb-4">
+                <div class="card admin-card mb-4">
                     <div class="card-header">{{ __('analytics.category_performance') }}</div>
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
@@ -211,17 +230,22 @@
                         </table>
                     </div>
                 </div>
-                <div class="card"><div class="card-body"><canvas id="chartCategories" height="100"></canvas></div></div>
+                <div class="card admin-card"><div class="card-body">
+                    <div class="admin-chart-wrap admin-chart-wrap--donut">
+                        <canvas id="chartCategories"></canvas>
+                    </div>
+                </div></div>
             @endif
 
             @if ($tab === 'sales')
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4"><div class="card p-3"><h6>{{ __('analytics.orders') }}</h6><h3>{{ $sales['orders'] }} {!! $changeBadge($change['orders'] ?? 0) !!}</h3></div></div>
-                    <div class="col-md-4"><div class="card p-3"><h6>{{ __('analytics.completed') }}</h6><h3>{{ $sales['completed_orders'] }}</h3></div></div>
-                    <div class="col-md-4"><div class="card p-3"><h6>{{ __('analytics.aov') }}</h6><h3>{{ number_format($sales['aov'], 2) }} EGP</h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.orders') }}</h6><h3 class="text-break">{{ $sales['orders'] }} {!! $changeBadge($change['orders'] ?? 0) !!}</h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.completed') }}</h6><h3 class="text-break">{{ $sales['completed_orders'] }}</h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.aov') }}</h6><h3 class="text-break">{{ number_format($sales['aov'], 2) }} EGP</h3></div></div>
                 </div>
-                <div class="card">
+                <div class="card admin-card">
                     <div class="card-header">{{ __('analytics.sales_by_city') }}</div>
+                    <div class="table-responsive">
                     <table class="table mb-0">
                         <thead><tr><th>{{ __('analytics.city') }}</th><th>{{ __('analytics.orders') }}</th><th>{{ __('analytics.revenue') }}</th></tr></thead>
                         <tbody>
@@ -232,53 +256,66 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
             @endif
 
             @if ($tab === 'customers')
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted">{{ __('analytics.new_customers') }}</h6>
-                        <h3 class="mb-0">{{ number_format($customerOverview['new_customers']) }}</h3>
+                        <h3 class="mb-0 text-break">{{ number_format($customerOverview['new_customers']) }}</h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted">{{ __('analytics.returning_customers') }}</h6>
-                        <h3 class="mb-0">{{ number_format($customerOverview['returning_customers']) }}</h3>
+                        <h3 class="mb-0 text-break">{{ number_format($customerOverview['returning_customers']) }}</h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted">{{ __('analytics.repeat_rate') }}</h6>
-                        <h3 class="mb-0">{{ $customerOverview['repeat_rate'] }}%</h3>
+                        <h3 class="mb-0 text-break">{{ $customerOverview['repeat_rate'] }}%</h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted">{{ __('analytics.atc_rate') }}</h6>
-                        <h3 class="mb-0">{{ $customerOverview['atc_rate'] }}%</h3>
+                        <h3 class="mb-0 text-break">{{ $customerOverview['atc_rate'] }}%</h3>
                     </div></div></div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.guest_orders') }}</h6><h3>{{ $customerOverview['guest_orders'] }}</h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.registered_orders') }}</h6><h3>{{ $customerOverview['registered_orders'] }}</h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.new_accounts') }}</h6><h3>{{ $customerOverview['new_accounts'] }}</h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6>{{ __('analytics.add_to_cart') }}</h6><h3>{{ $customerOverview['add_to_cart'] }}</h3></div></div>
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.guest_orders') }}</h6><h3 class="text-break">{{ $customerOverview['guest_orders'] }}</h3></div></div>
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.registered_orders') }}</h6><h3 class="text-break">{{ $customerOverview['registered_orders'] }}</h3></div></div>
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.new_accounts') }}</h6><h3 class="text-break">{{ $customerOverview['new_accounts'] }}</h3></div></div>
+                    <div class="col-6 col-md-3"><div class="card admin-card admin-kpi-card p-3"><h6>{{ __('analytics.add_to_cart') }}</h6><h3 class="text-break">{{ $customerOverview['add_to_cart'] }}</h3></div></div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header">{{ __('analytics.devices') }}</div>
-                            <div class="card-body"><canvas id="chartDevices" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header">{{ __('analytics.devices') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap admin-chart-wrap--donut">
+                                    <canvas id="chartDevices"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header">{{ __('analytics.traffic_sources') }}</div>
-                            <div class="card-body"><canvas id="chartSources" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header">{{ __('analytics.traffic_sources') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartSources"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header">{{ __('analytics.sales_by_weekday') }}</div>
-                            <div class="card-body"><canvas id="chartWeekday" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header">{{ __('analytics.sales_by_weekday') }}</div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartWeekday"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-6">
+                    <div class="col-12 col-lg-6 min-w-0">
                         <div class="card">
                             <div class="card-header">{{ __('analytics.top_customers') }}</div>
                             <div class="table-responsive">
@@ -300,9 +337,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-3">
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card mb-3">
                             <div class="card-header">{{ __('analytics.top_searches') }}</div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th>{{ __('analytics.search_term') }}</th><th>{{ __('analytics.searches') }}</th></tr></thead>
                                 <tbody>
@@ -313,9 +351,11 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            </div>
                         </div>
-                        <div class="card">
+                        <div class="card admin-card">
                             <div class="card-header">{{ __('analytics.payment_methods') }}</div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th>{{ __('analytics.payment_method') }}</th><th>{{ __('analytics.orders') }}</th><th>{{ __('analytics.revenue') }}</th></tr></thead>
                                 <tbody>
@@ -326,13 +366,14 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endif
 
             @if ($tab === 'live')
-                <div class="card">
+                <div class="card admin-card">
                     <div class="card-body table-responsive">
                         <table class="table mb-0">
                             <thead><tr><th>{{ __('analytics.path') }}</th><th>{{ __('analytics.page') }}</th><th>{{ __('analytics.product') }}</th><th>{{ __('analytics.user') }}</th><th>{{ __('analytics.last_seen') }}</th></tr></thead>
@@ -351,7 +392,6 @@
                     </div>
                 </div>
             @endif
-        </div>
     </div>
 </main>
 
@@ -406,7 +446,7 @@
                     { label: '{{ __('analytics.orders') }}', data: traffic.orders, borderColor: '#fd7e14', tension: 0.3 },
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: true }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartHours')) {
@@ -416,7 +456,7 @@
                 labels: Array.from({length:24}, (_,i)=>i+':00'),
                 datasets: [{ label: '{{ __('analytics.page_views') }}', data: hours, backgroundColor: '#6c757d' }]
             },
-            options: { responsive: true, plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     if (document.getElementById('chartRevenue')) {
@@ -426,7 +466,7 @@
                 labels: revenue.labels,
                 datasets: [{ label: '{{ __('analytics.revenue') }} (EGP)', data: revenue.revenue, backgroundColor: '#0d6efd' }]
             },
-            options: { responsive: true }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartFunnel')) {
@@ -436,7 +476,7 @@
                 labels: Object.keys(funnel),
                 datasets: [{ label: '{{ __('analytics.sessions') }}', data: Object.values(funnel), backgroundColor: '#20c997' }]
             },
-            options: { indexAxis: 'y', responsive: true }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartCategories')) {
@@ -445,7 +485,8 @@
             data: {
                 labels: Object.keys(categories),
                 datasets: [{ data: Object.values(categories), backgroundColor: ['#0d6efd','#6610f2','#6f42c1','#d63384','#fd7e14','#198754'] }]
-            }
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     }
     if (document.getElementById('chartDevices')) {
@@ -454,7 +495,8 @@
             data: {
                 labels: Object.keys(devices),
                 datasets: [{ data: Object.values(devices), backgroundColor: ['#0d6efd','#198754','#fd7e14','#6c757d'] }]
-            }
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     }
     if (document.getElementById('chartSources')) {
@@ -464,7 +506,7 @@
                 labels: Object.keys(sources),
                 datasets: [{ label: '{{ __('analytics.sessions') }}', data: Object.values(sources), backgroundColor: '#6610f2' }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     if (document.getElementById('chartWeekday')) {
@@ -474,7 +516,7 @@
                 labels: weekdayLabels,
                 datasets: [{ label: '{{ __('analytics.orders') }}', data: weekday, backgroundColor: '#20c997' }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     @endif

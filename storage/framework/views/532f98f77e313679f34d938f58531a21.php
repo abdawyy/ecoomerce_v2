@@ -72,10 +72,9 @@
 <?php endif; ?>
 
 <main id="main">
-    <div class="container-fluid">
-        <div class="row pt-4">
+    <div class="container-fluid admin-page pt-3 pt-md-4">
             <div class="pagetitle d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
+                <div class="min-w-0">
                     <h1><?php echo e(__('analytics.title')); ?></h1>
                     <p class="text-muted mb-0"><?php echo e($start->format('Y-m-d')); ?> — <?php echo e($end->format('Y-m-d')); ?></p>
                 </div>
@@ -84,11 +83,11 @@
                 </div>
             </div>
 
-            <div class="card mb-3">
+            <div class="card admin-card mb-3">
                 <div class="card-body">
                     <form method="GET" class="row g-2 align-items-end">
                         <input type="hidden" name="tab" value="<?php echo e($tab); ?>">
-                        <div class="col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <label class="form-label"><?php echo e(__('analytics.range')); ?></label>
                             <select name="range" class="form-select" onchange="this.form.submit()">
                                 <?php $__currentLoopData = ['today','yesterday','last_7','last_30','this_month','last_month','this_year','last_year','all','custom']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $preset): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -97,17 +96,17 @@
                             </select>
                         </div>
                         <?php if($range === 'custom'): ?>
-                            <div class="col-md-2"><input type="date" name="from" class="form-control" value="<?php echo e($from); ?>"></div>
-                            <div class="col-md-2"><input type="date" name="to" class="form-control" value="<?php echo e($to); ?>"></div>
+                            <div class="col-6 col-lg-2"><input type="date" name="from" class="form-control" value="<?php echo e($from); ?>"></div>
+                            <div class="col-6 col-lg-2"><input type="date" name="to" class="form-control" value="<?php echo e($to); ?>"></div>
                         <?php endif; ?>
-                        <div class="col-md-2">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <a href="<?php echo e(route('admin.analytics.export', array_merge(request()->query(), ['type' => $tab === 'customers' ? 'customers' : 'products']))); ?>" class="btn btn-outline-secondary w-100"><?php echo e(__('analytics.export')); ?></a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <ul class="nav nav-tabs mb-3 flex-wrap">
+            <ul class="nav nav-tabs admin-tabs-scroll mb-3">
                 <?php $__currentLoopData = ['overview','products','traffic','categories','sales','customers','live']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $t): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <li class="nav-item"><a class="nav-link <?php echo e($tab === $t ? 'active' : ''); ?>" href="<?php echo e($tabUrl($t)); ?>"><?php echo e(__('analytics.tab_'.$t)); ?></a></li>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -115,34 +114,34 @@
 
             <?php if(in_array($tab, ['overview', 'products', 'traffic', 'categories', 'sales', 'customers'])): ?>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted"><?php echo e(__('analytics.page_views')); ?></h6>
-                            <h3 class="mb-0"><?php echo e(number_format($pageViews)); ?></h3>
+                            <h3 class="mb-0 text-break"><?php echo e(number_format($pageViews)); ?></h3>
                             <?php echo $changeBadge($change['page_views'] ?? 0); ?>
 
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted"><?php echo e(__('analytics.product_views')); ?></h6>
-                            <h3 class="mb-0"><?php echo e(number_format($productViews)); ?></h3>
+                            <h3 class="mb-0 text-break"><?php echo e(number_format($productViews)); ?></h3>
                             <?php echo $changeBadge($change['product_views'] ?? 0); ?>
 
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted"><?php echo e(__('analytics.uniques')); ?></h6>
-                            <h3 class="mb-0"><?php echo e(number_format($uniqueVisitors)); ?></h3>
+                            <h3 class="mb-0 text-break"><?php echo e(number_format($uniqueVisitors)); ?></h3>
                             <?php echo $changeBadge($change['unique_visitors'] ?? 0); ?>
 
                         </div></div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3">
+                        <div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                             <h6 class="text-muted"><?php echo e(__('analytics.revenue')); ?></h6>
-                            <h3 class="mb-0"><?php echo e(number_format($sales['revenue'], 2)); ?> EGP</h3>
+                            <h3 class="mb-0 text-break"><?php echo e(number_format($sales['revenue'], 2)); ?> EGP</h3>
                             <?php echo $changeBadge($change['revenue'] ?? 0); ?>
 
                         </div></div>
@@ -152,14 +151,22 @@
 
             <?php if($tab === 'overview' || $tab === 'traffic'): ?>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-8">
-                        <div class="card h-100"><div class="card-header"><?php echo e(__('analytics.chart_traffic')); ?></div>
-                            <div class="card-body"><canvas id="chartTraffic" height="120"></canvas></div>
+                    <div class="col-12 col-lg-8 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header"><?php echo e(__('analytics.chart_traffic')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartTraffic"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header"><?php echo e(__('analytics.chart_hours')); ?></div>
-                            <div class="card-body"><canvas id="chartHours" height="120"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header"><?php echo e(__('analytics.chart_hours')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap admin-chart-wrap--sm">
+                                    <canvas id="chartHours"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,21 +174,29 @@
 
             <?php if($tab === 'overview' || $tab === 'sales'): ?>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header"><?php echo e(__('analytics.chart_revenue')); ?></div>
-                            <div class="card-body"><canvas id="chartRevenue" height="120"></canvas></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header"><?php echo e(__('analytics.chart_revenue')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartRevenue"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header"><?php echo e(__('analytics.funnel')); ?></div>
-                            <div class="card-body"><canvas id="chartFunnel" height="120"></canvas></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header"><?php echo e(__('analytics.funnel')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartFunnel"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
 
             <?php if($tab === 'overview' || $tab === 'products'): ?>
-                <div class="card mb-4">
+                <div class="card admin-card mb-4">
                     <div class="card-header"><?php echo e(__('analytics.top_products')); ?></div>
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
@@ -203,7 +218,7 @@
                 </div>
 
                 <?php if($windowShoppers->isNotEmpty()): ?>
-                    <div class="card mb-4 border-warning">
+                    <div class="card admin-card mb-4 border-warning">
                         <div class="card-header"><?php echo e(__('analytics.window_shoppers')); ?></div>
                         <div class="table-responsive">
                             <table class="table mb-0">
@@ -225,8 +240,9 @@
 
             <?php if($tab === 'traffic'): ?>
                 <div class="row g-3">
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header"><?php echo e(__('analytics.top_pages')); ?></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header"><?php echo e(__('analytics.top_pages')); ?></div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th><?php echo e(__('analytics.page')); ?></th><th><?php echo e(__('analytics.views')); ?></th><th><?php echo e(__('analytics.uniques')); ?></th></tr></thead>
                                 <tbody>
@@ -237,10 +253,12 @@
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card"><div class="card-header"><?php echo e(__('analytics.locales')); ?></div>
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card"><div class="card-header"><?php echo e(__('analytics.locales')); ?></div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th><?php echo e(__('analytics.locale')); ?></th><th><?php echo e(__('analytics.views')); ?></th></tr></thead>
                                 <tbody>
@@ -251,13 +269,14 @@
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
 
             <?php if($tab === 'categories'): ?>
-                <div class="card mb-4">
+                <div class="card admin-card mb-4">
                     <div class="card-header"><?php echo e(__('analytics.category_performance')); ?></div>
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
@@ -272,17 +291,22 @@
                         </table>
                     </div>
                 </div>
-                <div class="card"><div class="card-body"><canvas id="chartCategories" height="100"></canvas></div></div>
+                <div class="card admin-card"><div class="card-body">
+                    <div class="admin-chart-wrap admin-chart-wrap--donut">
+                        <canvas id="chartCategories"></canvas>
+                    </div>
+                </div></div>
             <?php endif; ?>
 
             <?php if($tab === 'sales'): ?>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4"><div class="card p-3"><h6><?php echo e(__('analytics.orders')); ?></h6><h3><?php echo e($sales['orders']); ?> <?php echo $changeBadge($change['orders'] ?? 0); ?></h3></div></div>
-                    <div class="col-md-4"><div class="card p-3"><h6><?php echo e(__('analytics.completed')); ?></h6><h3><?php echo e($sales['completed_orders']); ?></h3></div></div>
-                    <div class="col-md-4"><div class="card p-3"><h6><?php echo e(__('analytics.aov')); ?></h6><h3><?php echo e(number_format($sales['aov'], 2)); ?> EGP</h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.orders')); ?></h6><h3 class="text-break"><?php echo e($sales['orders']); ?> <?php echo $changeBadge($change['orders'] ?? 0); ?></h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.completed')); ?></h6><h3 class="text-break"><?php echo e($sales['completed_orders']); ?></h3></div></div>
+                    <div class="col-12 col-sm-4"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.aov')); ?></h6><h3 class="text-break"><?php echo e(number_format($sales['aov'], 2)); ?> EGP</h3></div></div>
                 </div>
-                <div class="card">
+                <div class="card admin-card">
                     <div class="card-header"><?php echo e(__('analytics.sales_by_city')); ?></div>
+                    <div class="table-responsive">
                     <table class="table mb-0">
                         <thead><tr><th><?php echo e(__('analytics.city')); ?></th><th><?php echo e(__('analytics.orders')); ?></th><th><?php echo e(__('analytics.revenue')); ?></th></tr></thead>
                         <tbody>
@@ -293,53 +317,66 @@
                             <?php endif; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             <?php endif; ?>
 
             <?php if($tab === 'customers'): ?>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted"><?php echo e(__('analytics.new_customers')); ?></h6>
-                        <h3 class="mb-0"><?php echo e(number_format($customerOverview['new_customers'])); ?></h3>
+                        <h3 class="mb-0 text-break"><?php echo e(number_format($customerOverview['new_customers'])); ?></h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted"><?php echo e(__('analytics.returning_customers')); ?></h6>
-                        <h3 class="mb-0"><?php echo e(number_format($customerOverview['returning_customers'])); ?></h3>
+                        <h3 class="mb-0 text-break"><?php echo e(number_format($customerOverview['returning_customers'])); ?></h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted"><?php echo e(__('analytics.repeat_rate')); ?></h6>
-                        <h3 class="mb-0"><?php echo e($customerOverview['repeat_rate']); ?>%</h3>
+                        <h3 class="mb-0 text-break"><?php echo e($customerOverview['repeat_rate']); ?>%</h3>
                     </div></div></div>
-                    <div class="col-md-3"><div class="card h-100"><div class="card-body">
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card h-100"><div class="card-body">
                         <h6 class="text-muted"><?php echo e(__('analytics.atc_rate')); ?></h6>
-                        <h3 class="mb-0"><?php echo e($customerOverview['atc_rate']); ?>%</h3>
+                        <h3 class="mb-0 text-break"><?php echo e($customerOverview['atc_rate']); ?>%</h3>
                     </div></div></div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3"><div class="card p-3"><h6><?php echo e(__('analytics.guest_orders')); ?></h6><h3><?php echo e($customerOverview['guest_orders']); ?></h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6><?php echo e(__('analytics.registered_orders')); ?></h6><h3><?php echo e($customerOverview['registered_orders']); ?></h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6><?php echo e(__('analytics.new_accounts')); ?></h6><h3><?php echo e($customerOverview['new_accounts']); ?></h3></div></div>
-                    <div class="col-md-3"><div class="card p-3"><h6><?php echo e(__('analytics.add_to_cart')); ?></h6><h3><?php echo e($customerOverview['add_to_cart']); ?></h3></div></div>
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.guest_orders')); ?></h6><h3 class="text-break"><?php echo e($customerOverview['guest_orders']); ?></h3></div></div>
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.registered_orders')); ?></h6><h3 class="text-break"><?php echo e($customerOverview['registered_orders']); ?></h3></div></div>
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.new_accounts')); ?></h6><h3 class="text-break"><?php echo e($customerOverview['new_accounts']); ?></h3></div></div>
+                    <div class="col-6 col-lg-3"><div class="card admin-card admin-kpi-card p-3"><h6><?php echo e(__('analytics.add_to_cart')); ?></h6><h3 class="text-break"><?php echo e($customerOverview['add_to_cart']); ?></h3></div></div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header"><?php echo e(__('analytics.devices')); ?></div>
-                            <div class="card-body"><canvas id="chartDevices" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header"><?php echo e(__('analytics.devices')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap admin-chart-wrap--donut">
+                                    <canvas id="chartDevices"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header"><?php echo e(__('analytics.traffic_sources')); ?></div>
-                            <div class="card-body"><canvas id="chartSources" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header"><?php echo e(__('analytics.traffic_sources')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartSources"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card h-100"><div class="card-header"><?php echo e(__('analytics.sales_by_weekday')); ?></div>
-                            <div class="card-body"><canvas id="chartWeekday" height="140"></canvas></div>
+                    <div class="col-12 col-lg-4 min-w-0">
+                        <div class="card admin-card h-100"><div class="card-header"><?php echo e(__('analytics.sales_by_weekday')); ?></div>
+                            <div class="card-body">
+                                <div class="admin-chart-wrap">
+                                    <canvas id="chartWeekday"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row g-3 mb-4">
-                    <div class="col-lg-6">
+                    <div class="col-12 col-lg-6 min-w-0">
                         <div class="card">
                             <div class="card-header"><?php echo e(__('analytics.top_customers')); ?></div>
                             <div class="table-responsive">
@@ -361,9 +398,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-3">
+                    <div class="col-12 col-lg-6 min-w-0">
+                        <div class="card admin-card mb-3">
                             <div class="card-header"><?php echo e(__('analytics.top_searches')); ?></div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th><?php echo e(__('analytics.search_term')); ?></th><th><?php echo e(__('analytics.searches')); ?></th></tr></thead>
                                 <tbody>
@@ -374,9 +412,11 @@
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
-                        <div class="card">
+                        <div class="card admin-card">
                             <div class="card-header"><?php echo e(__('analytics.payment_methods')); ?></div>
+                            <div class="table-responsive">
                             <table class="table mb-0">
                                 <thead><tr><th><?php echo e(__('analytics.payment_method')); ?></th><th><?php echo e(__('analytics.orders')); ?></th><th><?php echo e(__('analytics.revenue')); ?></th></tr></thead>
                                 <tbody>
@@ -387,13 +427,14 @@
                                     <?php endif; ?>
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
 
             <?php if($tab === 'live'): ?>
-                <div class="card">
+                <div class="card admin-card">
                     <div class="card-body table-responsive">
                         <table class="table mb-0">
                             <thead><tr><th><?php echo e(__('analytics.path')); ?></th><th><?php echo e(__('analytics.page')); ?></th><th><?php echo e(__('analytics.product')); ?></th><th><?php echo e(__('analytics.user')); ?></th><th><?php echo e(__('analytics.last_seen')); ?></th></tr></thead>
@@ -412,7 +453,6 @@
                     </div>
                 </div>
             <?php endif; ?>
-        </div>
     </div>
 </main>
 
@@ -467,7 +507,7 @@
                     { label: '<?php echo e(__('analytics.orders')); ?>', data: traffic.orders, borderColor: '#fd7e14', tension: 0.3 },
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: true }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartHours')) {
@@ -477,7 +517,7 @@
                 labels: Array.from({length:24}, (_,i)=>i+':00'),
                 datasets: [{ label: '<?php echo e(__('analytics.page_views')); ?>', data: hours, backgroundColor: '#6c757d' }]
             },
-            options: { responsive: true, plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     if (document.getElementById('chartRevenue')) {
@@ -487,7 +527,7 @@
                 labels: revenue.labels,
                 datasets: [{ label: '<?php echo e(__('analytics.revenue')); ?> (EGP)', data: revenue.revenue, backgroundColor: '#0d6efd' }]
             },
-            options: { responsive: true }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartFunnel')) {
@@ -497,7 +537,7 @@
                 labels: Object.keys(funnel),
                 datasets: [{ label: '<?php echo e(__('analytics.sessions')); ?>', data: Object.values(funnel), backgroundColor: '#20c997' }]
             },
-            options: { indexAxis: 'y', responsive: true }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
         });
     }
     if (document.getElementById('chartCategories')) {
@@ -506,7 +546,8 @@
             data: {
                 labels: Object.keys(categories),
                 datasets: [{ data: Object.values(categories), backgroundColor: ['#0d6efd','#6610f2','#6f42c1','#d63384','#fd7e14','#198754'] }]
-            }
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     }
     if (document.getElementById('chartDevices')) {
@@ -515,7 +556,8 @@
             data: {
                 labels: Object.keys(devices),
                 datasets: [{ data: Object.values(devices), backgroundColor: ['#0d6efd','#198754','#fd7e14','#6c757d'] }]
-            }
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
         });
     }
     if (document.getElementById('chartSources')) {
@@ -525,7 +567,7 @@
                 labels: Object.keys(sources),
                 datasets: [{ label: '<?php echo e(__('analytics.sessions')); ?>', data: Object.values(sources), backgroundColor: '#6610f2' }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     if (document.getElementById('chartWeekday')) {
@@ -535,7 +577,7 @@
                 labels: weekdayLabels,
                 datasets: [{ label: '<?php echo e(__('analytics.orders')); ?>', data: weekday, backgroundColor: '#20c997' }]
             },
-            options: { plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
     }
     <?php endif; ?>

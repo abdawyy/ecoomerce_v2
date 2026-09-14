@@ -664,3 +664,244 @@ body.admin-body.modal-open {
 .admin-table-wrap {
     box-shadow: var(--admin-shadow) !important;
 }
+
+/* ---- Dashboard + analytics: all screen sizes ---- */
+.min-w-0 {
+    min-width: 0;
+}
+
+.admin-page {
+    min-width: 0;
+    max-width: 100%;
+}
+
+#main .row > [class*="col-"] {
+    min-width: 0;
+}
+
+.admin-chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    min-width: 0;
+}
+
+.admin-chart-wrap--sm {
+    height: 240px;
+}
+
+.admin-chart-wrap--donut {
+    height: 260px;
+    max-width: 420px;
+    margin-inline: auto;
+}
+
+.admin-chart-wrap canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.admin-tabs-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-tabs-scroll .nav-item {
+    flex: 0 0 auto;
+}
+
+.admin-tabs-scroll .nav-link {
+    white-space: nowrap;
+    color: var(--admin-text-muted);
+}
+
+.admin-tabs-scroll .nav-link.active {
+    color: var(--admin-text);
+    background: var(--admin-surface);
+    border-color: var(--admin-border) var(--admin-border) var(--admin-surface);
+}
+
+.action-strip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+}
+
+.admin-kpi-card .card-body,
+.admin-kpi-card.p-3 {
+    min-width: 0;
+}
+
+.admin-kpi-card h3 {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.admin-navbar .navbar-brand img {
+    max-width: 120px;
+    height: auto;
+}
+
+@media (max-width: 1199.98px) {
+    #main {
+        padding: 16px 12px 56px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .admin-chart-wrap,
+    .admin-chart-wrap--sm {
+        height: 240px;
+    }
+
+    .admin-kpi-card h6,
+    .admin-kpi-card .text-muted {
+        font-size: 0.75rem;
+        line-height: 1.35;
+    }
+
+    .admin-kpi-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .pagetitle h1 {
+        font-size: 1.45rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    #main {
+        padding: 10px 8px 80px !important;
+    }
+
+    #main .container-fluid.admin-page {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .pagetitle h1 {
+        font-size: 1.25rem;
+    }
+
+    .action-strip {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .action-strip-btn,
+    .action-strip-live {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        justify-content: center;
+    }
+
+    .action-strip-live {
+        text-align: center;
+        font-size: 0.9rem !important;
+    }
+
+    .admin-kpi-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .admin-kpi-card .card-body {
+        padding: 0.85rem;
+    }
+
+    .admin-chart-wrap,
+    .admin-chart-wrap--sm,
+    .admin-chart-wrap--donut {
+        height: 210px;
+    }
+
+    .activity-feed-item > a {
+        flex-wrap: wrap;
+        gap: 0.5rem 0.75rem !important;
+        padding: 0.75rem 1rem;
+    }
+
+    .activity-feed-time {
+        width: 100%;
+        padding-inline-start: 3rem;
+        white-space: normal !important;
+    }
+
+    .admin-card .card-header,
+    #main .card-header {
+        font-size: 0.9rem;
+        gap: 0.5rem;
+    }
+
+    .admin-navbar {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .admin-navbar .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .admin-navbar .navbar-brand img {
+        width: 88px !important;
+        height: 36px !important;
+        max-width: 88px;
+        object-fit: contain;
+    }
+
+    .admin-icon-btn,
+    .admin-notify-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .admin-notify-menu {
+        position: fixed !important;
+        inset: 64px 12px auto 12px;
+        width: auto !important;
+        min-width: 0;
+        max-width: none;
+        max-height: min(70vh, 420px);
+        transform: none !important;
+    }
+
+    #live-badge {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .admin-kpi-card h3 {
+        font-size: 1.05rem;
+    }
+
+    .admin-chart-wrap,
+    .admin-chart-wrap--sm,
+    .admin-chart-wrap--donut {
+        height: 190px;
+    }
+
+    .quick-actions .btn,
+    #main .d-grid .btn {
+        white-space: normal;
+        text-align: start;
+    }
+}
+
+@media (min-width: 1400px) {
+    .admin-chart-wrap {
+        height: 320px;
+    }
+}
