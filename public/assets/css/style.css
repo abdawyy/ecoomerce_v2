@@ -22,7 +22,7 @@ body {
     min-height: 100vh;
     position: relative;
     font-family: var(--bs-font-family-cairo);
-    background-color: #fff;
+    background-color: var(--brand-white, #fff);
 }
 
 /* --- Helpers --- */
@@ -357,7 +357,7 @@ body {
     min-height: 100vh;
     position: relative;
     font-family: var(--bs-font-family-cairo);
-    background-color: #fff;
+    background-color: var(--brand-white, #fff);
 }
 
 /* --- Helpers & Typography --- */
@@ -626,7 +626,8 @@ body {
 /* --- Cart Page --- */
 #cart-page .card {
     border-radius: var(--border-radius);
-    background-color: #f6f6f6;
+    background-color: var(--brand-soft);
+    color: var(--brand-black);
     border: none;
 }
 
@@ -638,7 +639,8 @@ body {
 }
 
 #cart-page .cart-change-quantity-btn, #cart-page .cart-change-quantity-btn-disable {
-    background-color: var(--color-white);
+    background-color: var(--brand-white);
+    color: var(--brand-black);
     border-radius: 50%;
     width: 30px;
     aspect-ratio: 1/1;
@@ -647,7 +649,7 @@ body {
     justify-content: center;
 }
 
-#cart-page .cart-change-quantity-btn { color: var(--color-black); }
+#cart-page .cart-change-quantity-btn { color: var(--brand-black); }
 #cart-page .cart-change-quantity-btn-disable { color: var(--color-disable); }
 
 @media (max-width:400px) { #cart-page .card .card-body img { width: 100px; } }

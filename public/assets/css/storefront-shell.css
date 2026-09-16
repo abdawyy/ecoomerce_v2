@@ -552,6 +552,11 @@ body:has(.modal.show) {
     overflow: hidden;
     display: flex;
     align-items: flex-end;
+    background: var(--brand-black);
+}
+
+.cart-img-frame {
+    background: var(--brand-soft);
 }
 
 .checkout-hero img {
@@ -639,7 +644,11 @@ body:has(.modal.show) {
     border: 1px solid var(--brand-border);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
     text-align: center;
-    background: #fff;
+    background: var(--brand-white);
+}
+
+.receipt-totals {
+    background: var(--brand-soft);
 }
 
 .receipt-icon {

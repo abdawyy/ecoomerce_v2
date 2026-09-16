@@ -70,9 +70,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/storefront-shell.css')); ?>?v=<?php echo e(filemtime(public_path('assets/css/storefront-shell.css'))); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>?v=<?php echo e(filemtime(public_path('assets/css/style.css'))); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('assets/css/storefront-theme.css')); ?>?v=<?php echo e(filemtime(public_path('assets/css/storefront-theme.css'))); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('assets/css/style.css')); ?>">
-    <script src="<?php echo e(asset('assets/js/storefront-theme.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/storefront-theme.js')); ?>?v=<?php echo e(filemtime(public_path('assets/js/storefront-theme.js'))); ?>"></script>
 </head>
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main"><?php echo e(__('web.skip_to_content')); ?></a>

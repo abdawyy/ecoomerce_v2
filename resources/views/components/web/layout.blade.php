@@ -33,9 +33,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
     <link rel="stylesheet" href="{{ asset('assets/css/storefront-shell.css') }}?v={{ filemtime(public_path('assets/css/storefront-shell.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?v={{ filemtime(public_path('assets/css/style.css')) }}">
     <link rel="stylesheet" href="{{ asset('assets/css/storefront-theme.css') }}?v={{ filemtime(public_path('assets/css/storefront-theme.css')) }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <script src="{{ asset('assets/js/storefront-theme.js') }}"></script>
+    <script src="{{ asset('assets/js/storefront-theme.js') }}?v={{ filemtime(public_path('assets/js/storefront-theme.js')) }}"></script>
 </head>
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>

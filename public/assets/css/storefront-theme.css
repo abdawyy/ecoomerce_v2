@@ -1,15 +1,29 @@
 /* Hayah storefront — design tokens + dark mode */
 
 [data-bs-theme="dark"] {
+    color-scheme: dark;
     --brand-black: #e6edf3;
     --brand-white: #0d1117;
     --brand-muted: #8b949e;
     --brand-soft: #161b22;
     --brand-border: #30363d;
+    --ecom-surface: #161b22;
+    --ecom-border: #30363d;
+    --bs-body-bg: #0d1117;
+    --bs-body-color: #e6edf3;
+    --bs-body-bg-rgb: 13, 17, 23;
+    --bs-card-bg: #161b22;
+    --bs-secondary-bg: #161b22;
+    --bs-tertiary-bg: #21262d;
+    --bs-border-color: #30363d;
+    --bs-light-rgb: 22, 27, 34;
+    --bs-white-rgb: 13, 17, 23;
 }
 
+[data-bs-theme="dark"] body,
 [data-bs-theme="dark"] .storefront-body {
-    background: #0d1117;
+    background: #0d1117 !important;
+    background-color: #0d1117 !important;
     color: #e6edf3;
 }
 
@@ -194,8 +208,12 @@
     color: #fff;
 }
 
-/* Bootstrap color names do not follow dark theme — remap on the storefront */
-[data-bs-theme="dark"] .bg-light {
+/* Bootstrap / style.css color names do not follow dark theme */
+[data-bs-theme="dark"] .bg-light,
+[data-bs-theme="dark"] .bg-white,
+[data-bs-theme="dark"] .bg-body,
+[data-bs-theme="dark"] .bg-body-tertiary,
+[data-bs-theme="dark"] .text-bg-light {
     background-color: #161b22 !important;
 }
 
@@ -292,4 +310,133 @@
     background: #fff;
     border-color: #fff;
     color: #0d1117;
+}
+
+/* Cart, checkout, receipt — beat #cart-page .card and style.css whites */
+[data-bs-theme="dark"] #cart-page .card,
+[data-bs-theme="dark"] #cart-page .card-body,
+[data-bs-theme="dark"] .checkout-page .card,
+[data-bs-theme="dark"] .checkout-page .card-body,
+[data-bs-theme="dark"] .checkout-summary-card .card,
+[data-bs-theme="dark"] .receipt-card {
+    background-color: #161b22 !important;
+    background: #161b22 !important;
+    color: #e6edf3;
+    border-color: #30363d !important;
+    box-shadow: none;
+}
+
+[data-bs-theme="dark"] .cart-img,
+[data-bs-theme="dark"] .cart-img-frame {
+    background-color: #0d1117 !important;
+}
+
+[data-bs-theme="dark"] .checkout-hero {
+    background: #010409;
+}
+
+[data-bs-theme="dark"] #cart-page .form-control,
+[data-bs-theme="dark"] #cart-page .form-select,
+[data-bs-theme="dark"] .checkout-page .form-control,
+[data-bs-theme="dark"] .checkout-page .form-select,
+[data-bs-theme="dark"] .checkout-page .form-select option {
+    background-color: #0d1117 !important;
+    color: #e6edf3 !important;
+    border-color: #30363d;
+}
+
+[data-bs-theme="dark"] #cart-page .card-title,
+[data-bs-theme="dark"] #cart-page h1,
+[data-bs-theme="dark"] #cart-page h5,
+[data-bs-theme="dark"] #cart-page h6,
+[data-bs-theme="dark"] .checkout-page h1,
+[data-bs-theme="dark"] .checkout-page h5,
+[data-bs-theme="dark"] .checkout-page h6,
+[data-bs-theme="dark"] .receipt-card h2 {
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] #cart-page hr,
+[data-bs-theme="dark"] .checkout-page hr {
+    border-color: #30363d;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .receipt-totals {
+    background-color: #0d1117 !important;
+    color: #e6edf3;
+    border: 1px solid #30363d;
+}
+
+[data-bs-theme="dark"] .receipt-icon {
+    background: #123524;
+    color: #3fb950;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+    background: #161b22;
+    border-color: #30363d;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background: #0d1117 !important;
+    color: #e6edf3 !important;
+    border-color: #8b949e;
+}
+
+[data-bs-theme="dark"] .form-control:-webkit-autofill,
+[data-bs-theme="dark"] .form-control:-webkit-autofill:hover,
+[data-bs-theme="dark"] .form-control:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #0d1117 inset;
+    -webkit-text-fill-color: #e6edf3;
+    caret-color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .form-check-input {
+    background-color: #0d1117;
+    border-color: #30363d;
+}
+
+[data-bs-theme="dark"] .form-check-input:checked {
+    background-color: #e6edf3;
+    border-color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .form-select option {
+    background: #161b22;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: #8b949e;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .alert-light {
+    background-color: #161b22 !important;
+    border-color: #30363d !important;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .alert-light a {
+    color: #58a6ff;
+}
+
+[data-bs-theme="dark"] #cart-page .cart-change-quantity-btn,
+[data-bs-theme="dark"] #cart-page .cart-change-quantity-btn-disable {
+    background-color: #0d1117;
+    color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: #e6edf3;
+    border-color: #30363d;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+    background: #21262d;
+    color: #fff;
+    border-color: #8b949e;
 }

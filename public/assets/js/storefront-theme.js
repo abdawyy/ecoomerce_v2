@@ -54,6 +54,10 @@
 
     applyTheme(getPreferredTheme());
 
+    document.addEventListener('DOMContentLoaded', function () {
+        updateToggleUi(document.documentElement.getAttribute('data-bs-theme') || getPreferredTheme());
+    });
+
     document.addEventListener('click', function (event) {
         const btn = event.target.closest('[data-storefront-theme-toggle]');
         if (btn) {

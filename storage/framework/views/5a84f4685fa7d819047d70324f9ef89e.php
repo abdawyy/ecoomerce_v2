@@ -102,7 +102,7 @@
                     <div class="card mb-3 shadow-sm rounded-3 border-0">
                         <div class="card-body p-3">
                             <div class="d-flex gap-3 align-items-start">
-                                <div class="cart-img rounded-3 overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                                <div class="cart-img cart-img-frame rounded-3 overflow-hidden d-flex align-items-center justify-content-center"
                                      style="width:110px; height:110px; flex-shrink:0;">
                                     <?php if (isset($component)) { $__componentOriginal3e482043bebb43455e92f4601a40e860 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3e482043bebb43455e92f4601a40e860 = $attributes; } ?>
