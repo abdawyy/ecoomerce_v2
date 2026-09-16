@@ -99,12 +99,12 @@
     <div class="container">
         <div class="hero">
             <img src="{{ $branding->heroImageUrl() }}" class="hero-img" alt="{{ $branding->siteName() }}">
-            <div class="hero-content text-white">
+            <div class="hero-content">
                 <span class="text-uppercase fw-bold mb-2 d-block" style="letter-spacing: 3px; font-size: 0.8rem;">
                     {{ $branding->tagline() ?: __('web.hero_tagline') }}
                 </span>
                 <h1 class="display-2 fw-bold mb-3">{{ __('web.brand_collection_title') }}</h1>
-                <p class="lead mb-4 opacity-75 w-75 d-none d-md-block">{{ __('web.brand_collection_desc') }}</p>
+                <p class="lead mb-4 w-75 d-none d-md-block">{{ __('web.brand_collection_desc') }}</p>
                 <a href="{{ route('product.List') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg">
                     {{ __('web.discover') }}
                 </a>

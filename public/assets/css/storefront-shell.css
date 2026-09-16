@@ -419,6 +419,33 @@ body:has(.modal.show) {
 
 .hero-content {
     background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+    color: #fff;
+}
+
+.hero-content,
+.hero-content h1,
+.hero-content .lead,
+.hero-content span,
+.hero-content p {
+    color: #fff !important;
+    opacity: 1 !important;
+}
+
+.hero-img {
+    filter: none !important;
+    opacity: 1;
+}
+
+.hero-content .btn-light {
+    background-color: #fff !important;
+    border-color: #fff !important;
+    color: #111 !important;
+}
+
+.hero-content .btn-light:hover {
+    background-color: #f3f3f3 !important;
+    border-color: #f3f3f3 !important;
+    color: #111 !important;
 }
 
 .carousel-swipe-hint {

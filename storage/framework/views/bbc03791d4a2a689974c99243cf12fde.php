@@ -108,13 +108,13 @@
     <div class="container">
         <div class="hero">
             <img src="<?php echo e($branding->heroImageUrl()); ?>" class="hero-img" alt="<?php echo e($branding->siteName()); ?>">
-            <div class="hero-content text-white">
+            <div class="hero-content">
                 <span class="text-uppercase fw-bold mb-2 d-block" style="letter-spacing: 3px; font-size: 0.8rem;">
                     <?php echo e($branding->tagline() ?: __('web.hero_tagline')); ?>
 
                 </span>
                 <h1 class="display-2 fw-bold mb-3"><?php echo e(__('web.brand_collection_title')); ?></h1>
-                <p class="lead mb-4 opacity-75 w-75 d-none d-md-block"><?php echo e(__('web.brand_collection_desc')); ?></p>
+                <p class="lead mb-4 w-75 d-none d-md-block"><?php echo e(__('web.brand_collection_desc')); ?></p>
                 <a href="<?php echo e(route('product.List')); ?>" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg">
                     <?php echo e(__('web.discover')); ?>
 
