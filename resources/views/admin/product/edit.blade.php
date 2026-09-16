@@ -226,10 +226,10 @@
                                                     <div class="text-center">
                                                         <img src="{{ asset('storage/' . $image->images) }}"
                                                             class="imgDisplay my-2" style="width: 150px; height: auto;"><br>
-                                                        <form method="POST" action="{{ route('image.delete', $image->id) }}" class="d-inline mt-2">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-danger">{{ __('products.delete') }}</button>
-                                                        </form>
+                                                        <button type="submit" class="btn btn-danger mt-2"
+                                                            form="delete-image-{{ $image->id }}">
+                                                            {{ __('products.delete') }}
+                                                        </button>
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -242,6 +242,14 @@
                                 id="submitId">{{ __('products.submit') }}</button>
 
                         </form>
+
+                        @if($model && $model->productImages)
+                            @foreach($model->productImages as $image)
+                                <form id="delete-image-{{ $image->id }}" method="POST" action="{{ route('image.delete', $image->id) }}" class="d-none">
+                                    @csrf
+                                </form>
+                            @endforeach
+                        @endif
 
                     </div>
                 </div>
@@ -397,24 +405,6 @@
 
 
 <script>
-    let formPrevant = document.getElementById("prevent");
-
-    formPrevant.addEventListener("submit", (e) => {
-        if (e.submitter.id === "submitId") {
-            // Prevent form submission if the Cancel button is clicked
-            console.log("Form submission canceled.");
-        } else {
-            // Allow form submission for the Save button
-            e.preventDefault();
-
-            console.log("Form will be submitted.");
-        }
-    })
-
-
-
-
-
     function changeMainImage(smallImage) {
         const mainImage = document.getElementById('mainImage');
         mainImage.src = smallImage.src;

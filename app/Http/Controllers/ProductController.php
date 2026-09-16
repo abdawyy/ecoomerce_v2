@@ -64,11 +64,6 @@ class ProductController extends Controller
             }
             $request->validate($rules);
 
-            // Prepare the attributes and values for update or creation
-            $attributes = [
-                'id' => $id
-            ];
-
             $values = [
                 'name' => $request->name,
                 'price' => $request->price,
@@ -79,7 +74,7 @@ class ProductController extends Controller
                 'description' => $request->description,
             ];
             if (Schema::hasColumn('products', 'slug')) {
-                $values['slug'] = $request->slug ?: Str::slug($request->name);
+                $values['slug'] = $this->uniqueProductSlug($request->slug ?: Str::slug((string) $request->name), $id);
                 $values['meta_title_en'] = $request->meta_title_en;
                 $values['meta_title_ar'] = $request->meta_title_ar;
                 $values['meta_description_en'] = $request->meta_description_en;
@@ -89,26 +84,30 @@ class ProductController extends Controller
             if (Schema::hasColumn('products', 'guide_id')) {
                 $values['guide_id'] = $request->guide_id ?: null;
             }
-            $quantities = $request->quantities;
-            $files = $request->images;
+            $quantities = $request->quantities ?? [];
             $imagesModel = new productImages();
 
+            try {
+                if ($id) {
+                    $model = $this->model::query()->find($id);
+                    if (! $model) {
+                        return redirect()->route('products.edit')->with('error', 'Your product could not be saved.');
+                    }
+                    $model->fill($values);
+                    $model->save();
+                } else {
+                    $model = $this->model::query()->create($values);
+                }
+            } catch (\Throwable $e) {
+                report($e);
 
-
-
-
-            // Use updateOrCreate to handle update or creation
-            $model = self::updateOrCreate($this->model, $attributes, $values);
-
-            // Redirect with success or error messages
-            if ($model) {
-                self::uploadImages($request, $imagesModel, $model->id);
-
-                $this->saveProductItems($quantities, $model);
-                return redirect()->route('products.list')->with('success', 'Your product has been successfully saved.');
-            } else {
-                return redirect()->route('products.edit')->with('error', 'Your product could not be saved.');
+                return redirect()->back()->withInput()->with('error', 'Your product could not be saved.');
             }
+
+            self::uploadImages($request, $imagesModel, $model->id);
+            $this->saveProductItems($quantities, $model);
+
+            return redirect()->route('products.list')->with('success', 'Your product has been successfully saved.');
         }
         $categories = Category::all();
         $types = Type::all();
@@ -116,14 +115,35 @@ class ProductController extends Controller
 
         return view('admin.product.edit', compact('model', 'categories', 'types', 'guides'));
     }
+
+    protected function uniqueProductSlug(string $slug, mixed $ignoreId = null): string
+    {
+        $slug = trim($slug);
+        if ($slug === '') {
+            $slug = 'product-'.uniqid();
+        }
+
+        $base = $slug;
+        $i = 1;
+        while (
+            $this->model::query()
+                ->where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $slug = $base.'-'.$i;
+            $i++;
+        }
+
+        return $slug;
+    }
+
     public function saveProductItems($quantities, $model)
     {
-
-
         foreach ($quantities as $size => $quantity) {
-            // $productItem = ProductItems::where('products_id', $model->id)
-            // ->where('size', $size)
-            // ->get();
+            if ($quantity === null || $quantity === '') {
+                continue;
+            }
 
             $values = [
                 'quantity' => $quantity,
@@ -131,8 +151,6 @@ class ProductController extends Controller
                 'products_id' => $model->id
             ];
 
-
-            // Define the attributes to check for existence
             $attributes = [
                 'products_id' => $model->id,
                 'size' => $size
