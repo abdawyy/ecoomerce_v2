@@ -1,46 +1,18 @@
-@php $locale = app()->getLocale(); @endphp
+<x-web.layout :title="__('auth.verify_email_title')">
+    <x-web.auth-card :title="__('auth.verify_email_title')" :subtitle="__('auth.verify_email_message')">
+        <form method="POST" action="{{ route('verification.send') }}" class="mb-3">
+            @csrf
+            <button type="submit" class="btn btn-dark btn-lg w-100">
+                {{ __('auth.resend_verification_email') }}
+            </button>
+        </form>
 
-<x-guest-layout>
-    @section('title', __('auth.verify_email_title'))
-    @section('meta_description', __('auth.verify_email_description'))
-
-    @push('meta')
-        <meta name="description" content="{{ __('auth.verify_email_description') }}">
-        <meta name="robots" content="noindex, nofollow">
-    @endpush
-
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
-
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('auth.verify_email_message') }}
-        </div>
-
-
-        <div class="mt-4 flex items-center justify-between">
-            <form method="POST" action="{{ route('verification.send') }}">
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+            <a href="{{ route('account.profile') }}" class="small">{{ __('auth.edit_profile') }}</a>
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <x-button type="submit">
-                    {{ __('auth.resend_verification_email') }}
-                </x-button>
+                <button type="submit" class="btn btn-link p-0 small">{{ __('auth.logout') }}</button>
             </form>
-
-            <div>
-                <a href="{{ route('account.profile') }}"
-                   class="underline text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    {{ __('auth.edit_profile') }}
-                </a>
-
-                <form method="POST" action="{{ route('logout') }}" class="inline">
-                    @csrf
-                    <button type="submit"
-                            class="underline text-sm text-gray-600 hover:text-gray-900 ms-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        {{ __('auth.logout') }}
-                    </button>
-                </form>
-            </div>
         </div>
-    </x-authentication-card>
-</x-guest-layout>
+    </x-web.auth-card>
+</x-web.layout>

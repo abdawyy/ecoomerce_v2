@@ -8,6 +8,10 @@ return [
     'forgot_password' => 'Forgot your password?',
     'login' => 'Log in',
     'register' => 'Register',
+    'no_account' => "Don't have an account?",
+    'show_password' => 'Show password',
+    'hide_password' => 'Hide password',
+    'or_continue' => 'or',
 
     'register_title' => 'Register an account | Hayah',
     'register_description' => 'Create a new account to enjoy personalized shopping experience.',

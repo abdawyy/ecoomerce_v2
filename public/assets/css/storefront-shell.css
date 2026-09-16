@@ -826,5 +826,121 @@ body:has(.modal.show) {
     letter-spacing: 0.04em;
 }
 
+/* Storefront login / register / password */
+.storefront-auth {
+    padding: 3rem 0 4.5rem;
+}
+
+.storefront-auth-card {
+    max-width: 440px;
+    margin: 0 auto;
+    border: 1px solid #111;
+    border-radius: 20px;
+    background: #fff;
+    color: #111;
+}
+
+.storefront-auth-form-wrap {
+    padding: 2rem 1.5rem 2.25rem;
+}
+
+@media (min-width: 768px) {
+    .storefront-auth-form-wrap {
+        padding: 2.5rem 2.25rem 2.75rem;
+    }
+}
+
+.storefront-auth-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 0.4rem;
+}
+
+.storefront-auth-subtitle {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.storefront-auth-card .form-label {
+    color: #111;
+    font-weight: 600;
+}
+
+.storefront-auth-card .form-control {
+    border-color: #111;
+    color: #111;
+    background: #fff;
+}
+
+.storefront-auth-card .form-control:focus {
+    border-color: #111;
+    box-shadow: 0 0 0 0.15rem rgba(17, 17, 17, 0.15);
+    background: #fff;
+    color: #111;
+}
+
+.storefront-auth-card .form-check-input {
+    border-color: #111;
+}
+
+.storefront-auth-card .form-check-input:checked {
+    background-color: #111;
+    border-color: #111;
+}
+
+.storefront-auth-card a {
+    color: #111;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.storefront-auth-card a:hover {
+    color: #000;
+}
+
+.storefront-auth-card .branding-logo-link,
+.storefront-auth-card .branding-logo-link:hover {
+    text-decoration: none;
+}
+
+.storefront-auth-card .btn-dark {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+}
+
+.storefront-auth-card .btn-dark:hover {
+    background: #000;
+    border-color: #000;
+    color: #fff;
+}
+
+.storefront-auth-password {
+    border: 1px solid #111;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.storefront-auth-password .form-control,
+.storefront-auth-password .btn {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #111;
+    background: #fff;
+}
+
+.storefront-auth-password .btn {
+    color: #111;
+}
+
+.storefront-auth-password .form-control:focus {
+    box-shadow: none !important;
+}
+
 
 
