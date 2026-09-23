@@ -48,7 +48,10 @@ class ProductController extends Controller
                 'description' => 'nullable|string',
                 'price' => 'required|numeric|min:0',
                 'sale' => 'nullable|numeric|min:0|max:100',
-                'quantities' => 'required_without_all:quantities.S,quantities.M,quantities.L,quantities.XL,quantities.XXL,quantities.XXXL|array',
+                'quantities' => 'nullable|array',
+                'quantities.*' => 'nullable|numeric|min:0',
+                'custom_size' => 'nullable|string|max:50',
+                'custom_size_qty' => 'nullable|numeric|min:0',
                 'category_id' => 'required|integer|exists:categories,id',
                 'type_id' => 'required|integer|exists:type,id',
                 'color' => 'required|string|max:255',
@@ -85,6 +88,18 @@ class ProductController extends Controller
                 $values['guide_id'] = $request->guide_id ?: null;
             }
             $quantities = $request->quantities ?? [];
+            $customSize = trim((string) $request->input('custom_size', ''));
+            $customQty = $request->input('custom_size_qty');
+            if ($customSize !== '' && $customQty !== null && $customQty !== '') {
+                $quantities[$customSize] = $customQty;
+            }
+
+            if (collect($quantities)->filter(fn ($qty) => $qty !== null && $qty !== '')->isEmpty()) {
+                return redirect()->back()->withInput()->withErrors([
+                    'quantities' => __('products.sizes_required'),
+                ]);
+            }
+
             $imagesModel = new productImages();
 
             try {
@@ -112,8 +127,36 @@ class ProductController extends Controller
         $categories = Category::all();
         $types = Type::all();
         $guides = Schema::hasTable('guides') ? Guide::active()->orderBy('title_en')->get() : collect();
+        $sizes = $this->availableProductSizes($model);
 
-        return view('admin.product.edit', compact('model', 'categories', 'types', 'guides'));
+        return view('admin.product.edit', compact('model', 'categories', 'types', 'guides', 'sizes'));
+    }
+
+    /**
+     * Defaults + every size already used in the catalog (and this product).
+     */
+    protected function availableProductSizes(?products $model = null): array
+    {
+        $defaults = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL', '6XL', 'S/M', 'L/XL', '10', '12', '14'];
+
+        $fromCatalog = productItems::query()
+            ->whereNotNull('size')
+            ->where('size', '!=', '')
+            ->distinct()
+            ->orderBy('size')
+            ->pluck('size')
+            ->all();
+
+        $fromProduct = $model?->productItems?->pluck('size')->filter()->all() ?? [];
+
+        return collect($defaults)
+            ->merge($fromCatalog)
+            ->merge($fromProduct)
+            ->map(fn ($size) => trim((string) $size))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     protected function uniqueProductSlug(string $slug, mixed $ignoreId = null): string

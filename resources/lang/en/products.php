@@ -23,6 +23,10 @@ return [
     'delete' => 'Delete',
     'submit' => 'Submit',
     'reviews_button' => 'Reviews',
-    
-
+    'sizes' => 'Sizes & stock',
+    'sizes_hint' => 'All sizes already used in your catalog are listed here. Set a quantity to keep a size for this product.',
+    'sizes_required' => 'Add stock quantity for at least one size.',
+    'qty' => 'Qty',
+    'custom_size' => 'Add a new size',
+    'custom_size_placeholder' => 'e.g. One Size, 16, XS',
 ];

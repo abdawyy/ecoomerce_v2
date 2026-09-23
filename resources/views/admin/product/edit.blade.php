@@ -171,21 +171,58 @@
                                         </div>
 
                                         <div class="col-12 mb-3">
-                                            @php $sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL','4XL','5XL','6XL' ,'S/M', 'L/XL','10','12','14']; @endphp
-                                            @foreach($sizes as $size)
-                                                @php $item = isset($model) && $model->productItems ? $model->productItems->firstWhere('size', $size) : null; @endphp
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="inlineCheckbox{{ $size }}" name="sizes[{{ $size }}]"
-                                                        value="{{ $size }}" {{ $item && $item->quantity > 0 ? 'checked' : '' }}>
-                                                    <label class="form-check-label"
-                                                        for="inlineCheckbox{{ $size }}">{{ $size }}</label>
-                                                    <input type="number" class="form-control ms-2"
-                                                        name="quantities[{{ $size }}]"
-                                                        value="{{ $item ? $item->quantity : '' }}" placeholder="Qty" min="0"
-                                                        style="width: 120px;">
+                                            <label class="form-label">{{ __('products.sizes') }}</label>
+                                            <p class="small text-muted mb-2">{{ __('products.sizes_hint') }}</p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @foreach($sizes as $size)
+                                                    @php
+                                                        $item = isset($model) && $model->productItems
+                                                            ? $model->productItems->firstWhere('size', $size)
+                                                            : null;
+                                                        $sizeId = 'size-'.preg_replace('/[^A-Za-z0-9_-]+/', '-', $size);
+                                                        $oldQuantities = old('quantities', []);
+                                                        $oldQty = array_key_exists($size, $oldQuantities)
+                                                            ? $oldQuantities[$size]
+                                                            : ($item?->quantity);
+                                                    @endphp
+                                                    <div class="border rounded-3 p-2 d-flex align-items-center gap-2">
+                                                        <input class="form-check-input m-0" type="checkbox"
+                                                            id="{{ $sizeId }}" name="sizes[{{ $size }}]"
+                                                            value="{{ $size }}"
+                                                            {{ ($oldQty !== null && $oldQty !== '' && (int) $oldQty > 0) ? 'checked' : '' }}>
+                                                        <label class="form-check-label mb-0 fw-semibold"
+                                                            for="{{ $sizeId }}">{{ $size }}</label>
+                                                        <input type="number" class="form-control form-control-sm"
+                                                            name="quantities[{{ $size }}]"
+                                                            value="{{ $oldQty }}"
+                                                            placeholder="{{ __('products.qty') }}" min="0"
+                                                            style="width: 88px;">
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            @error('quantities')
+                                                <div class="text-danger small mt-2">{{ $message }}</div>
+                                            @enderror
+
+                                            <div class="row g-2 align-items-end mt-3">
+                                                <div class="col-sm-5">
+                                                    <label class="form-label mb-1" for="custom_size">{{ __('products.custom_size') }}</label>
+                                                    <input type="text" id="custom_size" name="custom_size"
+                                                        class="form-control @error('custom_size') is-invalid @enderror"
+                                                        value="{{ old('custom_size') }}"
+                                                        placeholder="{{ __('products.custom_size_placeholder') }}"
+                                                        maxlength="50">
+                                                    @error('custom_size')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
                                                 </div>
-                                            @endforeach
+                                                <div class="col-sm-3">
+                                                    <label class="form-label mb-1" for="custom_size_qty">{{ __('products.qty') }}</label>
+                                                    <input type="number" id="custom_size_qty" name="custom_size_qty"
+                                                        class="form-control" value="{{ old('custom_size_qty') }}"
+                                                        placeholder="0" min="0">
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="col-6 mb-3">
