@@ -1,5 +1,5 @@
 <x-web.layout :seo="$seo ?? null" :title="$product->name ?? null">
-@push('styles')
+<x-slot:styles>
 <style>
     .pointer { cursor: pointer; }
 
@@ -107,7 +107,7 @@
         margin-bottom: 30px;
     }
 </style>
-@endpush
+</x-slot:styles>
 
 <section id="oneProduct" class="page-wrap">
     <div class="container">
@@ -279,7 +279,7 @@
     </div>
 </div>
 
-@push('scripts')
+<x-slot:scripts>
 <script>
     @php
         $pixelUnitPrice = (float) ($product->sale
@@ -413,6 +413,6 @@
         });
     });
 </script>
-@endpush
+</x-slot:scripts>
 
 </x-web.layout>

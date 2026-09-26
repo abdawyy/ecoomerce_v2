@@ -51,12 +51,14 @@
     fbq('track', 'PageView');
     window.HayahPixel = {
         track: function (event, data) {
-            if (typeof fbq !== 'function') return;
-            if (data) {
-                fbq('track', event, data);
-            } else {
-                fbq('track', event);
-            }
+            try {
+                if (typeof fbq !== 'function') return;
+                if (data) {
+                    fbq('track', event, data);
+                } else {
+                    fbq('track', event);
+                }
+            } catch (e) {}
         }
     };
     </script>
@@ -64,6 +66,9 @@
     src="https://www.facebook.com/tr?id=3262657207254492&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
+
+    {!! $styles ?? '' !!}
+    @stack('styles')
 </head>
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>
@@ -73,9 +78,9 @@
         {{ $slot }}
     </div>
 
-    @stack('styles')
-
     <x-web.footer />
+
+    {!! $scripts ?? '' !!}
     @stack('scripts')
 </body>
 </html>

@@ -259,7 +259,7 @@
     })();
 </script>
 
-@push('scripts')
+<x-slot:scripts>
 <script>
     if (window.HayahPixel) {
         window.HayahPixel.track('InitiateCheckout', {
@@ -273,6 +273,6 @@
         });
     }
 </script>
-@endpush
+</x-slot:scripts>
 
 </x-web.layout>

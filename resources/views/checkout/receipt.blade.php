@@ -70,7 +70,7 @@
 </script>
 @endif
 
-@push('scripts')
+<x-slot:scripts>
 <script>
     (function () {
         if (!window.HayahPixel) return;
@@ -89,6 +89,6 @@
         });
     })();
 </script>
-@endpush
+</x-slot:scripts>
 
 </x-web.layout>

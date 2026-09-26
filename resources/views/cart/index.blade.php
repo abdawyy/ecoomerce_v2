@@ -200,7 +200,7 @@
     </div>
 </section>
 
-@push('scripts')
+<x-slot:scripts>
 <script>
     document.querySelectorAll('.qty-minus, .qty-plus').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -216,6 +216,6 @@
         });
     });
 </script>
-@endpush
+</x-slot:scripts>
 
 </x-web.layout>
