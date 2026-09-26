@@ -49,6 +49,16 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '3262657207254492');
     fbq('track', 'PageView');
+    window.HayahPixel = {
+        track: function (event, data) {
+            if (typeof fbq !== 'function') return;
+            if (data) {
+                fbq('track', event, data);
+            } else {
+                fbq('track', event);
+            }
+        }
+    };
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=3262657207254492&ev=PageView&noscript=1"

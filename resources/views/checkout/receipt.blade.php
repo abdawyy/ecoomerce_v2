@@ -70,4 +70,25 @@
 </script>
 @endif
 
+@push('scripts')
+<script>
+    (function () {
+        if (!window.HayahPixel) return;
+        var orderId = @json((string) $orderID);
+        var key = 'hayah_pixel_purchase_' + orderId;
+        try {
+            if (sessionStorage.getItem(key)) return;
+            sessionStorage.setItem(key, '1');
+        } catch (e) {}
+        window.HayahPixel.track('Purchase', {
+            value: {{ number_format((float) $totalPrice, 2, '.', '') }},
+            currency: 'EGP',
+            content_type: 'product',
+            contents: [{ id: orderId, quantity: 1 }],
+            content_ids: [orderId]
+        });
+    })();
+</script>
+@endpush
+
 </x-web.layout>
