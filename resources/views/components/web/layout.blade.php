@@ -50,10 +50,12 @@
     fbq('init', '3262657207254492');
     fbq('track', 'PageView');
     window.HayahPixel = {
-        track: function (event, data) {
+        track: function (event, data, options) {
             try {
                 if (typeof fbq !== 'function') return;
-                if (data) {
+                if (options) {
+                    fbq('track', event, data || {}, options);
+                } else if (data) {
                     fbq('track', event, data);
                 } else {
                     fbq('track', event);

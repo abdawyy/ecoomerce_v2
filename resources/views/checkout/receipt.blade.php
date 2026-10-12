@@ -70,6 +70,7 @@
 </script>
 @endif
 
+@if (!empty($trackPixelPurchase))
 <x-slot:scripts>
 <script>
     (function () {
@@ -77,18 +78,20 @@
         var orderId = @json((string) $orderID);
         var key = 'hayah_pixel_purchase_' + orderId;
         try {
-            if (sessionStorage.getItem(key)) return;
-            sessionStorage.setItem(key, '1');
+            if (localStorage.getItem(key)) return;
+            localStorage.setItem(key, '1');
         } catch (e) {}
         window.HayahPixel.track('Purchase', {
             value: {{ number_format((float) $totalPrice, 2, '.', '') }},
             currency: 'EGP',
             content_type: 'product',
             contents: [{ id: orderId, quantity: 1 }],
-            content_ids: [orderId]
-        });
+            content_ids: [orderId],
+            order_id: orderId
+        }, { eventID: 'purchase-' + orderId });
     })();
 </script>
 </x-slot:scripts>
+@endif
 
 </x-web.layout>
