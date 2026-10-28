@@ -259,20 +259,4 @@
     })();
 </script>
 
-<x-slot:scripts>
-<script>
-    if (window.HayahPixel) {
-        window.HayahPixel.track('InitiateCheckout', {
-            value: {{ number_format((float) ($total ?? $subtotal ?? 0), 2, '.', '') }},
-            currency: 'EGP',
-            num_items: {{ (int) (is_countable($cartItems ?? null) ? count($cartItems) : 0) }},
-            content_type: 'product',
-            content_ids: @json(collect($cartItems ?? [])->map(function ($item) {
-                return (string) (is_object($item) ? ($item->product_id ?? $item->product->id ?? '') : ($item['product_id'] ?? ''));
-            })->filter()->values())
-        });
-    }
-</script>
-</x-slot:scripts>
-
 </x-web.layout>

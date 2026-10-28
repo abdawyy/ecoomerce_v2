@@ -101,7 +101,7 @@
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="admin-card admin-kpi-card card h-100">
-                        <div class="card-body">
+                    <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start gap-2">
                                 <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.pending_orders') }}</h6>
@@ -132,7 +132,7 @@
                 <div class="col-12 col-lg-4 min-w-0">
                     <div class="admin-card card h-100">
                         <div class="card-header bg-white border-bottom">{{ __('dashboard.traffic_chart') }}</div>
-                        <div class="card-body">
+                    <div class="card-body">
                             <div class="admin-chart-wrap admin-chart-wrap--sm">
                                 <canvas id="chartTraffic"></canvas>
                             </div>
@@ -201,14 +201,14 @@
                         </div>
                     </div>
                     <div class="admin-card card">
-                        <div class="card-body">
+                    <div class="card-body">
                             <h6 class="mb-2">{{ __('branding.home_images') }}</h6>
                             <p class="small text-muted mb-3">{{ __('branding.home_images_hint') }}</p>
                             <a href="{{ route('admin.settings.branding') }}#home-tiles" class="btn btn-outline-dark w-100">{{ __('dashboard.manage_home_images') }}</a>
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
     </div>
 </main>
 

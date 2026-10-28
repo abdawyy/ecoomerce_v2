@@ -49,28 +49,11 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '3262657207254492');
     fbq('track', 'PageView');
-    window.HayahPixel = {
-        track: function (event, data, options) {
-            try {
-                if (typeof fbq !== 'function') return;
-                if (options) {
-                    fbq('track', event, data || {}, options);
-                } else if (data) {
-                    fbq('track', event, data);
-                } else {
-                    fbq('track', event);
-                }
-            } catch (e) {}
-        }
-    };
     </script>
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=3262657207254492&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
-
-    {!! $styles ?? '' !!}
-    @stack('styles')
 </head>
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>
@@ -80,9 +63,9 @@
         {{ $slot }}
     </div>
 
-    <x-web.footer />
+    @stack('styles')
 
-    {!! $scripts ?? '' !!}
+    <x-web.footer />
     @stack('scripts')
 </body>
 </html>

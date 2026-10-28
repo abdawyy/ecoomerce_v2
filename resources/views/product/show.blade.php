@@ -1,5 +1,5 @@
 <x-web.layout :seo="$seo ?? null" :title="$product->name ?? null">
-<x-slot:styles>
+@push('styles')
 <style>
     .pointer { cursor: pointer; }
 
@@ -107,7 +107,7 @@
         margin-bottom: 30px;
     }
 </style>
-</x-slot:styles>
+@endpush
 
 <section id="oneProduct" class="page-wrap">
     <div class="container">
@@ -279,23 +279,8 @@
     </div>
 </div>
 
-<x-slot:scripts>
+@push('scripts')
 <script>
-    @php
-        $pixelUnitPrice = (float) ($product->sale
-            ? ($product->price - ($product->price * $product->sale / 100))
-            : $product->price);
-    @endphp
-    if (window.HayahPixel) {
-        window.HayahPixel.track('ViewContent', {
-            content_ids: [@json((string) $product->id)],
-            content_type: 'product',
-            content_name: @json($product->name),
-            value: {{ number_format($pixelUnitPrice, 2, '.', '') }},
-            currency: 'EGP'
-        });
-    }
-
     /* Image Gallery Logic */
     function changeMainImage(img) {
         document.getElementById('mainImage').src = img.src;
@@ -342,16 +327,13 @@
             return;
         }
 
-        const quantity = parseInt($('#quantity').val(), 10) || 1;
-        const unitPrice = {{ (float) ($product->sale ? ($product->price - ($product->price * $product->sale / 100)) : $product->price) }};
-
         fetch('/cart/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
             body: JSON.stringify({
                 product_id: productId,
                 size_id: selectedSize,
-                quantity: quantity
+                quantity: parseInt($('#quantity').val(), 10)
             })
         })
             .then(async (res) => {
@@ -366,16 +348,6 @@
                     $('.cart-Notify, .cart-count').text(data.cartCount);
                     if (window.toastr) {
                         toastr.success(data.message || "Added to cart.");
-                    }
-                    if (window.HayahPixel) {
-                        window.HayahPixel.track('AddToCart', {
-                            content_ids: [String(productId)],
-                            content_type: 'product',
-                            content_name: @json($product->name),
-                            value: Number((unitPrice * quantity).toFixed(2)),
-                            currency: 'EGP',
-                            contents: [{ id: String(productId), quantity: quantity }]
-                        });
                     }
                 } else if (data.redirect) {
                     window.location.href = data.redirect;
@@ -413,6 +385,6 @@
         });
     });
 </script>
-</x-slot:scripts>
+@endpush
 
 </x-web.layout>

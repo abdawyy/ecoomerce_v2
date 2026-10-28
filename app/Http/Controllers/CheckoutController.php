@@ -278,7 +278,6 @@ class CheckoutController extends Controller
             'notifyUrl' => route('checkout.receipt.notify', $orderModel->id),
             'emailSent' => false,
             'emailPending' => true,
-            'trackPixelPurchase' => cache()->add('pixel-purchase-sent-'.$orderModel->id, 1, now()->addDays(90)),
         ]);
     }
 
