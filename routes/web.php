@@ -74,6 +74,7 @@ Route::get('/guides/{slug}/download', [GuideController::class, 'download'])->nam
 
 Route::get('admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [AdminController::class, 'login']);
+Route::redirect('admin', 'admin/dashboard');
 
 if (config('hayah.allow_admin_register')) {
     Route::get('admin/register', [AdminController::class, 'showRegisterForm'])->name('admin.register');
@@ -88,6 +89,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('admin/dashboard/stats', [AdminController::class, 'dashboardStats'])->name('admin.dashboard.stats');
     Route::get('admin/list', [AdminController::class, 'list'])->name('admin.list');
+    Route::get('admin/edit/{id}', [AdminController::class, 'adminShow'])->whereNumber('id')->name('admin.show');
     Route::post('admin/list/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 

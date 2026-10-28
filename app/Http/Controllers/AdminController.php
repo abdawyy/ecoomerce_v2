@@ -257,6 +257,17 @@ class AdminController extends Controller
         return view('admin.admin.list', compact('headers', 'rows', 'admins', 'search', 'url'));
     }
 
+    public function adminShow($id)
+    {
+        $admin = Admin::find($id);
+
+        if (! $admin) {
+            return redirect()->route('admin.list')->with('error', __('admin_list.not_found'));
+        }
+
+        return view('admin.admin.show', compact('admin'));
+    }
+
     public function delete($id)
     {
         // Call the deleteRecord function from the trait

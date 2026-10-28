@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # /admin is the portal. Do not serve the public/admin asset folder for that URL.
+    RewriteRule ^admin/?$ index.php [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
