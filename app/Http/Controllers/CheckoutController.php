@@ -14,6 +14,8 @@ use App\Models\shoppingCart;
 use App\Rules\ValidPromoCode;
 use App\Services\PdfService;
 use App\Services\AnalyticsService;
+use App\Services\ShippingService;
+use Illuminate\Support\Facades\Schema;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -99,16 +101,24 @@ class CheckoutController extends Controller
                     : addresses::create($payload);
 
                 $cart = new shoppingCart;
-                $total = $cart->totalPrice($userId, $city->price, $promoCodeValue->discount_percentage ?? 0);
+                $promoPercent = $promoCodeValue->discount_percentage ?? 0;
+                $shipping = app(ShippingService::class);
+                $merchandise = $cart->merchandiseTotal($userId, $promoPercent);
+                $deliveryFee = $shipping->resolveFee((float) $city->price, $merchandise);
+                $total = $shipping->money($merchandise + $deliveryFee);
 
-                $order = orders::create([
+                $orderPayload = [
                     'user_id' => $userId,
                     'total_amount' => $total,
                     'status' => 'Pending',
                     'discount_code_id' => $promoCodeValue->id ?? null,
                     'city_id' => $city->id,
                     'address_id' => $address->id,
-                ]);
+                ];
+                if (Schema::hasColumn('orders', 'delivery_fee')) {
+                    $orderPayload['delivery_fee'] = $deliveryFee;
+                }
+                $order = orders::create($orderPayload);
 
                 $result = $order->addOrderItems($userId);
                 if (! $result['success']) {
@@ -117,7 +127,7 @@ class CheckoutController extends Controller
 
                 payments::createCashPayment($order->id, $total);
 
-                return ['order' => $order, 'total' => $total];
+                return ['order' => $order, 'total' => $total, 'deliveryFee' => $deliveryFee];
             });
         } catch (RuntimeException $e) {
             session(['checkout_token' => Str::uuid()->toString()]);
@@ -130,7 +140,7 @@ class CheckoutController extends Controller
             return redirect()->back()->withInput()->with('error', 'Failed to place order. Please try again.');
         }
 
-        return $this->completeOrder($order['order']->id, $order['total'], $city->price);
+        return $this->completeOrder($order['order']->id, $order['total'], $order['deliveryFee']);
     }
 
     protected function processGuestOrder(Request $request)
@@ -171,9 +181,13 @@ class CheckoutController extends Controller
                 ));
 
                 $cart = new shoppingCart;
-                $total = $cart->totalPrice(null, $city->price, $promoCodeValue->discount_percentage ?? 0);
+                $promoPercent = $promoCodeValue->discount_percentage ?? 0;
+                $shipping = app(ShippingService::class);
+                $merchandise = $cart->merchandiseTotal(null, $promoPercent);
+                $deliveryFee = $shipping->resolveFee((float) $city->price, $merchandise);
+                $total = $shipping->money($merchandise + $deliveryFee);
 
-                $order = orders::create([
+                $orderPayload = [
                     'user_id' => null,
                     'total_amount' => $total,
                     'status' => 'Pending',
@@ -181,7 +195,11 @@ class CheckoutController extends Controller
                     'city_id' => $city->id,
                     'address_id' => $address->id,
                     'guest_id' => $guestUser->id,
-                ]);
+                ];
+                if (Schema::hasColumn('orders', 'delivery_fee')) {
+                    $orderPayload['delivery_fee'] = $deliveryFee;
+                }
+                $order = orders::create($orderPayload);
 
                 $result = $order->addOrderItems(null, true);
                 if (! $result['success']) {
@@ -190,7 +208,7 @@ class CheckoutController extends Controller
 
                 payments::createCashPayment($order->id, $total);
 
-                return ['order' => $order, 'total' => $total, 'guest' => $guestUser];
+                return ['order' => $order, 'total' => $total, 'guest' => $guestUser, 'deliveryFee' => $deliveryFee];
             });
         } catch (RuntimeException $e) {
             session(['checkout_token' => Str::uuid()->toString()]);
@@ -203,7 +221,7 @@ class CheckoutController extends Controller
             return redirect()->back()->withInput()->with('error', 'Failed to place order. Please try again.');
         }
 
-        return $this->completeOrder($order['order']->id, $order['total'], $city->price);
+        return $this->completeOrder($order['order']->id, $order['total'], $order['deliveryFee']);
     }
 
     protected function addressPayload(Request $request, ?int $userId, ?int $guestId): array
@@ -265,7 +283,7 @@ class CheckoutController extends Controller
             ->findOrFail($order);
 
         $total = session('placed_order_total', $orderModel->total_amount);
-        $deliveryFees = session('placed_order_delivery', $orderModel->cities->price ?? 0);
+        $deliveryFees = session('placed_order_delivery', $orderModel->resolvedDeliveryFee());
 
         return view('checkout.receipt', [
             'orderID' => $orderModel->id,
@@ -359,18 +377,23 @@ class CheckoutController extends Controller
             return $this->lineTotal($item->product ?? null, (int) ($item->quantity ?? 1));
         });
 
+        $shipping = app(ShippingService::class);
         $cityId = old('city');
         $city = $cityId ? Cities::find($cityId) : null;
-        $deliveryFee = $city->price ?? 0;
         $promoCode = old('promo_code') ?? session('promo_code');
         $promo = $promoCode
             ? discountCodes::where('code', $promoCode)->where('is_active', 1)->where('expiry_date', '>', now())->first()
             : null;
         $discountPercent = $promo->discount_percentage ?? 0;
-        $discountAmount = $subtotal * ($discountPercent / 100);
-
-        $cart = new shoppingCart;
-        $total = $cart->totalPrice($userId, $deliveryFee, $discountPercent);
+        $subtotal = $shipping->money((float) $subtotal);
+        $discountAmount = $shipping->money($subtotal * ($discountPercent / 100));
+        $merchandise = $shipping->merchandiseAfterDiscount($subtotal, $discountPercent);
+        $cityPrice = (float) ($city->price ?? 0);
+        $deliveryFee = $shipping->resolveFee($cityPrice, $merchandise);
+        $total = $shipping->money($merchandise + $deliveryFee);
+        $freeShippingMin = $shipping->threshold();
+        $freeShippingQualifies = $shipping->qualifies($merchandise);
+        $freeShippingRemaining = $shipping->remainingUntilFree($merchandise);
 
         $checkoutToken = session('checkout_token') ?? Str::uuid()->toString();
         session(['checkout_token' => $checkoutToken]);
@@ -382,7 +405,10 @@ class CheckoutController extends Controller
             'deliveryFee',
             'discountPercent',
             'discountAmount',
-            'checkoutToken'
+            'checkoutToken',
+            'freeShippingMin',
+            'freeShippingQualifies',
+            'freeShippingRemaining'
         );
     }
 

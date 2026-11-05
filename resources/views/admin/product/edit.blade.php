@@ -235,7 +235,7 @@
 
                                         <div class="col-6 mb-3">
                                             <label class="form-label">{{ __('products.sale_price') }}</label>
-                                            <input type="number" placeholder="60"
+                                            <input type="number" placeholder="0" min="0" max="100"
                                                 class="form-control @error('sale') is-invalid @enderror" name="sale"
                                                 value="{{ old('sale', $model->sale ?? '') }}">
                                             @error('sale')<div class="invalid-feedback">{{ $message }}</div>@enderror

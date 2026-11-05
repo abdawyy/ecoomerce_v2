@@ -34,7 +34,8 @@ return [
 
     'discount_codes' => 'Discount Codes',
     'view_discount_codes' => 'View all Discount Codes',
-    'add_discount_code' => 'Add Discount Code', // ✅ This is the one you asked for
+    'add_discount_code' => 'Add Discount Code',
+    'free_shipping' => 'Free shipping', // ✅ This is the one you asked for
     'messages_list' => 'Messages List',
 
     'section_operations' => 'Operations',

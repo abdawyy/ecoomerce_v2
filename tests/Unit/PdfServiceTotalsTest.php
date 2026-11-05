@@ -39,4 +39,41 @@ class PdfServiceTotalsTest extends TestCase
         $this->assertSame(10.0, $totals['discountPercent']);
         $this->assertSame(180.0, $totals['grandTotal']);
     }
+
+    public function test_invoice_totals_uses_zero_delivery_fee_snapshot(): void
+    {
+        $branding = Mockery::mock(BrandingService::class);
+        $service = new PdfService($branding);
+
+        $order = new orders(['total_amount' => 150, 'delivery_fee' => 0]);
+        $order->setRelation('orderItems', new Collection([
+            new orderItems(['price' => 150, 'quantity' => 1]),
+        ]));
+        $order->setRelation('cities', (object) ['price' => 30]);
+        $order->setRelation('discountCodes', null);
+
+        $totals = $service->invoiceTotals($order);
+
+        $this->assertSame(150.0, $totals['subtotal']);
+        $this->assertSame(0.0, $totals['delivery']);
+        $this->assertSame(150.0, $totals['grandTotal']);
+    }
+
+    public function test_invoice_totals_falls_back_to_city_price_when_delivery_fee_missing(): void
+    {
+        $branding = Mockery::mock(BrandingService::class);
+        $service = new PdfService($branding);
+
+        $order = new orders(['total_amount' => 180]);
+        $order->setRelation('orderItems', new Collection([
+            new orderItems(['price' => 150, 'quantity' => 1]),
+        ]));
+        $order->setRelation('cities', (object) ['price' => 30]);
+        $order->setRelation('discountCodes', null);
+
+        $totals = $service->invoiceTotals($order);
+
+        $this->assertSame(30.0, $totals['delivery']);
+    }
 }
+

@@ -7,6 +7,7 @@ use App\Models\productItems;
 use App\Models\products;
 use App\Models\shoppingCart;
 use App\Services\AnalyticsService;
+use App\Services\ShippingService;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -253,6 +254,28 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', __('cart.promo_applied', ['percent' => $promo->discount_percentage]));
     }
 
+
+    private function cartShippingHints(float $subtotal): array
+    {
+        $shipping = app(ShippingService::class);
+        $promoPercent = 0;
+        $code = session('promo_code');
+        if ($code) {
+            $promo = discountCodes::where('code', $code)
+                ->where('is_active', 1)
+                ->where('expiry_date', '>', now())
+                ->first();
+            $promoPercent = (float) ($promo->discount_percentage ?? 0);
+        }
+        $merchandise = $shipping->merchandiseAfterDiscount($subtotal, $promoPercent);
+
+        return [
+            'freeShippingMin' => $shipping->threshold(),
+            'freeShippingQualifies' => $shipping->qualifies($merchandise),
+            'freeShippingRemaining' => $shipping->remainingUntilFree($merchandise),
+        ];
+    }
+
     private function featuredProducts()
     {
         return products::with('productImages')
@@ -275,26 +298,26 @@ class CartController extends Controller
             return ($item->product->price - ($item->product->price * $item->product->sale / 100)) * $item->quantity;
         });
 
-        return view('cart.index', [
+        return view('cart.index', array_merge([
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
             'total' => $subtotal,
             'featuredProducts' => $this->featuredProducts(),
             'appliedPromo' => session('promo_code'),
-        ]);
+        ], $this->cartShippingHints((float) $subtotal)));
     }
 
     private function renderGuestCart()
     {
         [$cartItems, $subtotal] = $this->buildGuestCartViewData();
 
-        return view('cart.index', [
+        return view('cart.index', array_merge([
             'cartItems' => $cartItems,
             'subtotal' => $subtotal,
             'total' => $subtotal,
             'featuredProducts' => $this->featuredProducts(),
             'appliedPromo' => session('promo_code'),
-        ]);
+        ], $this->cartShippingHints((float) $subtotal)));
     }
 
     private function buildGuestCartViewData(): array

@@ -18,6 +18,7 @@
     --admin-accent-soft: rgba(42, 174, 231, 0.12);
     --admin-sidebar-bg: #ffffff;
     --admin-navbar-bg: #ffffff;
+    --admin-navbar-height: 72px;
     --admin-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     --admin-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     --admin-nav-text: #374151;
@@ -42,6 +43,7 @@
     --admin-accent-soft: rgba(61, 184, 240, 0.15);
     --admin-sidebar-bg: #161b22;
     --admin-navbar-bg: #161b22;
+    --admin-navbar-height: 72px;
     --admin-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
     --admin-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
     --admin-nav-text: #c9d1d9;
@@ -58,6 +60,7 @@ body.admin-body {
     background-color: var(--admin-bg) !important;
     color: var(--admin-text);
     font-family: var(--bs-font-family-cairo, "Cairo", system-ui, sans-serif);
+    padding-top: var(--admin-navbar-height);
 }
 
 .pagetitle h1 {
@@ -76,9 +79,22 @@ body.admin-body {
 }
 
 /* ---- Navbar ---- */
+#navbar.admin-navbar,
 .admin-navbar {
+    position: fixed;
+    top: 0;
+    inset-inline: 0;
+    z-index: 999;
+    height: var(--admin-navbar-height);
+    padding-top: 0;
+    padding-bottom: 0;
     background-color: var(--admin-navbar-bg) !important;
     border-bottom: 1px solid var(--admin-border) !important;
+}
+
+.admin-navbar .container-fluid,
+.admin-navbar .container-fluid > .d-flex {
+    height: 100%;
 }
 
 .admin-icon-btn {
@@ -147,10 +163,11 @@ body.admin-body {
 .sidebar {
     background-color: var(--admin-sidebar-bg) !important;
     border-color: var(--admin-border) !important;
+    top: var(--admin-navbar-height);
 }
 
 .sidebar.d-flex.flex-column {
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - var(--admin-navbar-height));
 }
 
 .sidebar-nav .nav-heading {
@@ -644,7 +661,7 @@ body.admin-body.modal-open {
         content: "";
         position: fixed;
         inset: 0;
-        top: 60px;
+        top: var(--admin-navbar-height);
         background: rgba(15, 23, 42, 0.45);
         z-index: 995;
     }
@@ -903,5 +920,12 @@ body.admin-body.modal-open {
 @media (min-width: 1400px) {
     .admin-chart-wrap {
         height: 320px;
+    }
+}
+
+
+@media print {
+    body.admin-body {
+        padding-top: 0;
     }
 }

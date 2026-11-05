@@ -65,6 +65,7 @@ class SiteSetting extends Model
         'twitter_card',
         'robots',
         'canonical_url',
+        'free_shipping_min_amount',
     ];
 
     public static function current(): self

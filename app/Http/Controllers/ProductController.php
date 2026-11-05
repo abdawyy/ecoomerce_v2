@@ -70,7 +70,7 @@ class ProductController extends Controller
             $values = [
                 'name' => $request->name,
                 'price' => $request->price,
-                'sale' => $request->sale,
+                'sale' => $request->sale ?? 0,
                 'category_id' => $request->category_id,
                 'type_id' => $request->type_id,
                 'color' => $request->color,

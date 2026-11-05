@@ -28,4 +28,6 @@ return [
     'remove_confirm' => 'Remove this item from your cart?',
     'policy_title_default' => 'Sales & Inspection Policy',
     'policy_body_default' => "We carefully select our products and clearly explain materials, details, and sizes with full transparency on the website.\n\nYou can inspect the product on delivery and check the material, details, and size before completing receipt.\n\nOur goal is a reliable, clear, and reassuring shopping experience — your trust and satisfaction are the foundation of how we work.",
+    'free_shipping_unlocked' => 'Free shipping unlocked at checkout',
+    'free_shipping_remaining' => 'Add :amount LE more for free shipping',
 ];

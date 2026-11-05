@@ -34,5 +34,7 @@ return [
     'select_saved_address' => 'Choose a saved address',
     'create_account_after' => 'Create an account after checkout to track this order',
     'invalid_promo' => 'Invalid or expired promo code.',
-
+    'free_shipping' => 'Free shipping',
+    'free_shipping_unlocked' => 'Free shipping on this order',
+    'free_shipping_remaining' => 'Add :amount LE more for free shipping',
 ];

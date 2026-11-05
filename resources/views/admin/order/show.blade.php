@@ -39,7 +39,7 @@
                 <div class="card-body">
                     <p><strong>{{ __('orders.user') }}:</strong> {{ $order->user->name ?? $order->guestUser->name ?? 'N/A' }}</p>
                     <p><strong>{{ __('orders.city') }}:</strong> {{ $order->cities->name ?? 'N/A' }}</p>
-                    <p><strong>{{ __('orders.delivery_fees') }}:</strong> {{ $order->cities->price ?? 'N/A' }} LE</p>
+                    <p><strong>{{ __('orders.delivery_fees') }}:</strong> {{ number_format($order->resolvedDeliveryFee(), 2) }} LE</p>
                     <p><strong>{{ __('orders.total_amount') }}:</strong> {{ $order->total_amount }} LE</p>
                     <p><strong>{{ __('orders.discount_code') }}:</strong> {{ $order->discountCodes->code ?? 'N/A' }}</p>
                     <p><strong>{{ __('orders.date') }}:</strong> {{ $order->created_at->format('Y-m-d H:i') }}</p>

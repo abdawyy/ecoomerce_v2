@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Apptraits;
+use App\Services\ShippingService;
 
 class shoppingCart extends Model
 {
@@ -44,11 +45,19 @@ class shoppingCart extends Model
         // Step 2: Calculate the subtotal
         $subtotal = $this->calculateSubtotal($cartItems);
 
-        // Step 3: Apply promo discount
-        $afterDiscount = $this->applyPromoDiscount($subtotal, $promoCode);
+        $shipping = app(ShippingService::class);
+        $afterDiscount = $shipping->merchandiseAfterDiscount((float) $subtotal, (float) $promoCode);
+        $fee = $shipping->resolveFee((float) $cityPrice, $afterDiscount);
 
-        // Step 4: Add city price
-        return $afterDiscount + $cityPrice;
+        return $shipping->money($afterDiscount + $fee);
+    }
+
+    public function merchandiseTotal($userId = null, $promoCode = 0): float
+    {
+        $shipping = app(ShippingService::class);
+        $subtotal = $this->calculateSubtotal($this->getCartItems($userId));
+
+        return $shipping->merchandiseAfterDiscount((float) $subtotal, (float) $promoCode);
     }
     // Get cart items for either a user or guest
     protected function getCartItems($userId)

@@ -22,6 +22,8 @@
                 </nav>
             </div>
 
+            <x-admin.discount-tabs />
+
             <div class="card">
                 <div class="card-body">
                     <form id="prevent" action="{{ route('discountCodes.edit', $model->id ?? null) }}" method="POST" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">

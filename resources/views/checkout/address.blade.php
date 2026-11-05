@@ -109,9 +109,16 @@
                                         <select name="city" id="city" class="form-select @error('city') is-invalid @enderror" required>
                                             <option value="" disabled {{ old('city') ? '' : 'selected' }}>{{ __('checkout.select_city') }}</option>
                                             @foreach ($cities as $cityOption)
-                                                <option value="{{ $cityOption->id }}" data-fee="{{ $cityOption->price }}"
+                                                <option value="{{ $cityOption->id }}"
+                                                    data-fee="{{ $cityOption->price }}"
+                                                    data-base-fee="{{ $cityOption->price }}"
+                                                    data-name="{{ $cityOption->name }}"
                                                     {{ old('city') == $cityOption->id ? 'selected' : '' }}>
-                                                    {{ $cityOption->name . ' - ' . $cityOption->price . ' LE ' . __('checkout.delivery_fees') }}
+                                                    @if (!empty($freeShippingQualifies))
+                                                        {{ $cityOption->name . ' - ' . __('checkout.free_shipping') }}
+                                                    @else
+                                                        {{ $cityOption->name . ' - ' . $cityOption->price . ' LE ' . __('checkout.delivery_fees') }}
+                                                    @endif
                                                 </option>
                                             @endforeach
                                         </select>
@@ -190,8 +197,21 @@
                                         @endif
                                         <div class="d-flex justify-content-between mb-2">
                                             <span>{{ __('checkout.delivery_fees') }}</span>
-                                            <span id="checkout-delivery">LE {{ number_format($deliveryFee ?? 0, 2) }}</span>
+                                            <span id="checkout-delivery">
+                                                @if (!empty($freeShippingQualifies))
+                                                    {{ __('checkout.free_shipping') }}
+                                                @else
+                                                    LE {{ number_format($deliveryFee ?? 0, 2) }}
+                                                @endif
+                                            </span>
                                         </div>
+                                        <p id="checkout-free-hint" class="small mb-2 {{ !empty($freeShippingMin) ? '' : 'd-none' }} {{ !empty($freeShippingQualifies) ? 'text-success' : 'text-muted' }}">
+                                            @if (!empty($freeShippingQualifies))
+                                                {{ __('checkout.free_shipping_unlocked') }}
+                                            @elseif (!empty($freeShippingMin))
+                                                {{ __('checkout.free_shipping_remaining', ['amount' => number_format($freeShippingRemaining ?? 0, 2)]) }}
+                                            @endif
+                                        </p>
                                         <hr>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h6 class="fw-bolder mb-0">{{ __('checkout.total') }}</h6>
@@ -217,22 +237,66 @@
         const citySelect = document.getElementById('city');
         const subtotal = {{ (float) $subtotal }};
         const discountPercent = {{ (float) ($discountPercent ?? 0) }};
+        const threshold = {{ (float) ($freeShippingMin ?? 0) }};
+        const freeLabel = @json(__('checkout.free_shipping'));
+        const deliveryLabel = @json(__('checkout.delivery_fees'));
+        const unlockedLabel = @json(__('checkout.free_shipping_unlocked'));
+        const remainingTpl = @json(__('checkout.free_shipping_remaining', ['amount' => '__AMOUNT__']));
         const subtotalEl = document.getElementById('checkout-subtotal');
         const deliveryEl = document.getElementById('checkout-delivery');
         const totalEl = document.getElementById('checkout-total');
+        const hintEl = document.getElementById('checkout-free-hint');
         const form = document.getElementById('checkout-order-form');
         const submitBtn = document.getElementById('checkout-submit-btn');
 
+        function round2(n) {
+            return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+        }
+
         function format(n) {
-            return 'LE ' + n.toFixed(2);
+            return 'LE ' + round2(n).toFixed(2);
+        }
+
+        function merchandise() {
+            const discount = round2(subtotal * (discountPercent / 100));
+            return round2(subtotal - discount);
+        }
+
+        function qualifies() {
+            return threshold > 0 && merchandise() >= threshold;
+        }
+
+        function updateCityLabels() {
+            if (!citySelect) return;
+            const free = qualifies();
+            citySelect.querySelectorAll('option[data-name]').forEach(function (opt) {
+                const name = opt.dataset.name;
+                const base = round2(opt.dataset.baseFee || opt.dataset.fee || 0);
+                opt.textContent = free
+                    ? (name + ' - ' + freeLabel)
+                    : (name + ' - ' + base + ' LE ' + deliveryLabel);
+            });
         }
 
         function recalc() {
-            const fee = parseFloat(citySelect?.selectedOptions[0]?.dataset.fee || 0);
-            const discount = subtotal * (discountPercent / 100);
-            const total = subtotal - discount + fee;
-            if (deliveryEl) deliveryEl.textContent = format(fee);
+            updateCityLabels();
+            const base = round2(citySelect?.selectedOptions[0]?.dataset.baseFee || citySelect?.selectedOptions[0]?.dataset.fee || 0);
+            const fee = qualifies() ? 0 : base;
+            const total = round2(merchandise() + fee);
+            if (deliveryEl) deliveryEl.textContent = fee === 0 && qualifies() ? freeLabel : format(fee);
             if (totalEl) totalEl.textContent = format(total);
+            if (hintEl && threshold > 0) {
+                hintEl.classList.remove('d-none');
+                if (qualifies()) {
+                    hintEl.classList.remove('text-muted');
+                    hintEl.classList.add('text-success');
+                    hintEl.textContent = unlockedLabel;
+                } else {
+                    hintEl.classList.remove('text-success');
+                    hintEl.classList.add('text-muted');
+                    hintEl.textContent = remainingTpl.replace('__AMOUNT__', round2(threshold - merchandise()).toFixed(2));
+                }
+            }
         }
 
         citySelect?.addEventListener('change', recalc);

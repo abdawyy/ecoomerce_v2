@@ -6,7 +6,7 @@
     $locale = app()->getLocale();
 @endphp
 
-<nav id="navbar" class="navbar py-3 admin-navbar" style="position: sticky; top: 0; z-index: 999;">
+<nav id="navbar" class="navbar admin-navbar">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between w-100 gap-3">
             <div class="d-flex align-items-center gap-2">

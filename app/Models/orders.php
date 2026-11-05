@@ -19,7 +19,8 @@ class orders extends Model
         'discount_code_id',
         'city_id',
         'guest_id',
-        'address_id'
+        'address_id',
+        'delivery_fee'
 
 
 
@@ -43,6 +44,11 @@ class orders extends Model
         return $this->belongsTo(discountCodes::class, 'discount_code_id');
 
     }
+    public function resolvedDeliveryFee(): float
+    {
+        return app(\App\Services\ShippingService::class)->orderDeliveryFee($this);
+    }
+
     public function cities()
     {
         return $this->belongsTo(Cities::class, 'city_id');

@@ -48,7 +48,7 @@ class PdfService
     public function invoiceTotals(orders $order): array
     {
         $subtotal = (float) $order->orderItems->sum('price');
-        $delivery = (float) ($order->cities->price ?? 0);
+        $delivery = $order->resolvedDeliveryFee();
         $discountPercent = (float) ($order->discountCodes->discount_percentage ?? 0);
         $discountAmount = round($subtotal * ($discountPercent / 100), 2);
         $grandTotal = (float) $order->total_amount;

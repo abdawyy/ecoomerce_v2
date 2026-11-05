@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Traits\Apptraits;
 use App\Models\discountCodes;
+use App\Models\SiteSetting;
+use App\Services\BrandingService;
+use Illuminate\Support\Facades\Schema;
 
 class discountCodesController extends Controller
 {
@@ -127,4 +130,31 @@ class discountCodesController extends Controller
         self::toggleStatus($discount_codes); // now using self
         return back()->with('success', 'Status toggled');
     }
+
+    public function freeShipping(BrandingService $branding)
+    {
+        return view('admin.discountCodes.free-shipping', [
+            'settings' => $branding->settings(),
+        ]);
+    }
+
+    public function updateFreeShipping(Request $request, BrandingService $branding)
+    {
+        $validated = $request->validate([
+            'free_shipping_min_amount' => 'nullable|numeric|min:0',
+        ]);
+
+        $raw = $validated['free_shipping_min_amount'] ?? null;
+        $amount = ($raw === null || $raw === '' || (float) $raw <= 0) ? null : round((float) $raw, 2);
+
+        $settings = SiteSetting::current();
+        if (Schema::hasColumn('site_settings', 'free_shipping_min_amount')) {
+            $settings->free_shipping_min_amount = $amount;
+            $settings->save();
+        }
+        $branding->clearCache();
+
+        return redirect()->route('discountCodes.freeShipping')->with('success', __('discount_codes.free_shipping_saved'));
+    }
 }
+

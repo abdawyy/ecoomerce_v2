@@ -171,6 +171,15 @@
                                     <p class="mb-0 text-muted small">{{ __('cart.subtotal') }}</p>
                                     <p class="fw-bolder mb-0">LE {{ number_format($subtotal, 2) }}</p>
                                 </div>
+                                @if (!empty($freeShippingMin))
+                                    <p class="small mb-2 {{ !empty($freeShippingQualifies) ? 'text-success' : 'text-muted' }}">
+                                        @if (!empty($freeShippingQualifies))
+                                            {{ __('cart.free_shipping_unlocked') }}
+                                        @else
+                                            {{ __('cart.free_shipping_remaining', ['amount' => number_format($freeShippingRemaining ?? 0, 2)]) }}
+                                        @endif
+                                    </p>
+                                @endif
 
                                 <hr>
                                 <div class="d-flex justify-content-between align-items-center">

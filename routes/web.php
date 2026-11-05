@@ -129,6 +129,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('admin/discountCodes/list', [discountCodesController::class, 'list'])->name('discountCodes.list');
     Route::post('admin/discountCodes/delete/{id}', [discountCodesController::class, 'delete'])->name('discountCodes.delete');
     Route::post('/admin/discountCodes/status/{id}', [discountCodesController::class, 'toggleUserStatus'])->name('admin.discountCodes.toggleStatus');
+    Route::get('admin/discountCodes/free-shipping', [discountCodesController::class, 'freeShipping'])->name('discountCodes.freeShipping');
+    Route::post('admin/discountCodes/free-shipping', [discountCodesController::class, 'updateFreeShipping'])->name('discountCodes.freeShipping.update');
 
 
     // product routes

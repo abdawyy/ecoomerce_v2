@@ -84,6 +84,8 @@
                 </nav>
             </div>
 
+            <x-admin.discount-tabs />
+
             <!-- Filter -->
             <div class="filter-card mb-4">
                 <div class="filter-header">

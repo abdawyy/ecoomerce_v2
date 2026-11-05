@@ -37,7 +37,8 @@ return [
 
     'discount_codes' => 'رموز الخصم',
     'view_discount_codes' => 'عرض جميع رموز الخصم',
-    'add_discount_code' => 'إضافة رمز خصم', // ✅ Translated version
+    'add_discount_code' => 'إضافة رمز خصم',
+    'free_shipping' => 'الشحن المجاني', // ✅ Translated version
     'messages_list' => 'قائمة الرسائل',
 
     'section_operations' => 'العمليات',

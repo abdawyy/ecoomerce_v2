@@ -17,7 +17,7 @@
         <div class="card-body">
             <p><strong>User:</strong> {{ $order->user->name ?? 'N/A' }}</p>
             <p><strong>City:</strong> {{ $order->cities->name ?? 'N/A' }}</p>
-            <p><strong>Delivery Fees:</strong> {{ $order->cities->price ?? 'N/A' }}</p>
+            <p><strong>Delivery Fees:</strong> {{ number_format($order->resolvedDeliveryFee(), 2) }} LE</p>
             <p><strong>Total Amount:</strong> {{ $order->total_amount ?? 'N/A' }} LE</p>
 
 

@@ -88,7 +88,7 @@
                         <hr>
                         <p class="mb-0 small text-muted">
                             {{ __('account.delivery_fee') }}:
-                            <strong>{{ number_format($order->cities->price ?? 0, 2) }} {{ __('account.currency') }}</strong>
+                            <strong>{{ number_format($order->resolvedDeliveryFee(), 2) }} {{ __('account.currency') }}</strong>
                         </p>
                     @endif
                 </div>

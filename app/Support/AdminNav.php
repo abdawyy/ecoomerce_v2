@@ -49,6 +49,7 @@ class AdminNav
                     self::collapse('discount-nav', 'admin_sidebar.discount_codes', 'bi-percent', Route::is('discountCodes.*'), [
                         self::child('discountCodes.list', 'admin_sidebar.view_discount_codes', Route::is('discountCodes.list')),
                         self::child('discountCodes.edit', 'admin_sidebar.add_discount_code', Route::is('discountCodes.edit')),
+                        self::child('discountCodes.freeShipping', 'admin_sidebar.free_shipping', Route::is('discountCodes.freeShipping')),
                     ]),
                 ],
             ],
