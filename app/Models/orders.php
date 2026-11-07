@@ -20,11 +20,8 @@ class orders extends Model
         'city_id',
         'guest_id',
         'address_id',
-        'delivery_fee'
-
-
-
-
+        'delivery_fee',
+        'meta_event_id',
     ];
     protected $table = 'orders';
 

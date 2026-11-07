@@ -53,6 +53,14 @@
     </div>
 </section>
 
+@if (!empty($metaPurchase))
+<script>
+    if (typeof window.trackMeta === 'function') {
+        window.trackMeta('Purchase', @json($metaPurchase));
+    }
+</script>
+@endif
+
 @if (!empty($notifyUrl))
 <script>
     window.addEventListener('load', function () {

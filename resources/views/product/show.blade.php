@@ -281,6 +281,12 @@
 
 @push('scripts')
 <script>
+    @if (!empty($metaViewContent))
+    if (typeof window.trackMeta === 'function') {
+        window.trackMeta('ViewContent', @json($metaViewContent));
+    }
+    @endif
+
     /* Image Gallery Logic */
     function changeMainImage(img) {
         document.getElementById('mainImage').src = img.src;
@@ -346,6 +352,9 @@
             .then(data => {
                 if (data.success) {
                     $('.cart-Notify, .cart-count').text(data.cartCount);
+                    if (typeof window.trackMeta === 'function' && data.meta) {
+                        window.trackMeta('AddToCart', data.meta);
+                    }
                     if (window.toastr) {
                         toastr.success(data.message || "Added to cart.");
                     }

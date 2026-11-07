@@ -11,6 +11,7 @@ use App\Models\productImages;
 
 use App\Models\Guide;
 use App\Services\AnalyticsService;
+use App\Services\MetaPixelService;
 use App\Traits\Apptraits;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -480,13 +481,13 @@ class ProductController extends Controller
             return redirect()->route('product.List')->with('error', 'Product not found');
         }
 
-        $analytics->recordProductView($product, $request);
+        $metaViewContent = $this->trackStorefrontProductView($product, $request, $analytics);
 
         $relatedProducts = $this->relatedProducts($product);
         $avgRating = round($product->reviews->avg('rating') ?? 0, 1);
         $reviewCount = $product->reviews->count();
 
-        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount'));
+        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent'));
     }
 
     public function productBySlug(string $slug, Request $request, AnalyticsService $analytics)
@@ -501,13 +502,32 @@ class ProductController extends Controller
             return redirect()->route('product.List')->with('error', 'Product not found');
         }
 
-        $analytics->recordProductView($product, $request);
+        $metaViewContent = $this->trackStorefrontProductView($product, $request, $analytics);
 
         $relatedProducts = $this->relatedProducts($product);
         $avgRating = round($product->reviews->avg('rating') ?? 0, 1);
         $reviewCount = $product->reviews->count();
 
-        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount'));
+        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent'));
+    }
+
+    protected function trackStorefrontProductView(products $product, Request $request, AnalyticsService $analytics): array
+    {
+        try {
+            $meta = app(MetaPixelService::class);
+            $sendCapi = $meta->shouldSendViewContentCapi($product, $request, $analytics);
+            $analytics->recordProductView($product, $request);
+            $payload = $meta->productCustomData($product, 1);
+            if ($sendCapi) {
+                $meta->sendCapi('ViewContent', $payload, $request);
+            }
+
+            return $payload;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];
+        }
     }
 
     protected function findActiveProductQuery()

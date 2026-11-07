@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/storefront-theme.css') }}?v={{ filemtime(public_path('assets/css/storefront-theme.css')) }}">
     <script src="{{ asset('assets/js/storefront-theme.js') }}?v={{ filemtime(public_path('assets/js/storefront-theme.js')) }}"></script>
 
+    @if (filled(config('meta.pixel_id')))
     <!-- Meta Pixel Code -->
     <script>
     !function(f,b,e,v,n,t,s)
@@ -47,13 +48,22 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '3262657207254492');
+    fbq('init', @json(config('meta.pixel_id')));
     fbq('track', 'PageView');
+    window.trackMeta = function (eventName, payload) {
+        if (typeof fbq !== 'function' || !payload) return;
+        var data = {};
+        Object.keys(payload).forEach(function (key) {
+            if (key !== 'event_id') data[key] = payload[key];
+        });
+        fbq('track', eventName, data, payload.event_id ? {eventID: payload.event_id} : {});
+    };
     </script>
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=3262657207254492&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id={{ config('meta.pixel_id') }}&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Meta Pixel Code -->
+    @endif
 </head>
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>

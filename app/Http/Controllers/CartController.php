@@ -7,6 +7,7 @@ use App\Models\productItems;
 use App\Models\products;
 use App\Models\shoppingCart;
 use App\Services\AnalyticsService;
+use App\Services\MetaPixelService;
 use App\Services\ShippingService;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
@@ -151,12 +152,13 @@ class CartController extends Controller
 
         $cartCount = shoppingCart::where('user_id', $userId)->count();
 
-        $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
+        $meta = $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
 
         return response()->json([
             'success' => true,
             'message' => $message,
             'cartCount' => $cartCount,
+            'meta' => $meta,
         ]);
     }
 
@@ -190,23 +192,41 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
+        $meta = $this->trackAddToCart($request, (int) $request->product_id, (int) $requestedQuantity);
 
         return response()->json([
             'success' => true,
             'message' => 'Product added to cart successfully.',
             'cartCount' => count($cart),
+            'meta' => $meta,
         ]);
     }
 
-    private function trackAddToCart(Request $request, int $productId, int $quantity): void
+    private function trackAddToCart(Request $request, int $productId, int $quantity): array
     {
-        app(AnalyticsService::class)->recordEvent(
-            AnalyticsService::EVENT_ADD_TO_CART,
-            $request,
-            ['qty' => $quantity],
-            $productId
-        );
+        try {
+            app(AnalyticsService::class)->recordEvent(
+                AnalyticsService::EVENT_ADD_TO_CART,
+                $request,
+                ['qty' => $quantity],
+                $productId
+            );
+
+            $product = products::find($productId);
+            if (! $product) {
+                return [];
+            }
+
+            $meta = app(MetaPixelService::class);
+            $payload = $meta->productCustomData($product, $quantity);
+            $meta->sendCapi('AddToCart', $payload, $request);
+
+            return $payload;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return [];
+        }
     }
 
     private function stockLimitResponse($productItem, $availableStock)

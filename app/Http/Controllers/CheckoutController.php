@@ -14,6 +14,7 @@ use App\Models\shoppingCart;
 use App\Rules\ValidPromoCode;
 use App\Services\PdfService;
 use App\Services\AnalyticsService;
+use App\Services\MetaPixelService;
 use App\Services\ShippingService;
 use Illuminate\Support\Facades\Schema;
 use App\Traits\Apptraits;
@@ -255,8 +256,11 @@ class CheckoutController extends Controller
             'placed_order_delivery' => $deliveryFees,
         ]);
 
+        $order = orders::query()
+            ->with(['orderItems', 'user', 'guestUser', 'address'])
+            ->find($orderId);
+
         try {
-            $order = orders::find($orderId);
             app(AnalyticsService::class)->recordEvent(
                 AnalyticsService::EVENT_PURCHASE,
                 request(),
@@ -271,6 +275,27 @@ class CheckoutController extends Controller
         } catch (\Throwable) {
         }
 
+        if ($order) {
+            try {
+                $meta = app(MetaPixelService::class);
+                $eventId = $meta->persistOrderEventId($order);
+                session(['placed_order_meta_event_id' => $eventId]);
+                $payload = $meta->orderCustomData($order, $eventId);
+                $meta->sendCapi(
+                    'Purchase',
+                    $payload,
+                    request(),
+                    route('checkout.receipt', $orderId),
+                    [
+                        'email' => $order->user?->email ?? $order->guestUser?->email,
+                        'phone' => $order->address?->phone_number ?? $order->user?->phone,
+                    ]
+                );
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         return redirect()->route('checkout.receipt', $orderId);
     }
 
@@ -279,23 +304,38 @@ class CheckoutController extends Controller
         $this->authorizeReceipt($order);
 
         $orderModel = orders::query()
-            ->with(['guestUser:id,email,name', 'cities:id,price'])
+            ->with(['guestUser:id,email,name', 'cities:id,price', 'orderItems'])
             ->findOrFail($order);
 
         $total = session('placed_order_total', $orderModel->total_amount);
         $deliveryFees = session('placed_order_delivery', $orderModel->resolvedDeliveryFee());
+
+        $fromThisCheckout = (int) session('placed_order_id') === (int) $orderModel->id;
+        $alreadySent = (int) session('purchase_pixel_sent') === (int) $orderModel->id;
+        $metaPurchase = null;
+        if ($fromThisCheckout && ! $alreadySent) {
+            try {
+                $eventId = $orderModel->meta_event_id ?: session('placed_order_meta_event_id');
+                $metaPurchase = app(MetaPixelService::class)->orderCustomData($orderModel, $eventId);
+                session(['purchase_pixel_sent' => $orderModel->id]);
+            } catch (\Throwable $e) {
+                report($e);
+                $metaPurchase = null;
+            }
+        }
 
         return view('checkout.receipt', [
             'orderID' => $orderModel->id,
             'totalPrice' => $total,
             'deliveryFees' => $deliveryFees,
             'isGuestCheckout' => $orderModel->user_id === null,
-            'guestEmail' => $orderModel->guestUser->email ?? null,
-            'guestName' => $orderModel->guestUser->name ?? null,
+            'guestEmail' => $orderModel->guestUser?->email,
+            'guestName' => $orderModel->guestUser?->name,
             'invoiceUrl' => URL::temporarySignedRoute('checkout.receipt.invoice', now()->addHours(48), ['order' => $orderModel->id]),
             'notifyUrl' => route('checkout.receipt.notify', $orderModel->id),
             'emailSent' => false,
             'emailPending' => true,
+            'metaPurchase' => $metaPurchase,
         ]);
     }
 

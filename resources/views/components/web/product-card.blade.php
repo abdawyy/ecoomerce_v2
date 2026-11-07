@@ -5,12 +5,15 @@
 ])
 
 @php
-    $image = $product->productImages->isNotEmpty()
+    $image = $product->productImages?->isNotEmpty()
         ? asset('storage/' . $product->productImages->first()->images)
         : $branding->placeholderProductUrl();
     $salePrice = $product->sale
         ? $product->price - ($product->price * $product->sale / 100)
         : null;
+    $productUrl = filled($product->slug ?? null)
+        ? route('product.slug', $product->slug)
+        : route('product.show', $product->id);
 @endphp
 
 <div {{ $attributes->merge(['class' => 'product-card h-100']) }}>
@@ -19,12 +22,12 @@
             <div class="sale-badge">-{{ $product->sale }}%</div>
         @endif
 
-        <a href="{{ route('product.show', $product->id) }}">
+        <a href="{{ $productUrl }}">
             <img src="{{ $image }}" class="{{ $imageClass }}" alt="{{ $product->name }}">
         </a>
 
         @if ($showCartOverlay)
-            <a href="{{ route('product.show', $product->id) }}" class="btn-cart-overlay" aria-label="{{ __('web.add_to_cart') }}">
+            <a href="{{ $productUrl }}" class="btn-cart-overlay" aria-label="{{ __('web.add_to_cart') }}">
                 <i class="bi bi-bag-plus-fill"></i>
             </a>
         @endif
@@ -32,7 +35,7 @@
 
     <div class="pt-3 product-card-meta">
         <h6 class="fw-bold mb-1 product-card-title">
-            <a href="{{ route('product.show', $product->id) }}" class="product-card-name">{{ $product->name }}</a>
+            <a href="{{ $productUrl }}" class="product-card-name">{{ $product->name }}</a>
         </h6>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             @if ($salePrice !== null)
