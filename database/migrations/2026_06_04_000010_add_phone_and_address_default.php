@@ -14,11 +14,11 @@ return new class extends Migration
             }
         });
 
-        Schema::table('addresses', function (Blueprint $table) {
-            if (! Schema::hasColumn('addresses', 'is_default')) {
+        if (Schema::hasTable('addresses') && ! Schema::hasColumn('addresses', 'is_default')) {
+            Schema::table('addresses', function (Blueprint $table) {
                 $table->boolean('is_default')->default(false)->after('phone_number');
-            }
-        });
+            });
+        }
     }
 
     public function down(): void
@@ -29,10 +29,10 @@ return new class extends Migration
             }
         });
 
-        Schema::table('addresses', function (Blueprint $table) {
-            if (Schema::hasColumn('addresses', 'is_default')) {
+        if (Schema::hasTable('addresses') && Schema::hasColumn('addresses', 'is_default')) {
+            Schema::table('addresses', function (Blueprint $table) {
                 $table->dropColumn('is_default');
-            }
-        });
+            });
+        }
     }
 };
