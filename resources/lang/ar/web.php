@@ -77,6 +77,7 @@ return [
     'sort_price_asc' => 'السعر: من الأقل للأعلى',
     'sort_price_desc' => 'السعر: من الأعلى للأقل',
     'on_sale' => 'تخفيضات',
+    'save_amount' => 'خصم :amount LE',
     'clear_filters' => 'مسح الفلاتر',
     'no_products_found' => 'لا توجد منتجات مطابقة للفلاتر.',
     'browse_all_products' => 'تصفح كل المنتجات',

@@ -144,14 +144,28 @@
                     </div>
 
                     <h1 class="fw-bold fs-3 mb-1">{{ $product->name }}</h1>
-                    <h2 class="fw-bold fs-2 mb-4">
-                        @if ($product->sale)
-                            <span class="text-danger">{{ number_format($product->price - ($product->price * $product->sale / 100), 2) }} LE</span>
-                            <span class="text-muted text-decoration-line-through fs-5 fw-normal ms-2">{{ number_format($product->price, 2) }}</span>
-                        @else
-                            {{ number_format($product->price, 2) }} LE
+                    @php
+                        $salePrice = $product->sale
+                            ? $product->price - ($product->price * $product->sale / 100)
+                            : null;
+                        $discountAmount = $salePrice !== null ? $product->price - $salePrice : 0;
+                        $discountLabel = abs($discountAmount - round($discountAmount)) < 0.001
+                            ? number_format($discountAmount, 0)
+                            : number_format($discountAmount, 2);
+                    @endphp
+                    <div class="mb-4">
+                        <h2 class="fw-bold fs-2 mb-0">
+                            @if ($salePrice !== null)
+                                <span class="text-danger">{{ number_format($salePrice, 2) }} LE</span>
+                                <span class="text-muted text-decoration-line-through fs-5 fw-normal ms-2">{{ number_format($product->price, 2) }}</span>
+                            @else
+                                {{ number_format($product->price, 2) }} LE
+                            @endif
+                        </h2>
+                        @if ($discountAmount > 0)
+                            <div class="product-save-amount product-save-amount-lg mt-1">{{ __('web.save_amount', ['amount' => $discountLabel]) }}</div>
                         @endif
-                    </h2>
+                    </div>
 
                     <div class="mb-4">
                         <p class="section-title mb-1">Description</p>
