@@ -73,6 +73,7 @@ return [
   'sort_price_asc' => 'Price: Low to High',
   'sort_price_desc' => 'Price: High to Low',
   'on_sale' => 'On sale',
+  'save_amount' => 'Save :amount LE',
   'clear_filters' => 'Clear filters',
   'no_products_found' => 'No products match your filters.',
   'browse_all_products' => 'Browse all products',

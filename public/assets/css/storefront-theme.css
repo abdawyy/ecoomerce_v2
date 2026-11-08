@@ -253,6 +253,10 @@
     color: #e6edf3 !important;
 }
 
+[data-bs-theme="dark"] .product-save-amount {
+    color: #3fb950;
+}
+
 [data-bs-theme="dark"] .home-show-all {
     border-bottom-color: #e6edf3;
 }

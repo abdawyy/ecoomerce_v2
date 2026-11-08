@@ -11,6 +11,10 @@
     $salePrice = $product->sale
         ? $product->price - ($product->price * $product->sale / 100)
         : null;
+    $discountAmount = $salePrice !== null ? $product->price - $salePrice : 0;
+    $discountLabel = abs($discountAmount - round($discountAmount)) < 0.001
+        ? number_format($discountAmount, 0)
+        : number_format($discountAmount, 2);
     $productUrl = filled($product->slug ?? null)
         ? route('product.slug', $product->slug)
         : route('product.show', $product->id);
@@ -45,5 +49,8 @@
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>
             @endif
         </div>
+        @if ($discountAmount > 0)
+            <div class="product-save-amount">{{ __('web.save_amount', ['amount' => $discountLabel]) }}</div>
+        @endif
     </div>
 </div>

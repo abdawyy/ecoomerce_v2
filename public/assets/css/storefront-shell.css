@@ -412,6 +412,17 @@ body:has(.modal.show) {
     font-size: 0.95rem;
 }
 
+.product-save-amount {
+    color: #15803d;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+.product-save-amount-lg {
+    font-size: 0.95rem;
+}
+
 /* Homepage hero RTL */
 [dir="rtl"] .hero-content {
     background: linear-gradient(to left, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
