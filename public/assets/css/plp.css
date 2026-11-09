@@ -145,12 +145,12 @@
 }
 
 .btn-filter.apply {
-    background: #007bff;
-    color: white;
+    background: #193049;
+    color: #FCF4E9;
 }
 
 .btn-filter.apply:hover {
-    background: #0056b3;
+    background: #6F262B;
 }
 
 .btn-filter.clear {
@@ -173,7 +173,7 @@
 
 .nav-pills .nav-link.active,
 .nav-pills .nav-link:hover {
-    background-color: #000 !important;
+    background-color: #193049 !important;
     color: #fff !important;
 }
 
@@ -219,7 +219,7 @@
 }
 
 .btn-cart-list:hover {
-    background: #000;
+    background: #6F262B;
     color: #fff;
 }
 

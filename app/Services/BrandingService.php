@@ -304,6 +304,109 @@ class BrandingService
         return compact('name', 'url', 'image');
     }
 
+    public function departmentKey(?string $name): ?string
+    {
+        $name = strtolower(trim((string) $name));
+
+        if ($name === '') {
+            return null;
+        }
+
+        if (str_contains($name, 'women') || str_contains($name, 'woman') || str_contains($name, 'female')) {
+            return 'women';
+        }
+
+        if ($name === 'men' || $name === 'man' || str_contains($name, 'male')) {
+            return 'men';
+        }
+
+        return null;
+    }
+
+    public function departmentLabel(?string $name): ?string
+    {
+        $key = $this->departmentKey($name);
+
+        return $key ? __('web.nav_'.$key) : null;
+    }
+
+    /**
+     * Men and Women menus for the navbar, hero, and homepage cards.
+     *
+     * @return array<int, array{key: string, label: string, shop_label: string, url: string, image: string, columns: array<int, array{title: string, links: array<int, array{name: string, url: string}>}>}>
+     */
+    public function departmentMenus(): array
+    {
+        $types = \App\Models\Type::query()->where('is_active', 1)->get();
+        $categories = \App\Models\Category::query()->where('is_active', 1)->orderBy('name')->get();
+        $categoryIdsByType = \App\Models\products::query()
+            ->sellable()
+            ->select('type_id', 'category_id')
+            ->distinct()
+            ->get()
+            ->groupBy('type_id')
+            ->map(fn ($rows) => $rows->pluck('category_id')->map(fn ($id) => (int) $id)->all());
+
+        $menus = [];
+        foreach (['men' => $this->categoryImage1Url(), 'women' => $this->categoryImage2Url()] as $key => $image) {
+            $type = $types->first(fn ($item) => $this->departmentKey($item->name) === $key);
+            if (! $type) {
+                continue;
+            }
+
+            $allowed = $categoryIdsByType->get($type->id, []);
+            $links = $categories
+                ->filter(fn ($category) => in_array((int) $category->id, $allowed, true))
+                ->map(fn ($category) => [
+                    'name' => $category->name,
+                    'url' => route('product.List', ['id' => $category->id, 'type_id' => $type->id]),
+                    'group' => $this->categoryMenuGroup($category->name),
+                ]);
+
+            $columns = [];
+            foreach ([
+                'nightwear' => __('web.mega_nightwear'),
+                'pajamas' => __('web.mega_pajamas'),
+                'more' => __('web.mega_more'),
+            ] as $group => $title) {
+                $groupLinks = $links->where('group', $group)->map(fn ($link) => [
+                    'name' => $link['name'],
+                    'url' => $link['url'],
+                ])->values()->all();
+
+                if ($groupLinks !== []) {
+                    $columns[] = ['title' => $title, 'links' => $groupLinks];
+                }
+            }
+
+            $menus[] = [
+                'key' => $key,
+                'label' => __('web.nav_'.$key),
+                'shop_label' => __('web.shop_'.$key.'_collection'),
+                'url' => route('product.List', ['type_id' => $type->id]),
+                'image' => $image,
+                'columns' => $columns,
+            ];
+        }
+
+        return $menus;
+    }
+
+    protected function categoryMenuGroup(string $name): string
+    {
+        $name = strtolower($name);
+
+        if (str_contains($name, 'night') || str_contains($name, 'gown')) {
+            return 'nightwear';
+        }
+
+        if (str_contains($name, 'pajama') || str_contains($name, 'pajma') || str_contains($name, 'capri')) {
+            return 'pajamas';
+        }
+
+        return 'more';
+    }
+
     public function assetUrl(?string $path): string
     {
         if (empty($path)) {

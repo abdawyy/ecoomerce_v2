@@ -43,7 +43,7 @@
         </h6>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             @if ($salePrice !== null)
-                <span class="fw-bold text-danger">{{ number_format($salePrice, 2) }} LE</span>
+                <span class="price-current">{{ number_format($salePrice, 2) }} LE</span>
                 <span class="text-muted text-decoration-line-through small">{{ number_format($product->price, 2) }}</span>
             @else
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>

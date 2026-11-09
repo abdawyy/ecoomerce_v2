@@ -6,6 +6,7 @@ use App\Models\GuestUser;
 use App\Models\Message;
 use App\Models\orders;
 use App\Models\User;
+use App\Support\OrderStatus;
 use Illuminate\Support\Facades\Schema;
 
 class AdminNotificationService
@@ -20,7 +21,7 @@ class AdminNotificationService
         $since = now()->subDays($this->recentDays());
 
         return [
-            'pending_orders' => orders::whereIn('status', ['Pending', 'pending', 'Processing'])->count(),
+            'pending_orders' => orders::whereIn('status', OrderStatus::pendingValues())->count(),
             'unread_messages' => $this->unreadMessagesCount(),
             'new_users' => User::where('created_at', '>=', $since)->count(),
             'new_guests' => GuestUser::where('created_at', '>=', $since)->count(),

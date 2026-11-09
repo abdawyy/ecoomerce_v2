@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use App\Services\GuestAccountMergeService;
+use App\Services\GuestCartMergeService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -33,6 +34,7 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
         ]);
 
+        app(GuestCartMergeService::class)->mergeForUser((int) $user->id);
         app(GuestAccountMergeService::class)->mergeForUser($user);
 
         try {

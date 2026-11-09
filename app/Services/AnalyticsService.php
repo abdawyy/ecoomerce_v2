@@ -12,6 +12,7 @@ use App\Models\ProductView;
 use App\Models\products;
 use App\Models\User;
 use App\Models\VisitorPresence;
+use App\Support\OrderStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -310,7 +311,7 @@ class AnalyticsService
     public function salesSummary(Carbon $start, Carbon $end): array
     {
         $orders = orders::whereBetween('created_at', [$start, $end]);
-        $completed = (clone $orders)->whereIn('status', ['Completed', 'completed']);
+        $completed = (clone $orders)->whereIn('status', OrderStatus::completedValues());
         $count = $orders->count();
         $completedCount = $completed->count();
         $revenue = (float) $completed->sum('total_amount');
@@ -375,7 +376,7 @@ class AnalyticsService
         }
 
         $sales = orders::whereBetween('created_at', [$start, $end])
-            ->whereIn('status', ['Completed', 'completed'])
+            ->whereIn('status', OrderStatus::completedValues())
             ->selectRaw('COUNT(*) as cnt, SUM(total_amount) as rev')
             ->first();
 
@@ -467,7 +468,7 @@ class AnalyticsService
             $dayEnd = $cursor->copy()->endOfDay();
             $labels[] = $cursor->format('M j');
             $revenue[] = (float) orders::whereBetween('created_at', [$dayStart, $dayEnd])
-                ->whereIn('status', ['Completed', 'completed'])
+                ->whereIn('status', OrderStatus::completedValues())
                 ->sum('total_amount');
             $cursor->addDay();
         }
@@ -601,7 +602,7 @@ class AnalyticsService
         $sold = orders::query()
             ->join('order_items', 'order_items.orders_id', '=', 'orders.id')
             ->whereBetween('orders.created_at', [$start, $end])
-            ->whereIn('orders.status', ['Completed', 'completed'])
+            ->whereIn('orders.status', OrderStatus::completedValues())
             ->whereIn('order_items.products_id', $viewed->keys())
             ->select('order_items.products_id', DB::raw('SUM(order_items.quantity) as qty'))
             ->groupBy('order_items.products_id')
@@ -634,20 +635,20 @@ class AnalyticsService
     public function customerOverview(Carbon $start, Carbon $end): array
     {
         $ordersInRange = orders::query()->whereBetween('created_at', [$start, $end]);
-        $completed = (clone $ordersInRange)->whereIn('status', ['Completed', 'completed']);
+        $completed = (clone $ordersInRange)->whereIn('status', OrderStatus::completedValues());
 
         $guestOrders = (clone $ordersInRange)->whereNull('user_id')->count();
         $registeredOrders = (clone $ordersInRange)->whereNotNull('user_id')->count();
 
         $buyers = orders::query()
             ->whereBetween('created_at', [$start, $end])
-            ->whereIn('status', ['Completed', 'completed'])
+            ->whereIn('status', OrderStatus::completedValues())
             ->selectRaw('COALESCE(user_id, CONCAT("g-", guest_id)) as buyer_key, COUNT(*) as order_count, SUM(total_amount) as revenue')
             ->groupBy('buyer_key')
             ->get();
 
         $firstOrders = orders::query()
-            ->whereIn('status', ['Completed', 'completed'])
+            ->whereIn('status', OrderStatus::completedValues())
             ->selectRaw('COALESCE(user_id, CONCAT("g-", guest_id)) as buyer_key, MIN(created_at) as first_at')
             ->groupBy('buyer_key')
             ->pluck('first_at', 'buyer_key');
@@ -782,7 +783,7 @@ class AnalyticsService
     {
         $rows = orders::query()
             ->whereBetween('created_at', [$start, $end])
-            ->whereIn('status', ['Completed', 'completed'])
+            ->whereIn('status', OrderStatus::completedValues())
             ->selectRaw('user_id, guest_id, COUNT(*) as orders_count, SUM(total_amount) as revenue, MAX(created_at) as last_order_at')
             ->groupBy('user_id', 'guest_id')
             ->orderByDesc('revenue')
@@ -814,7 +815,7 @@ class AnalyticsService
         $days = array_fill(0, 7, ['orders' => 0, 'revenue' => 0.0]);
         $rows = orders::query()
             ->whereBetween('created_at', [$start, $end])
-            ->whereIn('status', ['Completed', 'completed'])
+            ->whereIn('status', OrderStatus::completedValues())
             ->selectRaw('WEEKDAY(created_at) as wd, COUNT(*) as cnt, SUM(total_amount) as rev')
             ->groupBy('wd')
             ->get();

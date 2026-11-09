@@ -75,7 +75,7 @@
                 <input class="form-check-input" type="radio" name="type_id" value="{{ $type->id }}"
                        id="{{ $idPrefix }}-type-{{ $type->id }}" {{ request('type_id') == $type->id ? 'checked' : '' }}>
                 <label class="form-check-label" for="{{ $idPrefix }}-type-{{ $type->id }}">
-                    {{ $type->name }}
+                    {{ $branding->departmentLabel($type->name) ?: $type->name }}
                 </label>
             </div>
         @endforeach

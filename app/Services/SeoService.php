@@ -89,6 +89,8 @@ class SeoService
                 ? url('/p/'.$product->slug)
                 : route('product.show', $product->id);
             $jsonLd[] = $this->productJsonLd($product, $branding, $canonical);
+            $ogTitle = $title;
+            $ogDescription = $description;
         }
 
         if (! empty($this->context['title'])) {
@@ -144,7 +146,10 @@ class SeoService
 
     public function productJsonLd(products $product, BrandingService $branding, string $url): array
     {
-        $price = $product->price - ($product->price * ($product->sale ?? 0) / 100);
+        $price = $product->discountedUnitPrice();
+        $inStock = $product->productItems
+            ? $product->productItems->contains(fn ($item) => (int) $item->quantity > 0)
+            : false;
 
         return [
             '@context' => 'https://schema.org',
@@ -158,7 +163,7 @@ class SeoService
                 '@type' => 'Offer',
                 'priceCurrency' => 'EGP',
                 'price' => number_format($price, 2, '.', ''),
-                'availability' => 'https://schema.org/InStock',
+                'availability' => $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                 'url' => $url,
             ],
         ];

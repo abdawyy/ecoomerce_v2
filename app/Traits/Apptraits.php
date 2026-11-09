@@ -66,6 +66,10 @@ trait Apptraits
                     return false;  // Record not found
                 }
 
+                if (method_exists($record, 'reviews')) {
+                    \App\Models\Review::where('product_id', $record->id)->delete();
+                }
+
                 // Delete associated product images
                 if ($record->productImages && $record->productImages->isNotEmpty()) {
                     foreach ($record->productImages as $albumImage) {
@@ -127,15 +131,28 @@ trait Apptraits
      */
 protected function deleteImageFromStorage($imagePath)
 {
-    // Define the full path to the image in the 'public/storage/uploads' directory
-    $fullPath = public_path('storage/' . $imagePath); // Adjust if the path is relative
-
-    // Check if the image exists, then delete it
-    if (file_exists($fullPath)) {
-        return unlink($fullPath); // Delete the file using unlink
+    if (! is_string($imagePath) || $imagePath === '') {
+        return false;
     }
 
-    return false;
+    $storageRoot = realpath(public_path('storage'));
+    if (! $storageRoot) {
+        return false;
+    }
+
+    $normalized = str_replace(['../', '..\\'], '', $imagePath);
+    $candidate = public_path('storage/'.ltrim($normalized, '/\\'));
+    $real = realpath($candidate);
+
+    if (! $real || ! is_file($real)) {
+        return false;
+    }
+
+    if (! str_starts_with($real, $storageRoot)) {
+        return false;
+    }
+
+    return unlink($real);
 }
 
     public function uploadImages(Request $request, $model, int $product_id, string $fieldName = 'images', string $storagePath = 'uploads')

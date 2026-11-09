@@ -13,9 +13,9 @@
     --admin-border-strong: #dee2e6;
     --admin-text: #111827;
     --admin-text-muted: #6b7280;
-    --admin-accent: #2aaee7;
-    --admin-accent-hover: #1a9ad4;
-    --admin-accent-soft: rgba(42, 174, 231, 0.12);
+    --admin-accent: #193049;
+    --admin-accent-hover: #6F262B;
+    --admin-accent-soft: rgba(25, 48, 73, 0.12);
     --admin-sidebar-bg: #ffffff;
     --admin-navbar-bg: #ffffff;
     --admin-navbar-height: 72px;
@@ -24,9 +24,9 @@
     --admin-nav-text: #374151;
     --admin-nav-muted: #6b7280;
     --admin-nav-hover: #f3f4f6;
-    --admin-nav-active-bg: rgba(42, 174, 231, 0.12);
-    --admin-nav-active-text: #0c7da8;
-    --admin-nav-active-border: #2aaee7;
+    --admin-nav-active-bg: rgba(25, 48, 73, 0.1);
+    --admin-nav-active-text: #193049;
+    --admin-nav-active-border: #6F262B;
 }
 
 [data-bs-theme="dark"] {
@@ -38,9 +38,9 @@
     --admin-border-strong: rgba(255, 255, 255, 0.12);
     --admin-text: #e6edf3;
     --admin-text-muted: #8b949e;
-    --admin-accent: #3db8f0;
-    --admin-accent-hover: #5cc4f5;
-    --admin-accent-soft: rgba(61, 184, 240, 0.15);
+    --admin-accent: #C9898C;
+    --admin-accent-hover: #E4C4C6;
+    --admin-accent-soft: rgba(201, 137, 140, 0.16);
     --admin-sidebar-bg: #161b22;
     --admin-navbar-bg: #161b22;
     --admin-navbar-height: 72px;
@@ -49,9 +49,9 @@
     --admin-nav-text: #c9d1d9;
     --admin-nav-muted: #8b949e;
     --admin-nav-hover: rgba(255, 255, 255, 0.06);
-    --admin-nav-active-bg: rgba(61, 184, 240, 0.15);
-    --admin-nav-active-text: #58c4f5;
-    --admin-nav-active-border: #3db8f0;
+    --admin-nav-active-bg: rgba(201, 137, 140, 0.16);
+    --admin-nav-active-text: #F3DDE0;
+    --admin-nav-active-border: #C9898C;
     color-scheme: dark;
 }
 
@@ -928,4 +928,16 @@ body.admin-body.modal-open {
     body.admin-body {
         padding-top: 0;
     }
+}
+
+.branding-logo-img.is-theme-dark {
+    display: none;
+}
+
+[data-bs-theme="dark"] .branding-logo-img.is-theme-light {
+    display: none;
+}
+
+[data-bs-theme="dark"] .branding-logo-img.is-theme-dark {
+    display: inline-block;
 }

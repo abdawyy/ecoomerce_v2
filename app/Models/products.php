@@ -30,6 +30,35 @@ class products extends Model
 
     ];
     protected $table = 'products';
+
+    public function scopeSellable($query)
+    {
+        return $query->where('is_active', 1)
+            ->whereHas('category', fn ($q) => $q->where('is_active', 1))
+            ->whereHas('type', fn ($q) => $q->where('is_active', 1));
+    }
+
+    public function isSellable(): bool
+    {
+        if ((int) $this->is_active !== 1) {
+            return false;
+        }
+
+        $category = $this->relationLoaded('category') ? $this->category : $this->category()->first();
+        $type = $this->relationLoaded('type') ? $this->type : $this->type()->first();
+
+        return $category && (int) $category->is_active === 1
+            && $type && (int) $type->is_active === 1;
+    }
+
+    public function discountedUnitPrice(): float
+    {
+        $price = (float) ($this->price ?? 0);
+        $sale = (float) ($this->sale ?? 0);
+
+        return round($price - ($price * $sale / 100), 2);
+    }
+
  // Define the relationship with the User model
  public function category()
  {

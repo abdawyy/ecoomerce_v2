@@ -25,7 +25,7 @@ class SiteSettingsController extends Controller
             'site_name' => 'nullable|string|max:255',
             'support_email' => 'nullable|email|max:255',
             'support_phone' => 'nullable|string|max:50',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'hero_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',

@@ -1,4 +1,13 @@
-<x-web.layout :title="$id ? $categoryName->name : __('web.all_products')">
+@php
+    $departmentTitle = $type_id
+        ? $branding->departmentLabel(optional($types->firstWhere('id', (int) $type_id))->name ?? null)
+        : null;
+    $listTitle = $id ? $categoryName->name : ($departmentTitle ?: __('web.all_products'));
+    app(\App\Services\SeoService::class)->setContext([
+        'title' => $listTitle.' | '.$branding->siteName(),
+    ]);
+@endphp
+<x-web.layout :title="$listTitle">
     @push('styles')
         <link rel="stylesheet" href="{{ asset('assets/css/plp.css') }}">
     @endpush
@@ -30,7 +39,7 @@
                     $listRouteParams = $id ? ['id' => $id] : [];
                     $breadcrumbItems = [
                         ['label' => __('web.home_breadcrumb'), 'url' => route('home')],
-                        ['label' => $id ? $categoryName->name : __('web.all_products'), 'url' => route('product.List', $listRouteParams)],
+                        ['label' => $listTitle, 'url' => route('product.List', $listRouteParams)],
                     ];
                 @endphp
 
@@ -38,7 +47,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                     <div>
-                        <h1 class="fw-bold h3 mb-1">{{ $id ? $categoryName->name : __('web.all_products') }}</h1>
+                        <h1 class="fw-bold h3 mb-1">{{ $listTitle }}</h1>
                         <p class="text-muted small mb-0">{{ __('web.products_count', ['count' => $data->total()]) }}</p>
                     </div>
 
@@ -68,7 +77,7 @@
                     $activeFilters = collect([
                         'min_price' => $minPrice ? __('web.min_price') . ': ' . $minPrice : null,
                         'max_price' => $maxPrice ? __('web.max_price') . ': ' . $maxPrice : null,
-                        'type_id' => $type_id ? optional($types->firstWhere('id', $type_id))->name : null,
+                        'type_id' => $departmentTitle,
                         'color' => $color ?: null,
                         'size' => $size ?: null,
                         'stock_status' => $stock_status === 'in_stock' ? __('web.in_stock') : ($stock_status === 'out_of_stock' ? __('web.out_of_stock') : null),

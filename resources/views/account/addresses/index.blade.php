@@ -16,7 +16,14 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">{{ __('account.city') }}</label>
-                    <input type="text" name="city" class="form-control" value="{{ old('city') }}" required>
+                    <select name="city" class="form-select" required>
+                        <option value="" disabled {{ old('city') ? '' : 'selected' }}>{{ __('checkout.select_city') }}</option>
+                        @foreach ($cities as $cityOption)
+                            <option value="{{ $cityOption->id }}" {{ (string) old('city') === (string) $cityOption->id ? 'selected' : '' }}>
+                                {{ $cityOption->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">{{ __('account.state') }}</label>
@@ -59,7 +66,7 @@
                             @if ($address->address_line2)
                                 <p class="mb-1 text-muted small">{{ $address->address_line2 }}</p>
                             @endif
-                            <p class="mb-1 small">{{ $address->city }} {{ $address->postal_code }}</p>
+                            <p class="mb-1 small">{{ $address->cityName() }} {{ $address->postal_code }}</p>
                             <p class="mb-3 small">{{ $address->country }}</p>
                             <p class="mb-3 small"><i class="fa-solid fa-phone me-1"></i>{{ $address->phone_number }}</p>
 
@@ -96,8 +103,13 @@
                                             value="{{ $address->address_line2 }}">
                                     </div>
                                     <div class="col-6">
-                                        <input type="text" name="city" class="form-control form-control-sm"
-                                            value="{{ $address->city }}" required>
+                                        <select name="city" class="form-select form-select-sm" required>
+                                            @foreach ($cities as $cityOption)
+                                                <option value="{{ $cityOption->id }}" {{ (string) $address->city === (string) $cityOption->id ? 'selected' : '' }}>
+                                                    {{ $cityOption->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="col-6">
                                         <input type="text" name="phone_number" class="form-control form-control-sm"

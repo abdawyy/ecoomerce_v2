@@ -57,7 +57,7 @@ class ProductController extends Controller
                 'type_id' => 'required|integer|exists:type,id',
                 'color' => 'required|string|max:255',
                 'images' => 'nullable|array',
-                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             ];
             if (Schema::hasColumn('products', 'slug')) {
                 $rules['slug'] = 'nullable|string|max:255|unique:products,slug,'.($id ?: 'NULL').',id';
@@ -351,17 +351,15 @@ class ProductController extends Controller
             'type',
             'productItems',
             'productImages',
-        ])
-            ->where('is_active', 1)
-            ->whereHas('category', function ($q) {
-                $q->where('is_active', 1);
-            })
-            ->whereHas('type', function ($q) {
-                $q->where('is_active', 1);
-            });
+        ])->sellable();
 
         // Apply category filter
+        $categoryName = null;
         if ($id) {
+            $categoryName = Category::where('id', $id)->where('is_active', 1)->first();
+            if (! $categoryName) {
+                abort(404);
+            }
             $query->where('category_id', $id);
         }
 
@@ -442,14 +440,11 @@ class ProductController extends Controller
         $data = $query->paginate(30)
             ->appends(array_filter($queryParams, fn ($v) => $v !== null && $v !== ''));
 
-        // Fetch all categories and filter options for the view
-        $categories = Category::all();
-        $types = Type::all();
-        $colors = products::distinct()->pluck('color')->filter()->values();
-        $sizes = productItems::distinct()->pluck('size')->filter()->values();
-        $maxProductPrice = products::max('price');
-        $categoryName = Category::find($id);
-
+        $categories = Category::where('is_active', 1)->get();
+        $types = Type::where('is_active', 1)->get();
+        $colors = products::sellable()->distinct()->pluck('color')->filter()->values();
+        $sizes = productItems::whereHas('products', fn ($q) => $q->sellable())->distinct()->pluck('size')->filter()->values();
+        $maxProductPrice = products::sellable()->max('price');
 
         return view('product.list', compact('data', 'categories', 'types', 'colors', 'sizes', 'maxProductPrice', 'id', 'categoryName', 'search', 'type_id', 'color', 'size', 'minPrice', 'maxPrice', 'stock_status', 'onSale', 'sort'));
     }
@@ -478,7 +473,7 @@ class ProductController extends Controller
         $product = $this->findActiveProductQuery()->with(['guide', 'reviews.user'])->find($id);
 
         if (! $product) {
-            return redirect()->route('product.List')->with('error', 'Product not found');
+            abort(404);
         }
 
         $metaViewContent = $this->trackStorefrontProductView($product, $request, $analytics);
@@ -499,7 +494,7 @@ class ProductController extends Controller
         $product = $this->findActiveProductQuery()->with(['guide', 'reviews.user'])->where('slug', $slug)->first();
 
         if (! $product) {
-            return redirect()->route('product.List')->with('error', 'Product not found');
+            abort(404);
         }
 
         $metaViewContent = $this->trackStorefrontProductView($product, $request, $analytics);
@@ -520,9 +515,11 @@ class ProductController extends Controller
             $payload = $meta->productCustomData($product, 1);
             if ($sendCapi) {
                 $meta->sendCapi('ViewContent', $payload, $request);
+
+                return $payload;
             }
 
-            return $payload;
+            return [];
         } catch (\Throwable $e) {
             report($e);
 
@@ -532,10 +529,7 @@ class ProductController extends Controller
 
     protected function findActiveProductQuery()
     {
-        return products::with(['category', 'type', 'productItems', 'productImages'])
-            ->where('is_active', 1)
-            ->whereHas('category', fn ($q) => $q->where('is_active', 1))
-            ->whereHas('type', fn ($q) => $q->where('is_active', 1));
+        return products::with(['category', 'type', 'productItems', 'productImages'])->sellable();
     }
     public function deleteImage($id)
     {

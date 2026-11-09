@@ -21,7 +21,9 @@ class OrderConfirmationMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Order Confirmation — Hayah')
+        $siteName = app(\App\Services\BrandingService::class)->siteName();
+
+        return $this->subject('Order Confirmation — '.$siteName)
             ->view('email.order-confirmation');
     }
 }

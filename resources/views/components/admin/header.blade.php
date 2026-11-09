@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/css/admin-theme.css') }}?v={{ filemtime(public_path('admin/assets/css/admin-theme.css')) }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     @if ($branding->faviconUrl())
-        <link rel="icon" href="{{ $branding->faviconUrl() }}" type="image/x-icon">
+        <link rel="icon" href="{{ $branding->faviconUrl() }}" type="image/png">
     @endif
     <title>{{ $branding->siteName() }} — Admin</title>
 </head>

@@ -10,25 +10,32 @@
         </button>
 
         <a class="navbar-brand d-inline-flex align-items-center py-0" href="{{ route('home') }}">
-            <x-branding.logo :link="false" style="width: 104px; height: auto; max-height: 44px; object-fit: contain;" />
+            <x-branding.logo :link="false" compact style="width: auto; height: 48px; max-height: 48px; max-width: 190px; object-fit: contain;" />
         </a>
+
+        @php $departments = $branding->departmentMenus(); @endphp
 
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link px-3" href="/">{{ __('web.home') }}</a></li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle px-3" href="#" role="button">
-                        {{ __('web.category') }}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('product.List') }}"><strong>{{ __('web.all_products') }}</strong></a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        @foreach ($categories as $category)
-                            <li><a class="dropdown-item" href="{{ route('product.List', ['id' => $category->id]) }}">{{ $category->name }}</a></li>
-                        @endforeach
-                    </ul>
-                </li>
+                @foreach ($departments as $department)
+                    <li class="nav-item nav-mega">
+                        <a class="nav-link px-3" href="{{ $department['url'] }}">{{ $department['label'] }}</a>
+                        <div class="mega-panel">
+                            <a class="mega-feature" href="{{ $department['url'] }}">
+                                <img src="{{ $department['image'] }}" alt="">
+                                <span>{{ $department['shop_label'] }}</span>
+                            </a>
+                            @foreach ($department['columns'] as $column)
+                                <div class="mega-column">
+                                    <p class="mega-heading">{{ $column['title'] }}</p>
+                                    @foreach ($column['links'] as $link)
+                                        <a class="mega-link" href="{{ $link['url'] }}">{{ $link['name'] }}</a>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    </li>
+                @endforeach
             </ul>
         </div>
 
@@ -91,18 +98,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-        <ul class="nav flex-column gap-3">
-            <li class="nav-item border-bottom pb-2"><a class="nav-link p-0 fs-5" href="/">{{ __('web.home') }}</a></li>
-            <li class="nav-item">
-                <p class="text-muted small mb-2 fw-bold text-uppercase">{{ __('web.category') }}</p>
-                <div class="list-group list-group-flush ps-2">
-                    <a href="{{ route('product.List') }}" class="list-group-item list-group-item-action border-0">{{ __('web.all_products') }}</a>
-                    @foreach ($categories as $category)
-                        <a href="{{ route('product.List', ['id' => $category->id]) }}" class="list-group-item list-group-item-action border-0">{{ $category->name }}</a>
+        <div class="d-flex flex-column gap-3">
+            @foreach ($departments as $department)
+                <details class="mobile-dept">
+                    <summary>{{ $department['label'] }}</summary>
+                    <a class="mega-link" href="{{ $department['url'] }}">{{ $department['shop_label'] }}</a>
+                    @foreach ($department['columns'] as $column)
+                        <p class="mobile-dept-heading">{{ $column['title'] }}</p>
+                        @foreach ($column['links'] as $link)
+                            <a class="mega-link" href="{{ $link['url'] }}">{{ $link['name'] }}</a>
+                        @endforeach
                     @endforeach
-                </div>
-            </li>
-        </ul>
+                </details>
+            @endforeach
+        </div>
 
         <div class="mt-4 pt-3 border-top">
             @auth
@@ -143,3 +152,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.nav-mega').forEach(function (item) {
+        var timer;
+
+        item.addEventListener('mouseenter', function () {
+            clearTimeout(timer);
+            document.querySelectorAll('.nav-mega.is-open').forEach(function (open) {
+                if (open !== item) {
+                    open.classList.remove('is-open');
+                }
+            });
+            item.classList.add('is-open');
+        });
+
+        item.addEventListener('mouseleave', function () {
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                item.classList.remove('is-open');
+            }, 280);
+        });
+    });
+</script>

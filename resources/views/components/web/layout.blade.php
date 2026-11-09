@@ -16,12 +16,12 @@
 
     <x-seo.meta :seo="$seo ?? null" />
 
-    @if ($title)
+    @if ($title && empty($seo))
         <title>{{ $title }} | {{ $branding->siteName() }}</title>
     @endif
 
     @if ($branding->faviconUrl())
-        <link rel="icon" href="{{ $branding->faviconUrl() }}" type="image/x-icon">
+        <link rel="icon" href="{{ $branding->faviconUrl() }}" type="image/png">
     @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">

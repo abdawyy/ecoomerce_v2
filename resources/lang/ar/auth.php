@@ -12,7 +12,7 @@ return [
     'show_password' => 'إظهار كلمة المرور',
     'hide_password' => 'إخفاء كلمة المرور',
     'or_continue' => 'أو',
-    'register_title' => 'تسجيل حساب جديد | حياة',
+    'register_title' => 'تسجيل حساب جديد | ترو ليبل إيجيبت',
     'register_description' => 'أنشئ حساباً جديداً للاستمتاع بتجربة تسوق مخصصة.',
     'name' => 'الاسم',
     'confirm_password' => 'تأكيد كلمة المرور',

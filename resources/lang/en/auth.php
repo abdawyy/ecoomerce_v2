@@ -13,7 +13,7 @@ return [
     'hide_password' => 'Hide password',
     'or_continue' => 'or',
 
-    'register_title' => 'Register an account | Hayah',
+    'register_title' => 'Register an account | True Label Egypt',
     'register_description' => 'Create a new account to enjoy personalized shopping experience.',
     'name' => 'Name',
 

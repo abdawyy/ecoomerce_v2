@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\orders;
 use App\Models\products;
 use Illuminate\Http\Request;
 use App\Models\Review;
 use App\Http\Requests\ReviewRequest;
+use App\Support\OrderStatus;
 use App\Traits\Apptraits;
 use Illuminate\Support\Facades\Mail;
 
@@ -21,13 +23,23 @@ class ReviewController extends Controller
 
 public function store(ReviewRequest $request)
 {
-    $request->validated();
+    $data = $request->validated();
+
+    $purchased = orders::query()
+        ->where('user_id', auth()->id())
+        ->whereIn('status', OrderStatus::completedValues())
+        ->whereHas('orderItems', fn ($q) => $q->where('products_id', $data['product_id']))
+        ->exists();
+
+    if (! $purchased) {
+        return response()->json(['message' => __('web.review_requires_purchase')], 403);
+    }
 
     $review = Review::create([
         'user_id' => auth()->id(),
-        'product_id' => $request->product_id,
-        'rating' => $request->rating,
-        'comment' => $request->comment,
+        'product_id' => $data['product_id'],
+        'rating' => $data['rating'],
+        'comment' => $data['comment'],
     ]);
 
     // Fetch product and user info

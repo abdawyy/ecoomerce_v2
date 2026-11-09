@@ -26,8 +26,8 @@ return [
     'trust_line' => 'Secure checkout. Delivery fees calculated at checkout based on your city.',
     'empty_cta' => 'Discover our latest pieces while your bag is empty.',
     'remove_confirm' => 'Remove this item from your cart?',
-    'policy_title_default' => 'Sales & Inspection Policy',
-    'policy_body_default' => "We carefully select our products and clearly explain materials, details, and sizes with full transparency on the website.\n\nYou can inspect the product on delivery and check the material, details, and size before completing receipt.\n\nOur goal is a reliable, clear, and reassuring shopping experience — your trust and satisfaction are the foundation of how we work.",
+    'policy_title_default' => 'Return Policy',
+    'policy_body_default' => "We want you to be sure about your piece before it is yours.\n1. When your order arrives, you may measure and try on the item in the presence of our delivery representative.\n2. If the item does not suit you, you can return it to the representative on the spot. In this case, you pay the delivery fee only.\n3. Once you have received the item and accepted the delivery, it cannot be returned.\nPlease check the size, colour and condition of your piece before accepting the delivery.",
     'free_shipping_unlocked' => 'Free shipping unlocked at checkout',
     'free_shipping_remaining' => 'Add :amount LE more for free shipping',
 ];

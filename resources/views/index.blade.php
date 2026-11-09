@@ -2,12 +2,12 @@
 @push('styles')
 <style>
     .hero {
-        min-height: 600px;
+        min-height: 72vh;
         position: relative;
         overflow: hidden;
         display: flex;
-        align-items: center;
-        border-radius: var(--radius-lg);
+        align-items: flex-end;
+        border-radius: 0;
     }
 
     .hero-img,
@@ -43,8 +43,14 @@
     .hero-content {
         position: relative;
         z-index: 2;
-        padding: 60px;
-        border-radius: var(--radius-lg);
+        width: 100%;
+        padding: 7vh 1.5rem 4.25rem;
+        border-radius: 0;
+        text-align: center;
+    }
+
+    .hero-content .hero-cta {
+        border-radius: 4px;
     }
 
     .section-title h2 {
@@ -67,16 +73,24 @@
     }
 
     .category-overlay {
-        position: relative;
+        position: absolute;
+        inset: 0;
         z-index: 2;
-        background: linear-gradient(to top, rgba(0,0,0,0.88) 8%, rgba(0,0,0,0.35) 48%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        background: linear-gradient(to top, rgba(0,0,0,0.84) 0%, rgba(0,0,0,0.58) 46%, rgba(0,0,0,0.4) 100%);
         width: 100%;
+        height: 100%;
         padding: 40px;
         transition: padding 0.4s ease;
     }
 
     .category-overlay h3 {
         color: #fff !important;
+        font-size: clamp(1.55rem, 2.4vw, 2.15rem);
+        line-height: 1.25;
         text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
     }
 
@@ -95,19 +109,22 @@
 </style>
 @endpush
 
-<section id="home" class="pt-4 pb-5">
-    <div class="container">
-        <div class="hero">
-            <img src="{{ $branding->heroImageUrl() }}" class="hero-img" alt="{{ $branding->siteName() }}">
-            <div class="hero-content">
-                <span class="text-uppercase fw-bold mb-2 d-block" style="letter-spacing: 3px; font-size: 0.8rem;">
-                    {{ $branding->tagline() ?: __('web.hero_tagline') }}
-                </span>
-                <h1 class="display-2 fw-bold mb-3">{{ __('web.brand_collection_title') }}</h1>
-                <p class="lead mb-4 w-75 d-none d-md-block">{{ __('web.brand_collection_desc') }}</p>
-                <a href="{{ route('product.List') }}" class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold shadow-lg">
-                    {{ __('web.discover') }}
-                </a>
+<section id="home" class="home-hero-section">
+    <div class="hero">
+        <img src="{{ $branding->heroImageUrl() }}" class="hero-img" alt="{{ $branding->siteName() }}">
+        <div class="hero-content">
+            <span class="hero-kicker text-uppercase fw-bold mb-2 d-block">
+                {{ $branding->tagline() ?: __('web.hero_tagline') }}
+            </span>
+            <h1 class="display-2 fw-bold mb-3">{{ __('web.brand_collection_title') }}</h1>
+            <p class="lead hero-lead mb-4 d-none d-md-block">{{ __('web.brand_collection_desc') }}</p>
+            @php $departments = $branding->departmentMenus(); @endphp
+            <div class="hero-actions">
+                @forelse ($departments as $department)
+                    <a href="{{ $department['url'] }}" class="btn btn-light hero-cta">{{ $department['shop_label'] }}</a>
+                @empty
+                    <a href="{{ route('product.List') }}" class="btn btn-light hero-cta">{{ __('web.discover') }}</a>
+                @endforelse
             </div>
         </div>
     </div>
@@ -154,13 +171,13 @@
 <section id="category" class="py-5 home-categories">
     <div class="container">
         <div class="row g-4 justify-content-center">
-            @foreach ($branding->homeCategoryTiles() as $tile)
+            @foreach ($departments as $department)
                 <div class="col-12 col-md-6">
-                    <a href="{{ $tile['url'] }}" class="category-box text-decoration-none d-block">
-                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $tile['image'] }}')"></span>
-                        <img src="{{ $tile['image'] }}" class="category-img" alt="{{ $tile['name'] }}">
+                    <a href="{{ $department['url'] }}" class="category-box text-decoration-none d-block">
+                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $department['image'] }}')"></span>
+                        <img src="{{ $department['image'] }}" class="category-img" alt="{{ $department['shop_label'] }}">
                         <div class="category-overlay">
-                            <h3 class="fw-bold text-white display-4 mb-3">{{ $tile['name'] }}</h3>
+                            <h3 class="fw-bold text-white mb-3">{{ $department['shop_label'] }}</h3>
                             <span class="btn btn-light px-4 py-2 rounded-pill fw-bold">
                                 {{ __('web.see_details') }}
                             </span>

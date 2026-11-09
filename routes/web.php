@@ -73,7 +73,7 @@ Route::get('/guides/{slug}/download', [GuideController::class, 'download'])->nam
 
 
 Route::get('admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [AdminController::class, 'login']);
+Route::post('admin/login', [AdminController::class, 'login'])->middleware('throttle:5,1');
 
 if (config('hayah.allow_admin_register')) {
     Route::get('admin/register', [AdminController::class, 'showRegisterForm'])->name('admin.register');
@@ -199,7 +199,7 @@ Route::middleware(['admin'])->group(function () {
 
 
 
-Route::match(['get', 'post'], '/cart/add', [CartController::class, 'add']);
+Route::post('/cart/add', [CartController::class, 'add']);
 Route::post('/cart/promo', [CartController::class, 'applyPromo'])->name('cart.promo');
 Route::post('/cart/{id}/quantity', [CartController::class, 'updateQuantity'])->middleware('auth')->name('cart.update');
 Route::post('/cart/guest/{key}/quantity', [CartController::class, 'updateGuestQuantity'])->name('cart.guest.update');

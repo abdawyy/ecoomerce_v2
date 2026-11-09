@@ -37,6 +37,7 @@
                     @if (session('promo_code'))
                         <input type="hidden" name="promo_code" value="{{ session('promo_code') }}">
                     @endif
+                    <input type="hidden" name="saved_address_id" id="saved_address_id" value="{{ old('saved_address_id') }}">
 
                     <div class="row g-4">
                         <div class="col-12 col-lg-7">
@@ -53,7 +54,8 @@
                                                         data-line2="{{ $address->address_line2 }}"
                                                         data-city="{{ $address->city }}"
                                                         data-country="{{ $address->country }}"
-                                                        data-phone="{{ $address->phone_number }}">
+                                                        data-phone="{{ $address->phone_number }}"
+                                                        {{ (string) old('saved_address_id') === (string) $address->id ? 'selected' : '' }}>
                                                         {{ $address->address_line1 }}@if($address->is_default) ★@endif
                                                     </option>
                                                 @endforeach
@@ -217,6 +219,7 @@
                                             <h6 class="fw-bolder mb-0">{{ __('checkout.total') }}</h6>
                                             <h6 class="fw-bolder mb-0" id="checkout-total">LE {{ number_format($total, 2) }}</h6>
                                         </div>
+                                        <x-web.return-policy class="mt-3" />
                                         <button class="btn btn-dark w-100 mt-3 py-3 fw-bold" type="submit" id="checkout-submit-btn">
                                             {{ __('checkout.confirm') }}
                                         </button>
@@ -302,9 +305,14 @@
         citySelect?.addEventListener('change', recalc);
 
         const savedSelect = document.getElementById('saved_address');
+        const savedIdInput = document.getElementById('saved_address_id');
         savedSelect?.addEventListener('change', () => {
             const opt = savedSelect.selectedOptions[0];
-            if (!opt || !opt.value) return;
+            if (!opt || !opt.value) {
+                if (savedIdInput) savedIdInput.value = '';
+                return;
+            }
+            if (savedIdInput) savedIdInput.value = opt.value;
             document.getElementById('address_line_1').value = opt.dataset.line1 || '';
             document.getElementById('address_line_2').value = opt.dataset.line2 || '';
             document.getElementById('country').value = opt.dataset.country || '';

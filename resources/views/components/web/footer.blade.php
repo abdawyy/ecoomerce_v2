@@ -24,6 +24,7 @@
             <div class="col-6 col-md-3">
                 <h6 class="footer-heading">{{ __('web.footer_legal') }}</h6>
                 <a href="{{ route('legal') }}" class="footer-link">{{ __('web.terms_title') }}</a>
+                <a href="{{ route('legal') }}#returns" class="footer-link">{{ __('web.returns_title') }}</a>
                 <a href="{{ route('legal') }}#privacy" class="footer-link">{{ __('web.privacy_title') }}</a>
                 <a href="{{ route('legal') }}#cookies" class="footer-link">{{ __('web.footer_cookies') }}</a>
             </div>

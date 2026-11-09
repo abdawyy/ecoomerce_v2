@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use RuntimeException;
 
 class CheckoutController extends Controller
@@ -74,32 +75,40 @@ class CheckoutController extends Controller
 
     protected function processAuthOrder(Request $request)
     {
+        $userId = Auth::id();
+
         $validatedData = $request->validate([
             'full_name' => 'required|string|max:255',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
-            'city' => 'required|integer|exists:cities,id',
+            'city' => ['required', 'integer', Cities::activeIdRule()],
             'country' => 'nullable|string|max:100',
             'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
             'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
+            'saved_address_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('addresses', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
+            ],
         ]);
-
-        $userId = Auth::id();
 
         if (! $this->cartHasItems($userId, false)) {
             return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
         }
 
-        $promoCodeValue = discountCodes::where('code', $validatedData['promo_code'] ?? null)->first();
-        $city = Cities::where('id', $validatedData['city'])->firstOrFail();
+        $promoCodeValue = discountCodes::findUsable($validatedData['promo_code'] ?? null);
+        $city = Cities::where('id', $validatedData['city'])->where('is_active', 1)->firstOrFail();
 
         try {
             $order = DB::transaction(function () use ($request, $validatedData, $userId, $promoCodeValue, $city) {
-                $addressQuery = addresses::where('user_id', $userId)->first();
                 $payload = $this->addressPayload($request, $userId, null);
-                $address = $addressQuery
-                    ? tap($addressQuery)->update($payload)
-                    : addresses::create($payload);
+                $savedId = $validatedData['saved_address_id'] ?? null;
+                if ($savedId) {
+                    $address = addresses::where('user_id', $userId)->where('id', $savedId)->firstOrFail();
+                    $address->fill($payload)->save();
+                } else {
+                    $address = addresses::create($payload);
+                }
 
                 $cart = new shoppingCart;
                 $promoPercent = $promoCodeValue->discount_percentage ?? 0;
@@ -111,7 +120,7 @@ class CheckoutController extends Controller
                 $orderPayload = [
                     'user_id' => $userId,
                     'total_amount' => $total,
-                    'status' => 'Pending',
+                    'status' => \App\Support\OrderStatus::PENDING,
                     'discount_code_id' => $promoCodeValue->id ?? null,
                     'city_id' => $city->id,
                     'address_id' => $address->id,
@@ -151,7 +160,7 @@ class CheckoutController extends Controller
             'full_name' => 'required|string|max:255',
             'address_line1' => 'required|string|max:255',
             'address_line2' => 'nullable|string|max:255',
-            'city' => 'required|integer|exists:cities,id',
+            'city' => ['required', 'integer', Cities::activeIdRule()],
             'country' => 'nullable|string|max:100',
             'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
             'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
@@ -161,20 +170,15 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
         }
 
-        $promoCodeValue = discountCodes::where('code', $validatedData['promo_code'] ?? null)->first();
-        $city = Cities::where('id', $validatedData['city'])->firstOrFail();
+        $promoCodeValue = discountCodes::findUsable($validatedData['promo_code'] ?? null);
+        $city = Cities::where('id', $validatedData['city'])->where('is_active', 1)->firstOrFail();
 
         try {
             $order = DB::transaction(function () use ($request, $validatedData, $promoCodeValue, $city) {
-                $guestUser = GuestUser::where('email', $validatedData['email'])->first();
-                if ($guestUser) {
-                    $guestUser->update(['name' => $validatedData['full_name']]);
-                } else {
-                    $guestUser = GuestUser::create([
-                        'email' => $validatedData['email'],
-                        'name' => $validatedData['full_name'],
-                    ]);
-                }
+                $guestUser = GuestUser::create([
+                    'email' => $validatedData['email'],
+                    'name' => $validatedData['full_name'],
+                ]);
 
                 $address = addresses::create(array_merge(
                     $this->addressPayload($request, null, $guestUser->id),
@@ -191,7 +195,7 @@ class CheckoutController extends Controller
                 $orderPayload = [
                     'user_id' => null,
                     'total_amount' => $total,
-                    'status' => 'Pending',
+                    'status' => \App\Support\OrderStatus::PENDING,
                     'discount_code_id' => $promoCodeValue->id ?? null,
                     'city_id' => $city->id,
                     'address_id' => $address->id,
@@ -344,17 +348,17 @@ class CheckoutController extends Controller
         $this->authorizeReceipt($order);
 
         $cacheKey = 'order-confirmation-sent-'.$order;
-        if (cache()->has($cacheKey)) {
+        if (! cache()->add($cacheKey, 1, now()->addDay())) {
             return response()->json(['ok' => true]);
         }
-
-        cache()->put($cacheKey, 1, now()->addDay());
 
         try {
             (new SendOrderConfirmation($order))->handle();
         } catch (\Throwable $e) {
             cache()->forget($cacheKey);
             report($e);
+
+            return response()->json(['ok' => false, 'message' => 'Failed to send confirmation email.'], 500);
         }
 
         return response()->json(['ok' => true]);
@@ -421,9 +425,7 @@ class CheckoutController extends Controller
         $cityId = old('city');
         $city = $cityId ? Cities::find($cityId) : null;
         $promoCode = old('promo_code') ?? session('promo_code');
-        $promo = $promoCode
-            ? discountCodes::where('code', $promoCode)->where('is_active', 1)->where('expiry_date', '>', now())->first()
-            : null;
+        $promo = $promoCode ? discountCodes::findUsable($promoCode) : null;
         $discountPercent = $promo->discount_percentage ?? 0;
         $subtotal = $shipping->money((float) $subtotal);
         $discountAmount = $shipping->money($subtotal * ($discountPercent / 100));
@@ -458,11 +460,7 @@ class CheckoutController extends Controller
             return 0;
         }
 
-        $price = $product->price ?? 0;
-        $sale = $product->sale ?? 0;
-        $unit = $price - ($price * $sale / 100);
-
-        return $unit * $quantity;
+        return $product->discountedUnitPrice() * $quantity;
     }
 
     protected function buildGuestCartViewData(): array
@@ -483,17 +481,15 @@ class CheckoutController extends Controller
         }
 
         $productIds = collect($combined)->pluck('product_id')->unique()->filter()->all();
-        $productsById = products::with('productImages')->whereIn('id', $productIds)->get()->keyBy('id');
+        $productsById = products::with(['productImages', 'category', 'type'])->whereIn('id', $productIds)->get()->keyBy('id');
 
         foreach ($combined as $key => $item) {
             $product = $productsById->get($item['product_id']);
 
-            if ($product) {
+            if ($product && $product->isSellable()) {
                 $cartItems->push((object) [
                     'product' => $product,
                     'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'sale' => $item['sale'],
                     'size_id' => $item['size_id'],
                     'key' => $key,
                 ]);

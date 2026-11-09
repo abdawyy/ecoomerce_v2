@@ -49,15 +49,19 @@ class ContactController extends Controller
 
     protected function sendAutoReply(array $data): void
     {
-        Mail::send([], [], function ($message) use ($data) {
+        $brand = app(\App\Services\BrandingService::class);
+        $siteName = $brand->siteName();
+        $from = $brand->supportEmail() ?: config('mail.from.address');
+
+        Mail::send([], [], function ($message) use ($data, $siteName, $from) {
             $body = "Dear {$data['name']},\n\n" .
                 "Thank you for reaching out to us. We have received your message and will contact you shortly.\n\n" .
-                "— Hayah";
+                "— {$siteName}";
 
             $message->to($data['email'])
-                ->subject('Thank you for contacting Hayah')
+                ->subject('Thank you for contacting '.$siteName)
                 ->text($body)
-                ->from('hayah@hayahfashion.net', 'Hayah Fashion');
+                ->from($from, $siteName);
         });
     }
     public function list(Request $request, \App\Services\AdminNotificationService $notifications)
