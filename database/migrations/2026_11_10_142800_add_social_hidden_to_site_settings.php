@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('site_settings', function (Blueprint $table) {
-            foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
-                $column = "{$platform}_hidden";
-                if (! Schema::hasColumn('site_settings', $column)) {
+        foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
+            $column = "{$platform}_hidden";
+            if (! Schema::hasColumn('site_settings', $column)) {
+                Schema::table('site_settings', function (Blueprint $table) use ($column) {
                     $table->boolean($column)->default(false);
-                }
+                });
             }
-        });
+        }
     }
 
     public function down(): void
