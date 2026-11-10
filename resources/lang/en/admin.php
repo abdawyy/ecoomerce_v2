@@ -2,6 +2,8 @@
 
 return [
     'login_title' => 'Admin Login',
+    'login_tagline' => 'True Label Egypt — immortal names, unique pieces.',
+    'login_subtitle' => 'Sign in to manage the store.',
     'email' => 'Email',
     'password' => 'Password',
     'login_button' => 'Login',

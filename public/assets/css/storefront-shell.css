@@ -292,7 +292,7 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     display: none;
 }
 
-[data-bs-theme="dark"] .branding-logo-img.is-theme-light {
+[data-bs-theme="dark"] .branding-logo-link:has(.is-theme-dark) .is-theme-light {
     display: none;
 }
 
@@ -1425,21 +1425,37 @@ body:has(.modal.show) {
 }
 
 .storefront-auth-card {
-    max-width: 440px;
+    max-width: 480px;
     margin: 0 auto;
-    border: 1px solid var(--brand-navy);
+    border: 1px solid rgba(25, 48, 73, 0.08);
     border-radius: 20px;
     background: var(--brand-surface);
     color: var(--brand-navy);
+    box-shadow: 0 18px 40px rgba(25, 48, 73, 0.1);
+    overflow: hidden;
+}
+
+.storefront-auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.35rem 1.5rem;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.14), transparent 55%),
+        linear-gradient(160deg, #193049 0%, #6F262B 100%);
+}
+
+.storefront-auth-brand .branding-logo-img-on-dark {
+    display: inline-block;
 }
 
 .storefront-auth-form-wrap {
-    padding: 2rem 1.5rem 2.25rem;
+    padding: 1.75rem 1.5rem 2.25rem;
 }
 
 @media (min-width: 768px) {
     .storefront-auth-form-wrap {
-        padding: 2.5rem 2.25rem 2.75rem;
+        padding: 2rem 2.25rem 2.75rem;
     }
 }
 
@@ -1462,9 +1478,11 @@ body:has(.modal.show) {
 }
 
 .storefront-auth-card .form-control {
-    border-color: var(--brand-navy);
+    border-color: rgba(25, 48, 73, 0.28);
     color: var(--brand-navy);
     background: var(--brand-surface);
+    border-radius: 999px;
+    padding-inline: 1rem;
 }
 
 .storefront-auth-card .form-control:focus {
@@ -1503,6 +1521,8 @@ body:has(.modal.show) {
     background: var(--brand-navy);
     border-color: var(--brand-navy);
     color: var(--brand-cream);
+    border-radius: 999px;
+    padding: 0.75rem 1.25rem;
 }
 
 .storefront-auth-card .btn-dark:hover {

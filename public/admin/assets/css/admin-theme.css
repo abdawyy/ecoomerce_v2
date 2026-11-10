@@ -401,27 +401,72 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
 }
 
 /* ---- Auth login ---- */
+body.admin-body:has(.admin-auth-page) {
+    padding-top: 0;
+}
+
 .admin-auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
     background: var(--admin-bg) !important;
 }
 
 [data-bs-theme="light"] .admin-auth-page {
-    background: linear-gradient(135deg, #f4f5f7 0%, #ffffff 60%) !important;
+    background: linear-gradient(160deg, #eef1f5 0%, #f8f6f4 45%, #ffffff 100%) !important;
 }
 
 [data-bs-theme="dark"] .admin-auth-page {
-    background: linear-gradient(135deg, #0d1117 0%, #161b22 60%) !important;
+    background: linear-gradient(160deg, #0d1117 0%, #161b22 100%) !important;
 }
 
 .admin-auth-card,
 .admin-auth-page .card {
     background: var(--admin-surface) !important;
-    border-color: var(--admin-border) !important;
+    border: 1px solid var(--admin-border) !important;
     color: var(--admin-text);
+    border-radius: 20px;
+    box-shadow: var(--admin-shadow-lg);
+}
+
+.admin-auth-visual {
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 55%),
+        linear-gradient(160deg, #193049 0%, #6F262B 100%);
+    color: #fff;
+    min-height: 100%;
+}
+
+[data-bs-theme="dark"] .admin-auth-visual {
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 55%),
+        linear-gradient(160deg, #0d1117 0%, #193049 100%);
+}
+
+.admin-auth-visual .branding-logo-img-on-dark {
+    display: inline-block;
+    filter: none;
 }
 
 .admin-auth-form .form-label {
     color: var(--admin-text);
+    font-weight: 600;
+}
+
+.admin-auth-form .form-control {
+    border-radius: 12px;
+}
+
+.admin-auth-form .btn-login {
+    background: #193049;
+    border-color: #193049;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+}
+
+.admin-auth-form .btn-login:hover {
+    background: #6F262B;
+    border-color: #6F262B;
 }
 
 /* ---- Forms (Bootstrap overrides in dark) ---- */
@@ -934,7 +979,7 @@ body.admin-body.modal-open {
     display: none;
 }
 
-[data-bs-theme="dark"] .branding-logo-img.is-theme-light {
+[data-bs-theme="dark"] .branding-logo-link:has(.is-theme-dark) .is-theme-light {
     display: none;
 }
 

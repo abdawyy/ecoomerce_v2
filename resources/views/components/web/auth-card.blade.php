@@ -6,11 +6,15 @@
 <section class="storefront-auth">
     <div class="container">
         <div class="storefront-auth-card">
+            <div class="storefront-auth-brand">
+                <x-branding.logo
+                    compact
+                    dark
+                    :link="false"
+                    style="width: auto; height: auto; max-height: 52px; max-width: 180px; object-fit: contain;"
+                />
+            </div>
             <div class="storefront-auth-form-wrap">
-                <div class="text-center mb-4">
-                    <x-branding.logo style="width: 140px; height: auto; max-height: 56px; object-fit: contain;" />
-                </div>
-
                 <h1 class="storefront-auth-title text-center">{{ $title }}</h1>
                 @if ($subtitle)
                     <p class="storefront-auth-subtitle text-center">{{ $subtitle }}</p>
