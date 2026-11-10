@@ -18,7 +18,7 @@ return [
   'search_placeholder' => 'Enter search term...',
   'language' => 'Language',
   'brand_collection_title' => 'TRUE LABEL',
-  'brand_collection_desc' => 'Discover our latest collection, featuring unique styles that celebrate the vibrant culture and fashion of Egypt.',
+  'brand_collection_desc' => 'Discover our latest collection, featuring unique styles that celebrate the vibrant culture and fashion',
   'discover' => 'Discover',
   'new_collection' => 'NEW COLLECTION',
   'new_collection_desc' => 'Elevate your style with our new collection, crafted by True Label Egypt.',

@@ -23,7 +23,7 @@ return [
     'search_placeholder' => 'اكتب مصطلح البحث...',
     'language' => 'اللغة',
     'brand_collection_title' => 'ترو ليبل',
-    'brand_collection_desc' => 'اكتشف أحدث مجموعاتنا، بتصاميم فريدة تحتفي بالثقافة والأناقة المصرية.',
+    'brand_collection_desc' => 'اكتشف أحدث مجموعاتنا، بتصاميم فريدة تحتفي بالثقافة والأناقة.',
     'discover' => 'استكشاف',
     'new_collection' => 'المجموعة الجديدة',
     'new_collection_desc' => 'ارفع مستوى أناقتك مع مجموعتنا الجديدة من ترو ليبل إيجيبت.',
