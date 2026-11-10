@@ -77,6 +77,7 @@ class categoriesController extends Controller
                 'Name' => $data->name,
                 'Type'=>$data->type->name,
                 'Created At' => $data->created_at->format('m/d/Y'),
+                'href' => route('categories.edit', $data->id),
                 'is_active'=>$data->is_active
             ];
         });

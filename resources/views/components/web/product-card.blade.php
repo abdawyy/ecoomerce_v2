@@ -28,7 +28,7 @@
         @endif
 
         <a href="{{ $productUrl }}" class="product-card-image-link">
-            <img src="{{ $image }}" class="{{ $imageClass }}" alt="{{ $product->name }}" onerror="this.style.visibility='hidden'">
+            <img src="{{ $image }}" class="{{ $imageClass }}" alt="{{ $product->name }}" loading="lazy" decoding="async" onerror="this.style.visibility='hidden'">
         </a>
 
         @if ($showCartOverlay)

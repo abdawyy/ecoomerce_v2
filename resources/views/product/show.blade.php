@@ -129,7 +129,8 @@
                     <div class="thumb-scroll-container">
                         @foreach ($product->productImages as $productImage)
                             <img class="img-oneProduct-sub {{ $loop->first ? 'img-selected' : '' }}"
-                                 src="{{ asset('storage/' . $productImage->images) }}" 
+                                 src="{{ asset('storage/' . $productImage->images) }}"
+                                 loading="lazy" decoding="async"
                                  onclick="changeMainImage(this)">
                         @endforeach
                     </div>

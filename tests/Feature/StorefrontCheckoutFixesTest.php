@@ -202,6 +202,45 @@ class StorefrontCheckoutFixesTest extends TestCase
         $this->assertSame(5, (int) $size->fresh()->quantity);
     }
 
+    public function test_leaving_cancelled_deducts_stock_and_refuses_when_short(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->makeProduct();
+        $size = $this->makeSize($product, ['quantity' => 1]);
+        $city = $this->makeCity();
+
+        $order = orders::create([
+            'user_id' => $user->id,
+            'total_amount' => 90,
+            'status' => OrderStatus::CANCELLED,
+            'city_id' => $city->id,
+        ]);
+        orderItems::create([
+            'orders_id' => $order->id,
+            'products_id' => $product->id,
+            'quantity' => 2,
+            'size_id' => $size->id,
+            'size' => $size->size,
+            'price' => 180,
+        ]);
+
+        try {
+            $order->transitionTo(OrderStatus::PROCESSING);
+            $this->fail('Expected insufficient stock to block the status change.');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString($product->name, $e->getMessage());
+        }
+
+        $this->assertSame(1, (int) $size->fresh()->quantity);
+        $this->assertSame(OrderStatus::CANCELLED, $order->fresh()->status);
+
+        $size->update(['quantity' => 4]);
+        $order->transitionTo(OrderStatus::PROCESSING);
+
+        $this->assertSame(2, (int) $size->fresh()->quantity);
+        $this->assertSame(OrderStatus::PROCESSING, $order->fresh()->status);
+    }
+
     public function test_missing_product_and_category_return_404(): void
     {
         $this->get(route('product.show', 99999))->assertNotFound();

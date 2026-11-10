@@ -51,6 +51,7 @@
                     </tr>
                 @else
                     @foreach ($rows as $row)
+                        @php $rowHref = $row['href'] ?? null; @endphp
                         <tr>
                             @foreach ($headers as $header)
                                 @php
@@ -63,12 +64,14 @@
                                     @if ($header === 'Action')
                                         @php
                                             $actionsAlign = $isArabic ? 'justify-content-start' : 'justify-content-end';
-                                            $actionCount = 1
+                                            $actionCount = ($rowHref ? 1 : 0)
                                                 + (isset($row['is_active']) ? 1 : 0)
                                                 + (isset($row['is_highest']) ? 1 : 0);
                                         @endphp
                                         <div class="table-actions {{ $actionsAlign }} {{ $actionCount >= 3 ? 'table-actions--multi' : '' }}">
-                                            <x-admin.view-link :href="$url . '/edit/' . $row['ID']" />
+                                            @if ($rowHref)
+                                                <x-admin.view-link :href="$rowHref" />
+                                            @endif
 
                                             @if (isset($row['is_active']))
                                                 <form method="POST" action="{{ $url }}/status/{{ $row['ID'] }}" class="table-actions-form">
@@ -90,7 +93,11 @@
                                             @endif
                                         </div>
                                     @elseif ($header === 'ID')
-                                        <a href="{{ $url }}/edit/{{ $row['ID'] }}" class="text-decoration-none">#{{ $row['ID'] }}</a>
+                                        @if ($rowHref)
+                                            <a href="{{ $rowHref }}" class="text-decoration-none">#{{ $row['ID'] }}</a>
+                                        @else
+                                            #{{ $row['ID'] }}
+                                        @endif
                                     @elseif ($header === 'Status')
                                         @php
                                             $status = $row['Status'] ?? '';

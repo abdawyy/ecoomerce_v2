@@ -213,7 +213,7 @@ class AdminController extends Controller
                 'email' => $message->email,
                 'preview' => \Illuminate\Support\Str::limit($message->message, 60),
                 'created_at' => $message->created_at?->diffForHumans(),
-                'url' => route('admin.contact.list'),
+                'url' => route('admin.contact.show', $message->id),
             ]),
         ]);
     }
@@ -329,6 +329,7 @@ class AdminController extends Controller
                 'City' => $city,
                 'Status' => $order->status,
                 'Created At' => $createdAt,
+                'href' => route('order.show', $order->id),
             ];
         });
 
@@ -385,7 +386,11 @@ class AdminController extends Controller
             'status' => OrderStatus::validationRule(),
         ]);
 
-        $order->transitionTo($request->status);
+        try {
+            $order->transitionTo($request->status);
+        } catch (\RuntimeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Order status updated successfully');
     }

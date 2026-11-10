@@ -73,6 +73,7 @@ class TypeController extends Controller
                 'ID' => $type->id,
                 'Name' => $type->name,
                 'Created At' => $type->created_at->format('m/d/Y'),
+                'href' => route('type.edit', $type->id),
                 'is_active' => $type->is_active
 
             ];

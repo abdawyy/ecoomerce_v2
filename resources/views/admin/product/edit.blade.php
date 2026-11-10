@@ -479,16 +479,39 @@
         const qty = document.getElementById(box.getAttribute('data-size-qty'));
         if (!qty || box.dataset.bound === '1') return;
         box.dataset.bound = '1';
+        if (!box.checked) {
+            qty.value = '';
+            qty.disabled = true;
+        }
         box.addEventListener('change', function () {
-            if (box.checked && qty.value === '') {
-                qty.value = '0';
+            if (box.checked) {
+                qty.disabled = false;
+                if (qty.value === '') {
+                    qty.value = '0';
+                }
                 qty.focus();
+            } else {
+                qty.value = '';
+                qty.disabled = true;
             }
         });
         qty.addEventListener('input', function () {
             box.checked = qty.value !== '';
         });
     }
+
+    document.getElementById('prevent')?.addEventListener('submit', function () {
+        document.querySelectorAll('.product-size-toggle').forEach(function (box) {
+            const qty = document.getElementById(box.getAttribute('data-size-qty'));
+            if (!qty) return;
+            if (!box.checked) {
+                qty.value = '';
+                qty.disabled = true;
+            } else {
+                qty.disabled = false;
+            }
+        });
+    });
 
     document.querySelectorAll('.product-size-toggle').forEach(bindSizeRow);
 

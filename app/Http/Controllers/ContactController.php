@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\ContactRequest;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Message;
 
 
@@ -67,10 +68,24 @@ class ContactController extends Controller
                 ->from($from, $siteName);
         });
     }
-    public function list(Request $request, \App\Services\AdminNotificationService $notifications)
+    public function open($id)
     {
-        $notifications->markMessagesRead();
+        $message = Message::find($id);
 
+        if (! $message) {
+            return redirect()->route('admin.contact.list')->with('error', __('messages.not_found'));
+        }
+
+        if (Schema::hasColumn('messages', 'read_at') && $message->read_at === null) {
+            $message->read_at = now();
+            $message->save();
+        }
+
+        return view('admin.contact.show', compact('message'));
+    }
+
+    public function list(Request $request)
+    {
         // Get the filter parameters from the request
         $search = $request->input('search');
         $email = $request->input('email');
@@ -108,7 +123,7 @@ class ContactController extends Controller
         $data = $query->paginate(10)->appends(['search' => $search, 'email' => $email, 'phone' => $phone]); // 👈 This preserves filter parameters
 
         // Define the headers for the table
-        $headers = ['ID', 'Name', 'Email', 'Phone', 'Message', 'Created At'];
+        $headers = ['ID', 'Name', 'Email', 'Phone', 'Message', 'Created At', 'Action'];
 
         // Prepare the rows by mapping through the types collection
         $rows = $data->map(function ($data) {
@@ -119,6 +134,7 @@ class ContactController extends Controller
                 'Phone' => $data->phone,
                 'Message' => $data->message,
                 'Created At' => $data->created_at->format('m/d/Y'),
+                'href' => route('admin.contact.show', $data->id),
             ];
         });
 

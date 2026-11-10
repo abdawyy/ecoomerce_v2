@@ -132,7 +132,7 @@ class AdminNotificationService
                 'at' => $message->created_at,
                 'title' => __('dashboard.activity_message', ['name' => $message->name]),
                 'subtitle' => \Illuminate\Support\Str::limit($message->message, 60),
-                'url' => route('admin.contact.list'),
+                'url' => route('admin.contact.show', $message->id),
                 'icon' => 'bi-envelope',
                 'variant' => 'danger',
             ]);

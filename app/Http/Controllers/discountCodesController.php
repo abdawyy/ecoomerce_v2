@@ -20,10 +20,23 @@ class discountCodesController extends Controller
         $model = $this->model::find($id);
 
         if ($request->isMethod('post')) {
+            $expiryRule = 'required|date|after:today';
+            if ($model && $model->expiry_date) {
+                try {
+                    $stored = \Illuminate\Support\Carbon::parse($model->expiry_date)->toDateString();
+                    $submitted = \Illuminate\Support\Carbon::parse((string) $request->input('expiry_date'))->toDateString();
+                    if ($submitted === $stored) {
+                        $expiryRule = 'required|date';
+                    }
+                } catch (\Throwable $e) {
+                    $expiryRule = 'required|date|after:today';
+                }
+            }
+
             $request->validate([
-                'code' => 'required|string|max:255', // Validates that code is required and a string with max 255 characters
-                'discount_percentage' => 'required|numeric|min:0|max:100', // Validates that the discount_percentage is a number between 0 and 100
-                'expiry_date' => 'required|date|after:today', // Validates expiry_date as a date and it must be a future date
+                'code' => 'required|string|max:255|unique:discount_codes,code,'.($id ?: 'NULL').',id',
+                'discount_percentage' => 'required|numeric|min:0|max:100',
+                'expiry_date' => $expiryRule,
             ]);
 
             $attributes = [
@@ -99,6 +112,7 @@ class discountCodesController extends Controller
                 'Discount Percentage' => $data->discount_percentage . ' %',
                 'Expiry Date' => $data->expiry_date,
                 'Created At' => $data->created_at->format('m/d/Y'),
+                'href' => route('discountCodes.edit', $data->id),
                 'is_active' => $data->is_active
 
             ];

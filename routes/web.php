@@ -166,6 +166,7 @@ Route::middleware(['admin'])->group(function () {
 
 
     Route::get('/admin/contact/list', [ContactController::class, 'list'])->name('admin.contact.list');
+    Route::get('/admin/contact/{id}', [ContactController::class, 'open'])->whereNumber('id')->name('admin.contact.show');
 
     Route::get('/admin/reviews/{productId}', [ReviewController::class, 'list'])->name('admin.reviews.byProduct');
     Route::post('/admin/reviews/status/{id}', [ReviewController::class, 'toggleUserStatus'])->name('admin.reviews.toggleStatus');

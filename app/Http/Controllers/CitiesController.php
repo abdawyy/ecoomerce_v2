@@ -89,6 +89,7 @@ class CitiesController extends Controller
                 'Name' => $data->name,
                 'Price' => $data->price,
                 'Created At' => $data->created_at->format('m/d/Y'),
+                'href' => route('cities.edit', $data->id),
                 'is_active'=>$data->is_active
             ];
         });

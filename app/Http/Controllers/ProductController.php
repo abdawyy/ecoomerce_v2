@@ -13,6 +13,7 @@ use App\Models\Guide;
 use App\Services\AnalyticsService;
 use App\Services\MetaPixelService;
 use App\Traits\Apptraits;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -40,6 +41,12 @@ class ProductController extends Controller
 
 
         if ($request->isMethod('post')) {
+            if ($this->requestExceededPostMax($request)) {
+                return redirect()->back()->withInput()->withErrors([
+                    'images' => __('products.images_too_large'),
+                ]);
+            }
+
             // Validate the incoming request
 
             self::filterQuantities($request);
@@ -101,27 +108,55 @@ class ProductController extends Controller
                 ]);
             }
 
-            $imagesModel = new productImages();
-
-            try {
-                if ($id) {
-                    $model = $this->model::query()->find($id);
-                    if (! $model) {
-                        return redirect()->route('products.edit')->with('error', 'Your product could not be saved.');
-                    }
-                    $model->fill($values);
-                    $model->save();
-                } else {
-                    $model = $this->model::query()->create($values);
-                }
-            } catch (\Throwable $e) {
-                report($e);
-
-                return redirect()->back()->withInput()->with('error', 'Your product could not be saved.');
+            if ($this->requestExceededPostMax($request)) {
+                return redirect()->back()->withInput()->withErrors([
+                    'images' => __('products.images_too_large'),
+                ]);
             }
 
-            self::uploadImages($request, $imagesModel, $model->id);
-            $this->saveProductItems($quantities, $model);
+            foreach ($request->file('images', []) ?: [] as $file) {
+                if ($file && ! $file->isValid()) {
+                    return redirect()->back()->withInput()->withErrors([
+                        'images' => __('products.images_too_large'),
+                    ]);
+                }
+            }
+
+            $storedFiles = [];
+
+            try {
+                DB::transaction(function () use ($request, $values, $id, $quantities, &$storedFiles) {
+                    if ($id) {
+                        $model = $this->model::query()->find($id);
+                        if (! $model) {
+                            throw new \RuntimeException('missing-product');
+                        }
+                        $model->fill($values);
+                        $model->save();
+                    } else {
+                        $model = $this->model::query()->create($values);
+                    }
+
+                    $this->storeUploadedImages($request, $model->id, $storedFiles);
+                    $this->saveProductItems($quantities, $model);
+                });
+            } catch (\Throwable $e) {
+                foreach ($storedFiles as $relative) {
+                    $this->deleteStoredUpload($relative);
+                }
+
+                if ($e instanceof \RuntimeException && $e->getMessage() === 'missing-product') {
+                    return redirect()->route('products.edit')->with('error', 'Your product could not be saved.');
+                }
+
+                report($e);
+
+                return redirect()->back()->withInput()->withErrors([
+                    'images' => $e instanceof \RuntimeException
+                        ? $e->getMessage()
+                        : __('products.images_save_failed'),
+                ]);
+            }
 
             return redirect()->route('products.list')->with('success', 'Your product has been successfully saved.');
         }
@@ -184,26 +219,103 @@ class ProductController extends Controller
 
     public function saveProductItems($quantities, $model)
     {
+        $submitted = [];
+
         foreach ($quantities as $size => $quantity) {
             $size = trim((string) $size);
-            if ($size === '' || $quantity === null || $quantity === '') {
+            if ($size === '') {
                 continue;
             }
 
-            $values = [
+            if ($quantity === null || $quantity === '') {
+                $quantity = 0;
+            }
+
+            $submitted[] = $size;
+
+            self::updateOrCreate($this->association, [
+                'products_id' => $model->id,
+                'size' => $size,
+            ], [
                 'quantity' => (int) $quantity,
                 'size' => $size,
-                'products_id' => $model->id
-            ];
-
-            $attributes = [
                 'products_id' => $model->id,
-                'size' => $size
-            ];
+            ]);
+        }
 
-            self::updateOrCreate($this->association, $attributes, $values);
+        $existing = $model->productItems();
+        if ($submitted !== []) {
+            $existing->whereNotIn('size', $submitted);
+        }
+        $existing->update(['quantity' => 0]);
+    }
+
+    protected function storeUploadedImages(Request $request, int $productId, array &$stored): void
+    {
+        if (! $request->hasFile('images')) {
+            return;
+        }
+
+        $directory = public_path('storage/uploads');
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+            throw new \RuntimeException(__('products.images_save_failed'));
+        }
+
+        foreach ($request->file('images') as $file) {
+            if (! $file || ! $file->isValid()) {
+                throw new \RuntimeException(__('products.images_too_large'));
+            }
+
+            $fileName = time().'-'.uniqid().'.'.$file->getClientOriginalExtension();
+            $file->move($directory, $fileName);
+            $relative = 'uploads/'.$fileName;
+            $stored[] = $relative;
+
+            $imageModel = new productImages();
+            $imageModel->products_id = $productId;
+            $imageModel->images = $relative;
+            $imageModel->save();
         }
     }
+
+    protected function deleteStoredUpload(string $relative): void
+    {
+        $relative = str_replace(['../', '..\\'], '', $relative);
+        $path = public_path('storage/'.ltrim($relative, '/\\'));
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
+
+    protected function requestExceededPostMax(Request $request): bool
+    {
+        $length = (int) $request->server('CONTENT_LENGTH', 0);
+        $postMax = $this->phpIniBytes((string) ini_get('post_max_size'));
+        if ($length < 1 || $postMax < 1 || $length <= $postMax) {
+            return false;
+        }
+
+        return ! $request->has('name') && ! $request->hasFile('images');
+    }
+
+    protected function phpIniBytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $number = (int) $value;
+
+        return match ($unit) {
+            'g' => $number * 1024 * 1024 * 1024,
+            'm' => $number * 1024 * 1024,
+            'k' => $number * 1024,
+            default => (int) $value,
+        };
+    }
+
     public function list(Request $request)
     {
         // Get the search and filter parameters from the request
@@ -267,11 +379,8 @@ class ProductController extends Controller
                     $q->where('quantity', '>', 0);
                 });
             } elseif ($stock_status === 'out_of_stock') {
-                $query = $query->where(function ($q) {
-                    $q->whereDoesntHave('productItems')
-                      ->orWhereHas('productItems', function ($q2) {
-                          $q2->where('quantity', '<=', 0);
-                      });
+                $query = $query->whereDoesntHave('productItems', function ($q) {
+                    $q->where('quantity', '>', 0);
                 });
             }
         }
@@ -297,11 +406,12 @@ class ProductController extends Controller
                 'Name' => $data->name,
                 'Price' => $data->price,
                 'Sale' => $data->sale,
-                'Type' => $data->type->name,
+                'Type' => $data->type->name ?? '—',
                 'Description' => $data->description,
                 'Color' => $data->color,
-                'Category Name' => $data->category->name,
-                'Created At' => $data->created_at->format('m/d/Y'),
+                'Category Name' => $data->category->name ?? '—',
+                'Created At' => $data->created_at?->format('m/d/Y') ?? '',
+                'href' => route('products.edit', $data->id),
                 'is_active' => $data->is_active,
                 'is_highest' => $data->is_highest
 

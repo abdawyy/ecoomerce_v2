@@ -7,4 +7,4 @@
     $alt = $product->name ?? $branding->logoAlt();
 @endphp
 
-<img src="{{ $src }}" alt="{{ $alt }}" {{ $attributes->merge(['class' => $class]) }}>
+<img src="{{ $src }}" alt="{{ $alt }}" {{ $attributes->merge(['class' => $class, 'loading' => 'lazy', 'decoding' => 'async']) }}>

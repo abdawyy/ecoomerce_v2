@@ -31,6 +31,7 @@ class AdminGuideController extends Controller
             'Title' => $g->title_en,
             'Type' => $g->content_type,
             'Downloads' => $g->download_count,
+            'href' => route('guides.admin.edit', $g->id),
             'is_active' => $g->is_active,
         ]);
 

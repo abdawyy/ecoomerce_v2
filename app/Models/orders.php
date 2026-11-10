@@ -52,12 +52,27 @@ class orders extends Model
         $from = OrderStatus::normalize($this->status);
         $to = OrderStatus::normalize($status);
 
-        if ($from !== OrderStatus::CANCELLED && $to === OrderStatus::CANCELLED) {
-            $this->restoreStock();
+        if ($from === $to) {
+            return;
         }
 
-        $this->status = $to;
-        $this->save();
+        DB::transaction(function () use ($from, $to) {
+            $order = self::query()->whereKey($this->id)->lockForUpdate()->first();
+            if (! $order) {
+                throw new \RuntimeException(__('orders.stock_item_missing'));
+            }
+
+            if ($from !== OrderStatus::CANCELLED && $to === OrderStatus::CANCELLED) {
+                $this->adjustStock($order, 1);
+            }
+
+            if ($from === OrderStatus::CANCELLED && $to !== OrderStatus::CANCELLED) {
+                $this->adjustStock($order, -1);
+            }
+
+            $this->status = $to;
+            $this->save();
+        });
     }
 
     public function restoreStock(): void
@@ -68,29 +83,49 @@ class orders extends Model
                 return;
             }
 
-            foreach ($order->orderItems as $item) {
-                $quantity = (int) $item->quantity;
-                if ($quantity < 1) {
-                    continue;
-                }
-
-                $productItem = null;
-                if ($item->size_id) {
-                    $productItem = productItems::where('id', $item->size_id)->lockForUpdate()->first();
-                }
-                if (! $productItem && $item->size) {
-                    $productItem = productItems::where('products_id', $item->products_id)
-                        ->where('size', $item->size)
-                        ->lockForUpdate()
-                        ->first();
-                }
-
-                if ($productItem) {
-                    $productItem->quantity = (int) $productItem->quantity + $quantity;
-                    $productItem->save();
-                }
-            }
+            $this->adjustStock($order, 1);
         });
+    }
+
+    protected function adjustStock(self $order, int $direction): void
+    {
+        $order->loadMissing('orderItems.product');
+
+        foreach ($order->orderItems as $item) {
+            $quantity = (int) $item->quantity;
+            if ($quantity < 1) {
+                continue;
+            }
+
+            $productItem = null;
+            if ($item->size_id) {
+                $productItem = productItems::where('id', $item->size_id)->lockForUpdate()->first();
+            }
+            if (! $productItem && $item->size) {
+                $productItem = productItems::where('products_id', $item->products_id)
+                    ->where('size', $item->size)
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            if (! $productItem) {
+                if ($direction < 0) {
+                    throw new \RuntimeException(__('orders.stock_item_missing'));
+                }
+
+                continue;
+            }
+
+            if ($direction < 0 && (int) $productItem->quantity < $quantity) {
+                throw new \RuntimeException(__('orders.insufficient_stock', [
+                    'product' => $item->product->name ?? ('#'.$item->products_id),
+                    'available' => (int) $productItem->quantity,
+                ]));
+            }
+
+            $productItem->quantity = (int) $productItem->quantity + ($direction * $quantity);
+            $productItem->save();
+        }
     }
 
     public function user()
