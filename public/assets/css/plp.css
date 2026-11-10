@@ -229,6 +229,28 @@
     display: inline-block !important;
 }
 
+@media (max-width: 768px) {
+    .plp-page .pagination {
+        gap: 0.35rem;
+        justify-content: center;
+    }
+
+    .plp-page .pagination .page-link {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.45rem 0.7rem;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .plp-page .pagination svg {
+        width: 1.15rem !important;
+        height: 1.15rem !important;
+    }
+}
+
 .plp-mobile-filter.offcanvas {
     width: 100% !important;
 }

@@ -9,7 +9,7 @@
 @endphp
 <x-web.layout :title="$listTitle">
     @push('styles')
-        <link rel="stylesheet" href="{{ asset('assets/css/plp.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/plp.css') }}?v={{ filemtime(public_path('assets/css/plp.css')) }}">
     @endpush
 
 <section class="pb-5 plp-page">

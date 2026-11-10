@@ -8,7 +8,6 @@
 
 <style>
     .pagination .page-link { border-radius: 10px; }
-    .pagination .page-link svg { width: 14px !important; }
 </style>
 
 <main id="main">
@@ -71,11 +70,6 @@
 <style>
     .pagination .page-link {
         border-radius: 10px;
-    }
-
-    .pagination .page-link svg {
-        width: 14px !important;
-        height: 14px !important;
     }
 </style>
 

@@ -11,9 +11,9 @@
                 :breadcrumb="__('users.breadcrumb_main')"
                 :activeBreadcrumb="__('users.breadcrumb_users')" />
 
-            <div class="admin-card card mb-4">
-                <div class="card-header bg-white fw-bold">{{ __('web.filter') }}</div>
-                <div class="card-body">
+            <div class="admin-card card mb-4 filter-card">
+                <div class="card-header filter-header bg-white fw-bold">{{ __('web.filter') }}</div>
+                <div class="card-body filter-body">
                     <form method="GET" class="row g-3">
                         <div class="col-lg-4 col-md-6">
                             <label class="form-label">{{ __('users.filter_search') }}</label>
@@ -69,24 +69,24 @@
                         <tbody>
                             @forelse ($users as $user)
                                 <tr>
-                                    <td>{{ $user->id }}</td>
-                                    <td>
+                                    <td data-label="ID">{{ $user->id }}</td>
+                                    <td data-label="{{ __('users.name') }}">
                                         {{ $user->name }}
                                         @if ($user->created_at && $user->created_at->gte(now()->subDays(7)))
                                             <span class="badge bg-info text-dark ms-1">{{ __('users.badge_new') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>{{ $user->order_count }}</td>
-                                    <td>
+                                    <td data-label="{{ __('users.email') }}">{{ $user->email }}</td>
+                                    <td data-label="{{ __('users.kpi_orders') }}">{{ $user->order_count }}</td>
+                                    <td data-label="{{ __('users.kpi_last_order') }}">
                                         @if ($user->last_order_at)
                                             {{ \Carbon\Carbon::parse($user->last_order_at)->format('M d, Y') }}
                                         @else
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $user->created_at->format('M d, Y') }}</td>
-                                    <td>
+                                    <td data-label="{{ __('users.joined') }}">{{ $user->created_at->format('M d, Y') }}</td>
+                                    <td data-label="{{ __('users.status') }}">
                                         <span class="admin-status-pill {{ $user->is_active ? 'is-on' : '' }}">
                                             {{ $user->is_active ? __('users.status_active') : __('users.status_inactive') }}
                                         </span>

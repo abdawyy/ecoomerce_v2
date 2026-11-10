@@ -11,9 +11,9 @@
                 :breadcrumb="__('guest.breadcrumb_main')"
                 :activeBreadcrumb="__('guest.breadcrumb_guest')" />
 
-            <div class="admin-card card mb-4">
-                <div class="card-header bg-white fw-bold">{{ __('web.filter') }}</div>
-                <div class="card-body">
+            <div class="admin-card card mb-4 filter-card">
+                <div class="card-header filter-header bg-white fw-bold">{{ __('web.filter') }}</div>
+                <div class="card-body filter-body">
                     <form method="GET" class="row g-3">
                         <div class="col-lg-4 col-md-6">
                             <label class="form-label">{{ __('guest.filter_search') }}</label>
@@ -61,24 +61,24 @@
                         <tbody>
                             @forelse ($guests as $guest)
                                 <tr>
-                                    <td>{{ $guest->id }}</td>
-                                    <td>
+                                    <td data-label="ID">{{ $guest->id }}</td>
+                                    <td data-label="{{ __('guest.name') }}">
                                         {{ $guest->name }}
                                         @if ($guest->created_at && $guest->created_at->gte(now()->subDays(7)))
                                             <span class="badge bg-info text-dark ms-1">{{ __('guest.badge_new') }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $guest->email }}</td>
-                                    <td>{{ $guest->orders_count }}</td>
-                                    <td>
+                                    <td data-label="{{ __('guest.email') }}">{{ $guest->email }}</td>
+                                    <td data-label="{{ __('guest.kpi_orders') }}">{{ $guest->orders_count }}</td>
+                                    <td data-label="{{ __('guest.kpi_last_order') }}">
                                         @if ($guest->last_order_at)
                                             {{ \Carbon\Carbon::parse($guest->last_order_at)->format('M d, Y') }}
                                         @else
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $guest->created_at->format('M d, Y') }}</td>
-                                    <td><span class="badge bg-secondary">{{ __('guest.badge_guest') }}</span></td>
+                                    <td data-label="{{ __('guest.joined') }}">{{ $guest->created_at->format('M d, Y') }}</td>
+                                    <td data-label="{{ __('guest.type') }}"><span class="badge bg-secondary">{{ __('guest.badge_guest') }}</span></td>
                                     <td data-label="{{ __('table.headers.action') }}">
                                         @php $actionsAlign = $isRtl ? 'justify-content-start' : 'justify-content-end'; @endphp
                                         <div class="table-actions {{ $actionsAlign }}">
