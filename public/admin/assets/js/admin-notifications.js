@@ -184,13 +184,23 @@
 
     let lockedScrollY = 0;
 
+    function isMobileNotify() {
+        return window.matchMedia('(max-width: 767.98px)').matches;
+    }
+
     function lockPageScroll() {
+        if (!isMobileNotify()) return;
         lockedScrollY = window.scrollY || window.pageYOffset || 0;
+        const gutter = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.position = 'fixed';
         document.body.style.top = '-' + lockedScrollY + 'px';
         document.body.style.left = '0';
         document.body.style.right = '0';
         document.body.style.width = '100%';
+        if (gutter > 0) {
+            document.body.style.paddingRight = gutter + 'px';
+        }
+        document.documentElement.style.scrollbarGutter = 'stable';
     }
 
     function unlockPageScroll() {
@@ -199,7 +209,11 @@
         document.body.style.left = '';
         document.body.style.right = '';
         document.body.style.width = '';
-        window.scrollTo(0, lockedScrollY);
+        document.body.style.paddingRight = '';
+        document.documentElement.style.scrollbarGutter = '';
+        if (isMobileNotify() || lockedScrollY) {
+            window.scrollTo(0, lockedScrollY);
+        }
     }
 
     function notifyToggleBtn() {
@@ -235,7 +249,7 @@
     });
 
     document.addEventListener('touchmove', function (event) {
-        if (!document.body.classList.contains('admin-notify-open')) return;
+        if (!document.body.classList.contains('admin-notify-open') || !isMobileNotify()) return;
         const feed = document.getElementById('admin-notify-feed');
         if (feed && feed.contains(event.target)) return;
         event.preventDefault();
