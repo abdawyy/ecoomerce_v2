@@ -1,2 +1,2 @@
-*
-!.gitignore
+# Uploaded product and site images in this folder are tracked.
+# The public/storage symlink stays gitignored in the repo root.
