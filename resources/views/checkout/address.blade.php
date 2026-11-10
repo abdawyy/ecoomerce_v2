@@ -37,6 +37,7 @@
                     @if (session('promo_code'))
                         <input type="hidden" name="promo_code" value="{{ session('promo_code') }}">
                     @endif
+                    <input type="hidden" name="saved_address_id" id="saved_address_id" value="{{ old('saved_address_id') }}">
 
                     <div class="row g-4">
                         <div class="col-12 col-lg-7">
@@ -53,7 +54,8 @@
                                                         data-line2="{{ $address->address_line2 }}"
                                                         data-city="{{ $address->city }}"
                                                         data-country="{{ $address->country }}"
-                                                        data-phone="{{ $address->phone_number }}">
+                                                        data-phone="{{ $address->phone_number }}"
+                                                        {{ (string) old('saved_address_id') === (string) $address->id ? 'selected' : '' }}>
                                                         {{ $address->address_line1 }}@if($address->is_default) ★@endif
                                                     </option>
                                                 @endforeach
@@ -302,9 +304,14 @@
         citySelect?.addEventListener('change', recalc);
 
         const savedSelect = document.getElementById('saved_address');
+        const savedIdInput = document.getElementById('saved_address_id');
         savedSelect?.addEventListener('change', () => {
             const opt = savedSelect.selectedOptions[0];
-            if (!opt || !opt.value) return;
+            if (!opt || !opt.value) {
+                if (savedIdInput) savedIdInput.value = '';
+                return;
+            }
+            if (savedIdInput) savedIdInput.value = opt.value;
             document.getElementById('address_line_1').value = opt.dataset.line1 || '';
             document.getElementById('address_line_2').value = opt.dataset.line2 || '';
             document.getElementById('country').value = opt.dataset.country || '';

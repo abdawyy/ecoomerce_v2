@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\AdminCustomerProfileService;
 use App\Services\AnalyticsService;
 use App\Services\AdminNotificationService;
+use App\Support\OrderStatus;
 use Carbon\Carbon;
 
 class AdminController extends Controller
@@ -42,7 +43,11 @@ class AdminController extends Controller
 
 
         // Attempt to log the admin in
-        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
+        if (Auth::guard('admin')->attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+            'is_active' => 1,
+        ])) {
             // Redirect to admin dashboard on successful login
             return redirect()->route("admin.dashboard")->with('success', 'Login successful');
         }
@@ -105,7 +110,7 @@ class AdminController extends Controller
     {
         $totalUsers = User::count();
         $totalOrders = orders::count();
-        $totalAmount = (float) orders::whereIn('status', ['Completed', 'completed'])->sum('total_amount');
+        $totalAmount = (float) orders::whereIn('status', OrderStatus::completedValues())->sum('total_amount');
 
         $todayStart = Carbon::today()->startOfDay();
         $todayEnd = Carbon::today()->endOfDay();
@@ -307,7 +312,7 @@ class AdminController extends Controller
         
         // Apply status filter
         if ($status) {
-            $query = $query->where('status', $status);
+            $query = $query->whereIn('status', OrderStatus::aliases($status));
         }
 
         // Paginate and preserve query parameters
@@ -386,11 +391,10 @@ class AdminController extends Controller
 
         // Validate and update the status
         $request->validate([
-            'status' => 'required|string|in:Pending,Processing,Completed,Cancelled,pending,completed',
+            'status' => OrderStatus::validationRule(),
         ]);
 
-        $order->status = $request->status;
-        $order->save();
+        $order->transitionTo($request->status);
 
         return redirect()->back()->with('success', 'Order status updated successfully');
     }

@@ -16,7 +16,7 @@
 
     <x-seo.meta :seo="$seo ?? null" />
 
-    @if ($title)
+    @if ($title && empty($seo))
         <title>{{ $title }} | {{ $branding->siteName() }}</title>
     @endif
 

@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('migrations')) {
+        if (Schema::hasTable('migrations') && Schema::getConnection()->getDriverName() === 'mysql') {
             DB::statement('ALTER TABLE migrations MODIFY id INT UNSIGNED NOT NULL AUTO_INCREMENT');
         }
 

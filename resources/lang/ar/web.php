@@ -90,4 +90,13 @@ return [
     'shop_now' => 'تسوق الآن',
     'continue_shopping' => 'متابعة التسوق',
     'skip_to_content' => 'تخطي إلى المحتوى',
+    'product_description' => 'الوصف',
+    'customer_reviews' => 'آراء العملاء',
+    'write_your_review' => 'اكتب مراجعتك...',
+    'please_select_size' => 'يرجى اختيار المقاس أولاً',
+    'unable_add_to_cart' => 'تعذر إضافة المنتج إلى السلة.',
+    'please_select_rating' => 'يرجى اختيار تقييم بالنجوم',
+    'first_to_review' => 'لا توجد مراجعات بعد. كن أول من يقيّم!',
+    'review_requires_purchase' => 'يمكنك تقييم المنتجات التي اشتريتها فقط.',
+    'please_login_to_review' => 'يرجى <a href=":url" class="fw-bold">تسجيل الدخول</a> لترك مراجعة.',
 ];

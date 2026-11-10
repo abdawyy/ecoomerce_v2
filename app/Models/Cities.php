@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Apptraits;
+use Illuminate\Validation\Rule;
 
 
 class Cities extends Model
@@ -21,6 +22,11 @@ class Cities extends Model
 
     // Define the table name (optional, but good practice for clarity)
     protected $table = 'cities';
+
+    public static function activeIdRule()
+    {
+        return Rule::exists('cities', 'id')->where(fn ($q) => $q->where('is_active', 1));
+    }
 
 
 

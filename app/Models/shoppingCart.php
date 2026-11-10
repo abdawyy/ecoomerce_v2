@@ -25,7 +25,7 @@ class shoppingCart extends Model
     // Define the relationship with the User model
     public function user()
     {
-        return $this->belongsTo(user::class);
+        return $this->belongsTo(User::class);
     }
     public function product()
     {
@@ -55,15 +55,21 @@ class shoppingCart extends Model
     public function merchandiseTotal($userId = null, $promoCode = 0): float
     {
         $shipping = app(ShippingService::class);
-        $subtotal = $this->calculateSubtotal($this->getCartItems($userId));
+        $subtotal = $this->subtotal($userId);
 
-        return $shipping->merchandiseAfterDiscount((float) $subtotal, (float) $promoCode);
+        return $shipping->merchandiseAfterDiscount($subtotal, (float) $promoCode);
     }
+
+    public function subtotal($userId = null): float
+    {
+        return app(ShippingService::class)->money((float) $this->calculateSubtotal($this->getCartItems($userId)));
+    }
+
     // Get cart items for either a user or guest
     protected function getCartItems($userId)
     {
         if ($userId) {
-            return $this->with('product')->where('user_id', $userId)->get();
+            return $this->with(['product.category', 'product.type'])->where('user_id', $userId)->get();
         }
 
         return self::getGuestCartItems();
@@ -75,11 +81,20 @@ class shoppingCart extends Model
         $total = 0;
 
         foreach ($items as $item) {
-            $price = $item->product->price ?? $item['price'];
-            $sale = $item->product->sale ?? $item['sale'];
+            $product = is_object($item) && isset($item->product) && is_object($item->product)
+                ? $item->product
+                : products::query()->with(['category', 'type'])->find(is_array($item) ? ($item['product_id'] ?? null) : ($item->products_id ?? $item->product_id ?? null));
 
-            $discountedPrice = $price - ($price * $sale / 100);
-            $total += $discountedPrice * ($item->quantity ?? $item['quantity']);
+            if (! $product || ! $product->isSellable()) {
+                continue;
+            }
+
+            $quantity = (int) (is_array($item) ? ($item['quantity'] ?? 0) : ($item->quantity ?? 0));
+            if ($quantity < 1) {
+                continue;
+            }
+
+            $total += $product->discountedUnitPrice() * $quantity;
         }
 
         return $total;
@@ -96,7 +111,7 @@ class shoppingCart extends Model
     {
         try {
             // Retrieve all cart items for the given user ID
-            $cartItems = self::where('user_id', $userId)->with('product')->get();
+            $cartItems = self::where('user_id', $userId)->with(['product.category', 'product.type'])->get();
 
             return $cartItems;
 

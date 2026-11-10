@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Support\OrderStatus;
 use App\Traits\Apptraits;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 
 class orders extends Model
@@ -28,8 +30,68 @@ class orders extends Model
 
     // Optionally, specify default values for attributes
     protected $attributes = [
-        'status' => 'Pending',
+        'status' => OrderStatus::PENDING,
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $order) {
+            if ($order->status) {
+                $order->status = OrderStatus::normalize($order->status);
+            }
+        });
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->whereIn('status', OrderStatus::completedValues());
+    }
+
+    public function transitionTo(string $status): void
+    {
+        $from = OrderStatus::normalize($this->status);
+        $to = OrderStatus::normalize($status);
+
+        if ($from !== OrderStatus::CANCELLED && $to === OrderStatus::CANCELLED) {
+            $this->restoreStock();
+        }
+
+        $this->status = $to;
+        $this->save();
+    }
+
+    public function restoreStock(): void
+    {
+        DB::transaction(function () {
+            $order = self::query()->whereKey($this->id)->lockForUpdate()->first();
+            if (! $order) {
+                return;
+            }
+
+            foreach ($order->orderItems as $item) {
+                $quantity = (int) $item->quantity;
+                if ($quantity < 1) {
+                    continue;
+                }
+
+                $productItem = null;
+                if ($item->size_id) {
+                    $productItem = productItems::where('id', $item->size_id)->lockForUpdate()->first();
+                }
+                if (! $productItem && $item->size) {
+                    $productItem = productItems::where('products_id', $item->products_id)
+                        ->where('size', $item->size)
+                        ->lockForUpdate()
+                        ->first();
+                }
+
+                if ($productItem) {
+                    $productItem->quantity = (int) $productItem->quantity + $quantity;
+                    $productItem->save();
+                }
+            }
+        });
+    }
 
     public function user()
     {
@@ -117,8 +179,16 @@ class orders extends Model
         foreach ($cartItems as $cartItem) {
             $productsId = $cartItem['product_id'] ?? $cartItem->products_id;
             $sizeId = $cartItem['size_id'] ?? $cartItem->size_id;
-            $quantity = $cartItem['quantity'] ?? $cartItem->quantity;
+            $quantity = (int) ($cartItem['quantity'] ?? $cartItem->quantity);
 
+            if ($quantity < 1) {
+                throw new \Exception('Invalid item quantity.');
+            }
+
+            $product = products::with(['category', 'type'])->find($productsId);
+            if (! $product || ! $product->isSellable()) {
+                throw new \Exception('This product is no longer available.');
+            }
 
             $productItem = productItems::where('products_id', $productsId)
                 ->where('id', $sizeId)
@@ -130,28 +200,26 @@ class orders extends Model
             }
 
             if ($productItem->quantity < $quantity) {
-                $productId = is_array($cartItem) ? $cartItem['product_id'] : $cartItem->products_id;
-                $productName = products::find($productId)?->name ?? 'Product';
-                throw new \Exception("Insufficient stock for {$productName}. Only {$productItem->quantity} available.");
+                throw new \Exception("Insufficient stock for {$product->name}. Only {$productItem->quantity} available.");
             }
-
-            $productId = is_array($cartItem) ? $cartItem['product_id'] : $cartItem->products_id;
-            $product = products::findOrFail($productId);
 
             $productItem->quantity -= $quantity;
             $productItem->save();
 
-            $price = ($product->price ?? 0) - (($product->price ?? 0) * ($product->sale ?? 0) / 100);
-            $totalPrice = $price * $quantity;
+            $totalPrice = $product->discountedUnitPrice() * $quantity;
 
-
-            orderItems::create([
+            $itemPayload = [
                 'orders_id' => $this->id,
                 'products_id' => $productsId,
                 'quantity' => $quantity,
                 'size' => $productItem->size,
                 'price' => $totalPrice,
-            ]);
+            ];
+            if (Schema::hasColumn('order_items', 'size_id')) {
+                $itemPayload['size_id'] = $sizeId;
+            }
+
+            orderItems::create($itemPayload);
         }
     }
 

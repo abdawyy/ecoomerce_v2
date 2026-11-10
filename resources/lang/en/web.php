@@ -86,5 +86,14 @@ return [
   'shop_now' => 'Shop now',
   'continue_shopping' => 'Continue shopping',
   'skip_to_content' => 'Skip to content',
+  'product_description' => 'Description',
+  'customer_reviews' => 'Customer Reviews',
+  'write_your_review' => 'Write your review...',
+  'please_select_size' => 'Please select a size first',
+  'unable_add_to_cart' => 'Unable to add to cart.',
+  'please_select_rating' => 'Please select a star rating',
+  'first_to_review' => 'No reviews yet. Be the first to rate!',
+  'review_requires_purchase' => 'You can only review products you have purchased.',
+  'please_login_to_review' => 'Please <a href=":url" class="fw-bold">Login</a> to leave a review.',
 ];
 

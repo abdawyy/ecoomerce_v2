@@ -43,4 +43,20 @@ class addresses extends Model
         return $this->hasMany(orders::class ,'address_id');
     }
 
+    public function cityRecord()
+    {
+        if (! is_numeric($this->city)) {
+            return null;
+        }
+
+        return Cities::query()->find((int) $this->city);
+    }
+
+    public function cityName(): string
+    {
+        $record = $this->cityRecord();
+
+        return $record?->name ?? (string) ($this->city ?? '');
+    }
+
 }

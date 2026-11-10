@@ -15,10 +15,7 @@ class ValidPromoCode implements Rule
             return true;
         }
 
-        $promoCode = discountCodes::where('code', $value)
-            ->where('is_active', 1)
-            ->where('expiry_date', '>', now())
-            ->first();
+        $promoCode = discountCodes::findUsable($value);
 
         if (! $promoCode) {
             return false;

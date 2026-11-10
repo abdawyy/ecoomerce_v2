@@ -171,6 +171,12 @@
                                     <p class="mb-0 text-muted small">{{ __('cart.subtotal') }}</p>
                                     <p class="fw-bolder mb-0">LE {{ number_format($subtotal, 2) }}</p>
                                 </div>
+                                @if (($discountPercent ?? 0) > 0)
+                                    <div class="d-flex justify-content-between align-items-center pb-2 text-success">
+                                        <p class="mb-0 small">{{ __('checkout.discount') }} ({{ $discountPercent }}%)</p>
+                                        <p class="fw-bolder mb-0">- LE {{ number_format($discountAmount ?? 0, 2) }}</p>
+                                    </div>
+                                @endif
                                 @if (!empty($freeShippingMin))
                                     <p class="small mb-2 {{ !empty($freeShippingQualifies) ? 'text-success' : 'text-muted' }}">
                                         @if (!empty($freeShippingQualifies))

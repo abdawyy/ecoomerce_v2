@@ -26,11 +26,11 @@ class SeoPublicController extends Controller
                 }
             }
 
+            $productsQuery = products::sellable();
             if (Schema::hasColumn('products', 'is_indexable')) {
-                $products = products::where('is_active', 1)->where('is_indexable', true)->get();
-            } else {
-                $products = products::where('is_active', 1)->get();
+                $productsQuery->where('is_indexable', true);
             }
+            $products = $productsQuery->get();
 
             if (Schema::hasTable('guides')) {
                 foreach (\App\Models\Guide::active()->get() as $guide) {

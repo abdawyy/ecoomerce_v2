@@ -140,7 +140,7 @@
                 <div class="content-card p-4 p-md-5">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         @php $totalQuantity = $product->productItems->sum('quantity'); @endphp
-                        <span class="stock-badge">{{ $totalQuantity > 0 ? 'In Stock' : 'Out of Stock' }}</span>
+                        <span class="stock-badge">{{ $totalQuantity > 0 ? __('web.in_stock') : __('web.out_of_stock') }}</span>
                     </div>
 
                     <h1 class="fw-bold fs-3 mb-1">{{ $product->name }}</h1>
@@ -168,12 +168,12 @@
                     </div>
 
                     <div class="mb-4">
-                        <p class="section-title mb-1">Description</p>
+                        <p class="section-title mb-1">{{ __('web.product_description') }}</p>
                         <p class="lh-base text-secondary">{{ $product->description }}</p>
                     </div>
 
                     <div class="mb-4">
-                        <p class="section-title mb-2">Size</p>
+                        <p class="section-title mb-2">{{ __('web.size') }}</p>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach ($product->productItems as $productItem)
                                 <input type="radio" class="btn-check" name="productItem_id" id="size_{{ $productItem->id }}"
@@ -191,7 +191,7 @@
                     @endif
 
                     <div class="mb-4">
-                        <p class="section-title mb-2">Quantity</p>
+                        <p class="section-title mb-2">{{ __('web.quantity') }}</p>
                         <div class="input-group qty-group" style="width: 160px;">
                             <button class="btn btn-outline-dark" type="button" onclick="changeQuantity(-1)">-</button>
                             <input type="text" id="quantity" class="form-control text-center fw-bold" value="1" readonly>
@@ -200,7 +200,7 @@
                     </div>
 
                     <button class="btn btn-dark w-100 py-3 fw-bold rounded-3 cta-btn" onclick="addToCart({{ $product->id }})">
-                        <i class="bi bi-bag-plus-fill me-2"></i> Add to Cart
+                        <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
                     </button>
 
                     @if ($product->guide)
@@ -213,7 +213,7 @@
 
                     <div id="reviews-section">
                         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-                            <h4 class="fw-bold mb-0">Customer Reviews</h4>
+                            <h4 class="fw-bold mb-0">{{ __('web.customer_reviews') }}</h4>
                             @if (($reviewCount ?? 0) > 0)
                                 <div class="text-warning">
                                     @for ($i = 1; $i <= 5; $i++)
@@ -226,19 +226,19 @@
                     
                     @auth
                         <div class="review-form-box shadow-sm">
-                            <label class="fw-bold small mb-2">Rate this product</label>
+                            <label class="fw-bold small mb-2">{{ __('web.rate_this_product') }}</label>
                             <div id="submitStars" class="text-muted fs-4 mb-3">
                                 @for ($i = 1; $i <= 5; $i++)
                                     <i class="bi bi-star pointer" data-value="{{ $i }}"></i>
                                 @endfor
                             </div>
                             <input type="hidden" id="ratingInput" value="0">
-                            <textarea id="commentInput" class="form-control mb-3" rows="3" placeholder="Write your review..."></textarea>
-                            <button class="btn btn-dark px-4" id="ajaxSubmitReview">Submit Review</button>
+                            <textarea id="commentInput" class="form-control mb-3" rows="3" placeholder="{{ __('web.write_your_review') }}"></textarea>
+                            <button class="btn btn-dark px-4" id="ajaxSubmitReview">{{ __('web.submit_review') }}</button>
                         </div>
                     @else
                         <div class="alert alert-secondary border mb-4 text-center">
-                            <p class="mb-0 small text-muted">Please <a href="{{ route('login') }}" class="fw-bold">Login</a> to leave a review.</p>
+                            <p class="mb-0 small text-muted">{!! __('web.please_login_to_review', ['url' => route('login')]) !!}</p>
                         </div>
                     @endauth
 
@@ -256,7 +256,7 @@
                                 <p class="mb-0 small text-muted mt-1">{{ $review->comment }}</p>
                             </div>
                         @empty
-                            <p class="text-muted small">No reviews yet. Be the first to rate!</p>
+                            <p class="text-muted small">{{ __('web.first_to_review') }}</p>
                         @endforelse
                     </div>
                 </div>
@@ -342,7 +342,7 @@
         let selectedSize = $('input[name="productItem_id"]:checked').val();
         if (!selectedSize) {
             if (window.toastr) {
-                toastr.error("Please select a size first");
+                toastr.error(@json(__('web.please_select_size')));
             }
             return;
         }
@@ -359,7 +359,7 @@
             .then(async (res) => {
                 const data = await res.json().catch(() => ({}));
                 if (!res.ok) {
-                    throw new Error(data.message || 'Unable to add to cart.');
+                    throw new Error(data.message || @json(__('web.unable_add_to_cart')));
                 }
                 return data;
             })
@@ -370,17 +370,17 @@
                         window.trackMeta('AddToCart', data.meta);
                     }
                     if (window.toastr) {
-                        toastr.success(data.message || "Added to cart.");
+                        toastr.success(data.message || @json(__('web.add_to_cart')));
                     }
                 } else if (data.redirect) {
                     window.location.href = data.redirect;
                 } else if (window.toastr) {
-                    toastr.error(data.message || "Unable to add to cart.");
+                    toastr.error(data.message || @json(__('web.unable_add_to_cart')));
                 }
             })
             .catch(err => {
                 if (window.toastr) {
-                    toastr.error(err.message || "Unable to add to cart.");
+                    toastr.error(err.message || @json(__('web.unable_add_to_cart')));
                 }
             });
     }
@@ -390,7 +390,7 @@
         let rating = $('#ratingInput').val();
         if (rating == 0) {
             if (window.toastr) {
-                toastr.error("Please select a star rating");
+                toastr.error(@json(__('web.please_select_rating')));
             }
             return;
         }

@@ -63,9 +63,7 @@ class AppServiceProvider extends ServiceProvider
             $shareNavData($view);
 
             $products = products::with(['productImages', 'category', 'type'])
-                ->where('is_active', 1)
-                ->whereHas('category', fn ($q) => $q->where('is_active', 1))
-                ->whereHas('type', fn ($q) => $q->where('is_active', 1))
+                ->sellable()
                 ->orderByDesc('is_highest')
                 ->orderByDesc('name')
                 ->get();

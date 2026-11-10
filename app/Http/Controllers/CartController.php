@@ -6,13 +6,17 @@ use App\Models\discountCodes;
 use App\Models\productItems;
 use App\Models\products;
 use App\Models\shoppingCart;
+use App\Rules\ValidPromoCode;
 use App\Services\AnalyticsService;
+use App\Services\GuestCartMergeService;
 use App\Services\MetaPixelService;
 use App\Services\ShippingService;
 use App\Traits\Apptraits;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CartController extends Controller
 {
@@ -26,17 +30,21 @@ class CartController extends Controller
 
         try {
             $productItem = $this->getProductItem($request);
-            $availableStock = $productItem->quantity;
-            $requestedQuantity = $request->quantity;
+            $availableStock = (int) $productItem->quantity;
+            $requestedQuantity = (int) $request->quantity;
 
             if (auth()->check()) {
-                $this->mergeGuestCartIntoDatabase(auth()->id());
+                app(GuestCartMergeService::class)->mergeForUser(auth()->id());
 
                 return $this->handleAuthCart($request, $productItem, $availableStock, $requestedQuantity);
             }
 
             return $this->handleGuestCart($request, $productItem, $availableStock, $requestedQuantity);
+        } catch (ValidationException|HttpResponseException|HttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
+            report($e);
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while adding the product to the cart.',
@@ -55,7 +63,8 @@ class CartController extends Controller
 
     private function getProductItem(Request $request)
     {
-        $productItem = productItems::with('products')->where('id', $request->size_id)
+        $productItem = productItems::with(['products.category', 'products.type'])
+            ->where('id', $request->size_id)
             ->where('products_id', $request->product_id)
             ->first();
 
@@ -66,58 +75,15 @@ class CartController extends Controller
             ], 404));
         }
 
+        $product = $productItem->products;
+        if (! $product || ! $product->isSellable()) {
+            abort(response()->json([
+                'success' => false,
+                'message' => 'This product is not available.',
+            ], 422));
+        }
+
         return $productItem;
-    }
-
-    private function mergeGuestCartIntoDatabase(int $userId): void
-    {
-        $sessionCart = session()->get('cart', []);
-
-        if (empty($sessionCart)) {
-            return;
-        }
-
-        foreach ($sessionCart as $item) {
-            $productId = $item['product_id'] ?? null;
-            $sizeId = $item['size_id'] ?? null;
-            $quantity = (int) ($item['quantity'] ?? 1);
-
-            if (! $productId || ! $sizeId) {
-                continue;
-            }
-
-            $productItem = productItems::where('id', $sizeId)
-                ->where('products_id', $productId)
-                ->first();
-
-            if (! $productItem) {
-                continue;
-            }
-
-            $quantity = min($quantity, $productItem->quantity);
-
-            $existingCartItem = shoppingCart::where('user_id', $userId)
-                ->where('products_id', $productId)
-                ->where('size_id', $sizeId)
-                ->first();
-
-            if ($existingCartItem) {
-                $existingCartItem->quantity = min(
-                    $existingCartItem->quantity + $quantity,
-                    $productItem->quantity
-                );
-                $existingCartItem->save();
-            } else {
-                shoppingCart::create([
-                    'user_id' => $userId,
-                    'products_id' => $productId,
-                    'size_id' => $sizeId,
-                    'quantity' => $quantity,
-                ]);
-            }
-        }
-
-        session()->forget('cart');
     }
 
     private function handleAuthCart($request, $productItem, $availableStock, $requestedQuantity)
@@ -250,9 +216,7 @@ class CartController extends Controller
 
     public function applyPromo(Request $request)
     {
-        $request->validate(['promo_code' => 'nullable|string|max:50']);
-
-        $code = trim($request->input('promo_code', ''));
+        $code = trim((string) $request->input('promo_code', ''));
 
         if ($code === '') {
             session()->forget('promo_code');
@@ -260,11 +224,12 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('success', __('cart.promo_removed'));
         }
 
-        $promo = discountCodes::where('code', $code)
-            ->where('is_active', 1)
-            ->where('expiry_date', '>', now())
-            ->first();
+        $request->merge(['promo_code' => $code]);
+        $request->validate([
+            'promo_code' => ['required', 'string', 'max:50', new ValidPromoCode],
+        ]);
 
+        $promo = discountCodes::findUsable($code);
         if (! $promo) {
             return redirect()->route('cart.index')->with('error', __('checkout.invalid_promo'));
         }
@@ -274,20 +239,46 @@ class CartController extends Controller
         return redirect()->route('cart.index')->with('success', __('cart.promo_applied', ['percent' => $promo->discount_percentage]));
     }
 
+    private function resolvedPromo(): ?discountCodes
+    {
+        $code = session('promo_code');
+        if (! $code) {
+            return null;
+        }
 
-    private function cartShippingHints(float $subtotal): array
+        $promo = discountCodes::findUsable($code);
+        if (! $promo || ! (new ValidPromoCode)->passes('promo_code', $code)) {
+            session()->forget('promo_code');
+
+            return null;
+        }
+
+        return $promo;
+    }
+
+    private function cartTotals(?int $userId): array
     {
         $shipping = app(ShippingService::class);
-        $promoPercent = 0;
-        $code = session('promo_code');
-        if ($code) {
-            $promo = discountCodes::where('code', $code)
-                ->where('is_active', 1)
-                ->where('expiry_date', '>', now())
-                ->first();
-            $promoPercent = (float) ($promo->discount_percentage ?? 0);
-        }
-        $merchandise = $shipping->merchandiseAfterDiscount($subtotal, $promoPercent);
+        $cart = new shoppingCart;
+        $subtotal = $cart->subtotal($userId);
+        $promo = $this->resolvedPromo();
+        $discountPercent = (float) ($promo->discount_percentage ?? 0);
+        $discountAmount = $shipping->money($subtotal * ($discountPercent / 100));
+        $merchandise = $shipping->merchandiseAfterDiscount($subtotal, $discountPercent);
+
+        return array_merge([
+            'subtotal' => $subtotal,
+            'total' => $merchandise,
+            'discountPercent' => $discountPercent,
+            'discountAmount' => $discountAmount,
+            'appliedPromo' => $promo?->code ?? session('promo_code'),
+            'featuredProducts' => $this->featuredProducts(),
+        ], $this->cartShippingHints($merchandise));
+    }
+
+    private function cartShippingHints(float $merchandise): array
+    {
+        $shipping = app(ShippingService::class);
 
         return [
             'freeShippingMin' => $shipping->threshold(),
@@ -299,9 +290,7 @@ class CartController extends Controller
     private function featuredProducts()
     {
         return products::with('productImages')
-            ->where('is_active', 1)
-            ->whereHas('category', fn ($q) => $q->where('is_active', 1))
-            ->whereHas('type', fn ($q) => $q->where('is_active', 1))
+            ->sellable()
             ->orderByDesc('is_highest')
             ->orderByDesc('created_at')
             ->limit(4)
@@ -314,37 +303,26 @@ class CartController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
-        $subtotal = $cartItems->sum(function ($item) {
-            return ($item->product->price - ($item->product->price * $item->product->sale / 100)) * $item->quantity;
-        });
-
-        return view('cart.index', array_merge([
-            'cartItems' => $cartItems,
-            'subtotal' => $subtotal,
-            'total' => $subtotal,
-            'featuredProducts' => $this->featuredProducts(),
-            'appliedPromo' => session('promo_code'),
-        ], $this->cartShippingHints((float) $subtotal)));
+        return view('cart.index', array_merge(
+            $this->cartTotals(auth()->id()),
+            compact('cartItems')
+        ));
     }
 
     private function renderGuestCart()
     {
-        [$cartItems, $subtotal] = $this->buildGuestCartViewData();
+        [$cartItems] = $this->buildGuestCartViewData();
 
-        return view('cart.index', array_merge([
-            'cartItems' => $cartItems,
-            'subtotal' => $subtotal,
-            'total' => $subtotal,
-            'featuredProducts' => $this->featuredProducts(),
-            'appliedPromo' => session('promo_code'),
-        ], $this->cartShippingHints((float) $subtotal)));
+        return view('cart.index', array_merge(
+            $this->cartTotals(null),
+            compact('cartItems')
+        ));
     }
 
     private function buildGuestCartViewData(): array
     {
         $sessionCart = session()->get('cart', []);
         $cartItems = collect();
-        $subtotal = 0;
         $combined = [];
 
         foreach ($sessionCart as $item) {
@@ -358,26 +336,22 @@ class CartController extends Controller
         }
 
         $productIds = collect($combined)->pluck('product_id')->unique()->filter()->all();
-        $productsById = products::with('productImages')->whereIn('id', $productIds)->get()->keyBy('id');
+        $productsById = products::with(['productImages', 'category', 'type'])->whereIn('id', $productIds)->get()->keyBy('id');
 
         foreach ($combined as $key => $item) {
             $product = $productsById->get($item['product_id']);
 
-            if ($product) {
+            if ($product && $product->isSellable()) {
                 $cartItems->push((object) [
                     'product' => $product,
                     'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'sale' => $item['sale'],
                     'size_id' => $item['size_id'],
                     'key' => $key,
                 ]);
-
-                $subtotal += ($product->price - ($product->price * $product->sale / 100)) * $item['quantity'];
             }
         }
 
-        return [$cartItems, $subtotal];
+        return [$cartItems];
     }
 
     public function delete($id)
@@ -421,9 +395,15 @@ class CartController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $productItem = productItems::where('id', $cartItem->size_id)
+        $productItem = productItems::with(['products.category', 'products.type'])
+            ->where('id', $cartItem->size_id)
             ->where('products_id', $cartItem->products_id)
             ->firstOrFail();
+
+        $product = $productItem->products;
+        if (! $product || ! $product->isSellable()) {
+            return redirect()->back()->with('error', 'This product is not available.');
+        }
 
         if ($request->quantity > $productItem->quantity) {
             return redirect()->back()->with('error', __('cart.stock_limit', ['count' => $productItem->quantity]));
@@ -446,11 +426,13 @@ class CartController extends Controller
         }
 
         $item = $guestCart[$key];
-        $productItem = productItems::where('id', $item['size_id'])
+        $productItem = productItems::with(['products.category', 'products.type'])
+            ->where('id', $item['size_id'])
             ->where('products_id', $item['product_id'])
             ->first();
 
-        if (! $productItem || $request->quantity > $productItem->quantity) {
+        $product = $productItem?->products;
+        if (! $productItem || ! $product || ! $product->isSellable() || $request->quantity > $productItem->quantity) {
             return redirect()->back()->with('error', __('cart.stock_limit', ['count' => $productItem->quantity ?? 0]));
         }
 

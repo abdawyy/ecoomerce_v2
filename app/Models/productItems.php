@@ -22,6 +22,10 @@ class productItems extends Model
      ];
      protected $table = 'product_items';
 
+     protected $casts = [
+         'quantity' => 'integer',
+     ];
+
      public function products(){
         return $this->belongsTo(products::class);
 

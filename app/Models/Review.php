@@ -11,7 +11,7 @@ class Review extends Model
 {
     use Apptraits;
     protected $fillable = [
-        'user_id', 'product_id', 'rating', 'comment','is_active'
+        'user_id', 'product_id', 'rating', 'comment',
     ];
 
     public function user()

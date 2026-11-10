@@ -130,12 +130,13 @@
                 @method('PUT')
                 <div class="form-group">
                     <label for="status">{{ __('orders.change_status') }}</label>
+                    @php $currentStatus = \App\Support\OrderStatus::normalize($order->status); @endphp
                     <select name="status" class="form-control">
-                        <option value="Pending" {{ $order->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="Processing" {{ $order->status == 'Processing' ? 'selected' : '' }}>Processing
+                        <option value="Pending" {{ $currentStatus === 'Pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="Processing" {{ $currentStatus === 'Processing' ? 'selected' : '' }}>Processing
                         </option>
-                        <option value="Completed" {{ $order->status == 'Completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="Cancelled" {{ $order->status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                        <option value="Completed" {{ $currentStatus === 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="Cancelled" {{ $currentStatus === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">{{ __('orders.update') }}</button>
