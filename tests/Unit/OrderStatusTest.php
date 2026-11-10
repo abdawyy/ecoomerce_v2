@@ -15,4 +15,23 @@ class OrderStatusTest extends TestCase
         $this->assertSame(OrderStatus::CANCELLED, OrderStatus::normalize('cancelled'));
         $this->assertSame(OrderStatus::CANCELLED, OrderStatus::normalize('canceled'));
     }
+
+    public function test_pending_list_filter_includes_processing(): void
+    {
+        $this->assertSame(
+            OrderStatus::pendingValues(),
+            OrderStatus::listFilterValues('Pending')
+        );
+        $this->assertContains(OrderStatus::PROCESSING, OrderStatus::listFilterValues('pending'));
+    }
+
+    public function test_bell_total_excludes_new_users_and_guests(): void
+    {
+        $this->assertSame(5, \App\Support\AdminNav::notificationTotal([
+            'pending_orders' => 2,
+            'unread_messages' => 3,
+            'new_users' => 10,
+            'new_guests' => 8,
+        ]));
+    }
 }

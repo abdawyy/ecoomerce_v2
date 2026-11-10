@@ -30,8 +30,8 @@ class AdminNav
                     self::link('order.list', 'admin_sidebar.order_list', 'bi-cart3', Route::is('order.*'), 'pending_orders', $notify, route('order.list').'?status=Pending'),
                     self::link('admin.contact.list', 'admin_sidebar.messages_list', 'bi-envelope', Route::is('admin.contact.*'), 'unread_messages', $notify, null, 'danger'),
                     self::collapse('customers-nav', 'admin_sidebar.customers', 'bi-people', Route::is('users.*') || Route::is('admin.guest.*'), [
-                        self::child('users.list', 'admin_sidebar.user_list', Route::is('users.*'), 'new_users', $notify, 'info'),
-                        self::child('admin.guest.list', 'admin_sidebar.guest_list', Route::is('admin.guest.*'), 'new_guests', $notify, 'info'),
+                        self::child('users.list', 'admin_sidebar.user_list', Route::is('users.*'), 'new_users', $notify, 'info', route('users.list').'?new=1'),
+                        self::child('admin.guest.list', 'admin_sidebar.guest_list', Route::is('admin.guest.*'), 'new_guests', $notify, 'info', route('admin.guest.list').'?new=1'),
                     ]),
                 ],
             ],
@@ -97,6 +97,7 @@ class AdminNav
             'icon' => $icon,
             'active' => $active,
             'badge' => $badgeKey ? ($notify[$badgeKey] ?? 0) : 0,
+            'badge_key' => $badgeKey,
             'badge_variant' => $badgeVariant,
             'url' => $url ?? route($route),
         ];
@@ -108,14 +109,17 @@ class AdminNav
         bool $active,
         ?string $badgeKey = null,
         array $notify = [],
-        string $badgeVariant = 'warning'
+        string $badgeVariant = 'warning',
+        ?string $url = null
     ): array {
         return [
             'route' => $route,
             'label' => $labelKey,
             'active' => $active,
             'badge' => $badgeKey ? ($notify[$badgeKey] ?? 0) : 0,
+            'badge_key' => $badgeKey,
             'badge_variant' => $badgeVariant,
+            'url' => $url ?? route($route),
         ];
     }
 
@@ -139,8 +143,6 @@ class AdminNav
     public static function notificationTotal(array $notify): int
     {
         return (int) ($notify['pending_orders'] ?? 0)
-            + (int) ($notify['unread_messages'] ?? 0)
-            + (int) ($notify['new_users'] ?? 0)
-            + (int) ($notify['new_guests'] ?? 0);
+            + (int) ($notify['unread_messages'] ?? 0);
     }
 }

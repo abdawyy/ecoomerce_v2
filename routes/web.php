@@ -19,6 +19,7 @@ use App\Http\Controllers\SeoPublicController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\AdminGuideController;
+use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccountController;
 
 /*
@@ -87,6 +88,8 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('admin/dashboard/stats', [AdminController::class, 'dashboardStats'])->name('admin.dashboard.stats');
+    Route::get('admin/notifications/counts', [AdminNotificationController::class, 'counts'])->name('admin.notifications.counts');
+    Route::get('admin/notifications/feed', [AdminNotificationController::class, 'feed'])->name('admin.notifications.feed');
     Route::get('admin/list', [AdminController::class, 'list'])->name('admin.list');
     Route::post('admin/list/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');

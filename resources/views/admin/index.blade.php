@@ -33,12 +33,12 @@
                     <a href="{{ route('order.list') }}?status=Pending" class="action-strip-btn btn btn-sm btn-warning">
                         <i class="bi bi-cart3 me-1"></i>
                         {{ __('dashboard.pending_orders') }}
-                        <span class="badge bg-dark ms-1" id="pending-count">{{ $pendingOrders }}</span>
+                        <span class="badge bg-dark ms-1" id="pending-count" data-admin-notify="pending_orders">{{ $pendingOrders }}</span>
                     </a>
                     <a href="{{ route('admin.contact.list') }}" class="action-strip-btn btn btn-sm btn-danger">
                         <i class="bi bi-envelope me-1"></i>
                         {{ __('dashboard.unread_messages') }}
-                        <span class="badge bg-light text-dark ms-1" id="unread-messages-count">{{ $notify['unread_messages'] ?? 0 }}</span>
+                        <span class="badge bg-light text-dark ms-1" id="unread-messages-count" data-admin-notify="unread_messages">{{ $notify['unread_messages'] ?? 0 }}</span>
                     </a>
                     <a href="{{ route('products.edit') }}" class="action-strip-btn btn btn-sm btn-dark">
                         <i class="bi bi-plus-lg me-1"></i>{{ __('dashboard.quick_add_product') }}
@@ -105,7 +105,7 @@
                             <div class="d-flex justify-content-between align-items-start gap-2">
                                 <div class="min-w-0">
                                     <h6 class="text-muted mb-1">{{ __('dashboard.pending_orders') }}</h6>
-                                    <h3 class="mb-0 text-warning text-break" id="pending-count-card">{{ $pendingOrders }}</h3>
+                                    <h3 class="mb-0 text-warning text-break" id="pending-count-card" data-admin-notify="pending_orders">{{ $pendingOrders }}</h3>
                                 </div>
                                 <span class="admin-kpi-icon text-warning bg-warning bg-opacity-10"><i class="bi bi-hourglass-split"></i></span>
                             </div>
@@ -190,13 +190,13 @@
                             <a href="{{ route('discountCodes.edit') }}" class="btn btn-outline-secondary text-start">
                                 <i class="bi bi-percent me-2"></i>{{ __('dashboard.quick_add_discount') }}
                             </a>
-                            <a href="{{ route('users.list') }}" class="btn btn-outline-info text-start">
+                            <a href="{{ route('users.list') }}?new=1" class="btn btn-outline-info text-start">
                                 <i class="bi bi-people me-2"></i>{{ __('dashboard.view_users') }}
-                                <span class="badge bg-info ms-1" id="new-users-count">{{ $notify['new_users'] ?? 0 }}</span>
+                                <span class="badge bg-info ms-1" id="new-users-count" data-admin-notify="new_users">{{ $notify['new_users'] ?? 0 }}</span>
                             </a>
-                            <a href="{{ route('admin.guest.list') }}" class="btn btn-outline-info text-start">
+                            <a href="{{ route('admin.guest.list') }}?new=1" class="btn btn-outline-info text-start">
                                 <i class="bi bi-person-badge me-2"></i>{{ __('dashboard.view_guests') }}
-                                <span class="badge bg-info ms-1" id="new-guests-count">{{ $notify['new_guests'] ?? 0 }}</span>
+                                <span class="badge bg-info ms-1" id="new-guests-count" data-admin-notify="new_guests">{{ $notify['new_guests'] ?? 0 }}</span>
                             </a>
                         </div>
                     </div>
@@ -217,15 +217,6 @@
 (function () {
     const revenue = @json($chartRevenue);
     const traffic = @json($chartViews);
-    let lastOrderId = {{ $latestOrderId }};
-    let lastUserId = {{ $latestUserId }};
-    let lastGuestId = {{ $latestGuestId }};
-    let lastMessageId = {{ $latestMessageId }};
-    const statsUrl = @json(route('admin.dashboard.stats'));
-    const toastOrder = @json(__('dashboard.new_order_toast'));
-    const toastUser = @json(__('dashboard.new_user_toast'));
-    const toastGuest = @json(__('dashboard.new_guest_toast'));
-    const toastMessage = @json(__('dashboard.new_message_toast'));
 
     let revenueChart = null;
     let trafficChart = null;
@@ -295,86 +286,6 @@
 
     buildCharts();
     window.addEventListener('admin-theme-changed', buildCharts);
-
-    function setText(id, value) {
-        document.querySelectorAll('#' + id).forEach(el => { el.textContent = value; });
-    }
-
-    function updateNavNotifyTotal(data) {
-        const total = (data.pending_orders || 0) + (data.unread_messages || 0) + (data.new_users || 0) + (data.new_guests || 0);
-        const badge = document.getElementById('nav-notify-total');
-        if (!badge) return;
-        if (total > 0) {
-            badge.textContent = total > 99 ? '99+' : total;
-            badge.classList.remove('d-none');
-        } else {
-            badge.classList.add('d-none');
-        }
-    }
-
-    async function pollStats() {
-        try {
-            const qs = new URLSearchParams({
-                since_order_id: lastOrderId,
-                since_user_id: lastUserId,
-                since_guest_id: lastGuestId,
-                since_message_id: lastMessageId,
-            });
-            const res = await fetch(statsUrl + '?' + qs.toString(), { headers: { 'Accept': 'application/json' } });
-            if (!res.ok) return;
-            const data = await res.json();
-
-            setText('live-count', data.live_count);
-            setText('live-count-card', data.live_count);
-            setText('pending-count', data.pending_orders);
-            setText('pending-count-card', data.pending_orders);
-            setText('unread-messages-count', data.unread_messages);
-            setText('new-users-count', data.new_users);
-            setText('new-guests-count', data.new_guests);
-            setText('today-revenue', new Intl.NumberFormat().format(data.today_revenue));
-            setText('today-orders', data.today_orders);
-            setText('nav-pending-orders', data.pending_orders);
-            setText('nav-unread-messages', data.unread_messages);
-            updateNavNotifyTotal(data);
-
-            if (Array.isArray(data.new_orders) && typeof toastr !== 'undefined') {
-                data.new_orders.forEach(order => {
-                    if (order.id > lastOrderId) {
-                        toastr.info(toastOrder.replace(':id', order.id).replace(':amount', order.total));
-                    }
-                });
-            }
-            if (Array.isArray(data.new_users) && typeof toastr !== 'undefined') {
-                data.new_users.forEach(user => {
-                    if (user.id > lastUserId) {
-                        toastr.success(toastUser.replace(':name', user.name));
-                    }
-                });
-            }
-            if (Array.isArray(data.new_guests) && typeof toastr !== 'undefined') {
-                data.new_guests.forEach(guest => {
-                    if (guest.id > lastGuestId) {
-                        toastr.success(toastGuest.replace(':name', guest.name));
-                    }
-                });
-            }
-            if (Array.isArray(data.new_messages) && typeof toastr !== 'undefined') {
-                data.new_messages.forEach(msg => {
-                    if (msg.id > lastMessageId) {
-                        toastr.warning(toastMessage.replace(':name', msg.name));
-                    }
-                });
-            }
-
-            if (data.latest_order_id > lastOrderId) lastOrderId = data.latest_order_id;
-            if (data.latest_user_id > lastUserId) lastUserId = data.latest_user_id;
-            if (data.latest_guest_id > lastGuestId) lastGuestId = data.latest_guest_id;
-            if (data.latest_message_id > lastMessageId) lastMessageId = data.latest_message_id;
-        } catch (e) {}
-    }
-
-    pollStats();
-    setInterval(pollStats, 30000);
 })();
 </script>
 

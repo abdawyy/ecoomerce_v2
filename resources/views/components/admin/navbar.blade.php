@@ -2,7 +2,6 @@
     use App\Support\AdminNav;
     $notify = $adminNotifications ?? ['pending_orders' => 0, 'unread_messages' => 0, 'new_users' => 0, 'new_guests' => 0];
     $notifyTotal = AdminNav::notificationTotal($notify);
-    $feed = $adminActivityFeed ?? collect();
     $locale = app()->getLocale();
 @endphp
 
@@ -46,62 +45,44 @@
                     <i class="bi bi-moon-stars-fill" id="admin-theme-icon"></i>
                 </button>
 
-                <div class="dropdown">
+                <div class="dropdown admin-notify-dropdown">
                     <button class="admin-icon-btn border admin-notify-btn position-relative"
                         type="button"
                         data-bs-toggle="dropdown"
+                        data-bs-display="static"
                         aria-expanded="false"
                         aria-label="{{ __('dashboard.notifications') }}">
                         <i class="bi bi-bell fs-5"></i>
-                        @if ($notifyTotal > 0)
-                            <span id="nav-notify-total"
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ $notifyTotal > 99 ? '99+' : $notifyTotal }}
-                            </span>
-                        @else
-                            <span id="nav-notify-total" class="d-none position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                        @endif
+                        <span id="nav-notify-total"
+                            data-admin-notify-bell
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ $notifyTotal > 0 ? '' : 'd-none' }}">
+                            {{ $notifyTotal > 99 ? '99+' : $notifyTotal }}
+                        </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end admin-notify-menu shadow-sm p-0">
                         <li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                             <span class="fw-semibold">{{ __('dashboard.notifications') }}</span>
                             <a href="{{ route('admin.dashboard') }}" class="small text-decoration-none">{{ __('dashboard.view_all') }}</a>
                         </li>
-                        @forelse ($feed as $entry)
-                            <li>
-                                <a class="dropdown-item admin-notify-item py-2 px-3"
-                                    href="{{ $entry['url'] }}">
-                                    <div class="d-flex gap-2 align-items-start">
-                                        <span class="admin-notify-icon bg-{{ $entry['variant'] }} bg-opacity-10 text-{{ $entry['variant'] }}">
-                                            <i class="bi {{ $entry['icon'] }}"></i>
-                                        </span>
-                                        <div class="flex-grow-1 min-w-0">
-                                            <div class="fw-semibold small text-truncate">{{ $entry['title'] }}</div>
-                                            <div class="text-muted small text-truncate">{{ $entry['subtitle'] }}</div>
-                                            <div class="text-muted" style="font-size: 0.7rem;">{{ $entry['at']?->diffForHumans() }}</div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </li>
-                        @empty
-                            <li class="dropdown-item-text text-muted small px-3 py-3">{{ __('dashboard.no_activity') }}</li>
-                        @endforelse
+                        <li>
+                            <ul id="admin-notify-feed" class="list-unstyled mb-0 admin-notify-feed">
+                                <li class="dropdown-item-text text-muted small px-3 py-3">{{ __('dashboard.no_activity') }}</li>
+                            </ul>
+                        </li>
                         <li class="border-top">
                             <div class="d-flex flex-wrap gap-2 p-2 small">
-                                @if (($notify['pending_orders'] ?? 0) > 0)
-                                    <a href="{{ route('order.list') }}?status=Pending" class="badge bg-warning text-dark text-decoration-none">
-                                        {{ __('dashboard.pending_orders') }}: <span id="nav-pending-orders">{{ $notify['pending_orders'] }}</span>
-                                    </a>
-                                @else
-                                    <span class="d-none"><span id="nav-pending-orders">0</span></span>
-                                @endif
-                                @if (($notify['unread_messages'] ?? 0) > 0)
-                                    <a href="{{ route('admin.contact.list') }}" class="badge bg-danger text-decoration-none">
-                                        {{ __('dashboard.unread_messages') }}: <span id="nav-unread-messages">{{ $notify['unread_messages'] }}</span>
-                                    </a>
-                                @else
-                                    <span class="d-none"><span id="nav-unread-messages">0</span></span>
-                                @endif
+                                <a href="{{ route('order.list') }}?status=Pending" class="badge bg-warning text-dark text-decoration-none">
+                                    {{ __('dashboard.pending_orders') }}: <span id="nav-pending-orders">{{ $notify['pending_orders'] ?? 0 }}</span>
+                                </a>
+                                <a href="{{ route('admin.contact.list') }}" class="badge bg-danger text-decoration-none">
+                                    {{ __('dashboard.unread_messages') }}: <span id="nav-unread-messages">{{ $notify['unread_messages'] ?? 0 }}</span>
+                                </a>
+                                <a href="{{ route('users.list') }}?new=1" class="badge bg-info text-decoration-none">
+                                    {{ __('dashboard.new_users') }}: <span data-admin-notify="new_users">{{ $notify['new_users'] ?? 0 }}</span>
+                                </a>
+                                <a href="{{ route('admin.guest.list') }}?new=1" class="badge bg-info text-decoration-none">
+                                    {{ __('dashboard.new_guests') }}: <span data-admin-notify="new_guests">{{ $notify['new_guests'] ?? 0 }}</span>
+                                </a>
                             </div>
                         </li>
                     </ul>

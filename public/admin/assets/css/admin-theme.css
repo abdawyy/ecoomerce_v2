@@ -1601,3 +1601,60 @@ body.admin-confirm-open {
     display: block;
     margin-inline: auto;
 }
+
+#navbar.admin-navbar,
+.admin-navbar,
+.admin-navbar .container-fluid,
+.admin-navbar .dropdown {
+    overflow: visible;
+}
+
+.admin-notify-btn .badge,
+#nav-notify-total {
+    pointer-events: none;
+}
+
+.admin-notify-menu {
+    min-width: min(360px, calc(100vw - 1.5rem));
+    max-width: calc(100vw - 1rem);
+    z-index: 1080;
+}
+
+.admin-notify-feed {
+    max-height: min(50vh, 360px);
+    overflow-y: auto;
+}
+
+.admin-notify-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+@media (max-width: 767.98px) {
+    .admin-notify-dropdown .admin-notify-menu {
+        position: fixed !important;
+        top: var(--admin-navbar-height);
+        inset-inline: 0.5rem auto;
+        left: 0.5rem;
+        right: 0.5rem;
+        width: auto;
+        max-width: none;
+        transform: none !important;
+        z-index: 1080;
+        max-height: calc(100vh - var(--admin-navbar-height) - 1rem);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .admin-notify-feed {
+        flex: 1 1 auto;
+        max-height: none;
+        overflow-y: auto;
+    }
+}

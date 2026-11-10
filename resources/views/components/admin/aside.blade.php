@@ -23,7 +23,7 @@
                             href="{{ $item['url'] }}">
                             <i class="bi {{ $item['icon'] }} mx-2"></i>
                             <span>{{ __($item['label']) }}</span>
-                            <x-admin.notification-badge :count="$item['badge']" :variant="$item['badge_variant']" />
+                            <x-admin.notification-badge :count="$item['badge']" :variant="$item['badge_variant']" :key="$item['badge_key'] ?? null" />
                         </a>
                     </li>
                 @elseif ($item['type'] === 'collapse')
@@ -42,9 +42,9 @@
                             @foreach ($item['children'] as $child)
                                 <li>
                                     <a class="{{ $child['active'] ? 'active' : '' }}"
-                                        href="{{ route($child['route']) }}">
+                                        href="{{ $child['url'] ?? route($child['route']) }}">
                                         {{ __($child['label']) }}
-                                        <x-admin.notification-badge :count="$child['badge']" :variant="$child['badge_variant']" />
+                                        <x-admin.notification-badge :count="$child['badge']" :variant="$child['badge_variant']" :key="$child['badge_key'] ?? null" />
                                     </a>
                                 </li>
                             @endforeach

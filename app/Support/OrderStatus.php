@@ -57,6 +57,15 @@ class OrderStatus
         };
     }
 
+    public static function listFilterValues(?string $status): array
+    {
+        if (self::normalize($status) === self::PENDING) {
+            return self::pendingValues();
+        }
+
+        return self::aliases($status);
+    }
+
     public static function validationRule(): string
     {
         return 'required|string|in:Pending,Processing,Completed,Cancelled,pending,processing,completed,cancelled,canceled';

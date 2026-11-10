@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\GuestUser;
+use App\Models\Message;
+use App\Models\orders;
+use App\Models\User;
+use App\Observers\GuestUserNotificationObserver;
+use App\Observers\MessageNotificationObserver;
+use App\Observers\OrderNotificationObserver;
+use App\Observers\UserNotificationObserver;
 use App\Services\BrandingService;
 use App\Services\SeoService;
 use App\Models\Category;
@@ -71,11 +79,15 @@ class AppServiceProvider extends ServiceProvider
             $view->with('products', $products);
         });
 
+        orders::observe(OrderNotificationObserver::class);
+        Message::observe(MessageNotificationObserver::class);
+        User::observe(UserNotificationObserver::class);
+        GuestUser::observe(GuestUserNotificationObserver::class);
+
         View::composer(['components.admin.aside', 'components.admin.navbar'], function ($view) {
             $notifications = app(\App\Services\AdminNotificationService::class);
             $view->with([
                 'adminNotifications' => $notifications->counts(),
-                'adminActivityFeed' => $notifications->activityFeed(8),
             ]);
         });
 

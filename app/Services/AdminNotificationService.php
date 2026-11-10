@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\AdminNotificationsUpdated;
 use App\Models\GuestUser;
 use App\Models\Message;
 use App\Models\orders;
@@ -46,6 +47,33 @@ class AdminNotificationService
         if (Schema::hasTable('messages') && Schema::hasColumn('messages', 'read_at')) {
             Message::whereNull('read_at')->update(['read_at' => now()]);
         }
+
+        $this->broadcast();
+    }
+
+    public function broadcast(?array $toast = null): void
+    {
+        try {
+            broadcast(new AdminNotificationsUpdated($this->counts(), $toast));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    public function feedPayload(int $limit = 15): array
+    {
+        return $this->activityFeed($limit)->map(function ($item) {
+            return [
+                'type' => $item['type'],
+                'title' => $item['title'],
+                'subtitle' => $item['subtitle'],
+                'url' => $item['url'],
+                'icon' => $item['icon'],
+                'variant' => $item['variant'],
+                'at' => optional($item['at'])->toIso8601String(),
+                'ago' => optional($item['at'])->diffForHumans(),
+            ];
+        })->all();
     }
 
     public function recentUnreadMessages(int $limit = 5)

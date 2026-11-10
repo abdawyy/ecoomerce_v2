@@ -122,10 +122,6 @@ class AdminController extends Controller
         $notify = $notifications->counts();
         $pendingOrders = $notify['pending_orders'];
         $liveCount = $analytics->liveVisitorCount();
-        $latestOrderId = (int) orders::max('id');
-        $latestUserId = (int) User::max('id');
-        $latestGuestId = (int) \App\Models\GuestUser::max('id');
-        $latestMessageId = (int) \App\Models\Message::max('id');
 
         $activityFeed = $notifications->activityFeed(15);
 
@@ -142,10 +138,6 @@ class AdminController extends Controller
             'pendingOrders',
             'notify',
             'liveCount',
-            'latestOrderId',
-            'latestUserId',
-            'latestGuestId',
-            'latestMessageId',
             'activityFeed',
             'chartRevenue',
             'chartViews',
@@ -193,7 +185,7 @@ class AdminController extends Controller
             'latest_user_id' => (int) User::max('id'),
             'latest_guest_id' => (int) \App\Models\GuestUser::max('id'),
             'latest_message_id' => (int) \App\Models\Message::max('id'),
-            'new_orders' => $newOrdersQuery->get()->map(fn ($order) => [
+            'new_order_items' => $newOrdersQuery->get()->map(fn ($order) => [
                 'id' => $order->id,
                 'total' => (float) $order->total_amount,
                 'status' => $order->status,
@@ -201,21 +193,21 @@ class AdminController extends Controller
                 'created_at' => $order->created_at?->diffForHumans(),
                 'url' => route('order.show', $order->id),
             ]),
-            'new_users' => $newUsersQuery->get()->map(fn ($user) => [
+            'new_user_items' => $newUsersQuery->get()->map(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'created_at' => $user->created_at?->diffForHumans(),
                 'url' => route('user.show', $user->id),
             ]),
-            'new_guests' => $newGuestsQuery->get()->map(fn ($guest) => [
+            'new_guest_items' => $newGuestsQuery->get()->map(fn ($guest) => [
                 'id' => $guest->id,
                 'name' => $guest->name,
                 'email' => $guest->email,
                 'created_at' => $guest->created_at?->diffForHumans(),
                 'url' => route('admin.guest.show', $guest->id),
             ]),
-            'new_messages' => $newMessagesQuery->get()->map(fn ($message) => [
+            'new_message_items' => $newMessagesQuery->get()->map(fn ($message) => [
                 'id' => $message->id,
                 'name' => $message->name,
                 'email' => $message->email,
@@ -311,7 +303,7 @@ class AdminController extends Controller
         
         // Apply status filter
         if ($status) {
-            $query = $query->whereIn('status', OrderStatus::aliases($status));
+            $query = $query->whereIn('status', OrderStatus::listFilterValues($status));
         }
 
         // Paginate and preserve query parameters
