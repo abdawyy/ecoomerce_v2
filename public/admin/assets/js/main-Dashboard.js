@@ -1,5 +1,4 @@
 const sidebarBtn = document.querySelector(".toggle-sidebar-btn");
-const mainContent = document.getElementById("main");
 
 function closeMobileSidebar() {
     if (window.innerWidth <= 1199) {
@@ -14,9 +13,15 @@ if (sidebarBtn) {
     });
 }
 
-if (mainContent) {
-    mainContent.addEventListener("click", closeMobileSidebar);
-}
+document.addEventListener("click", (event) => {
+    if (!document.body.classList.contains("toggle-sidebar")) {
+        return;
+    }
+    if (event.target.closest(".sidebar") || event.target.closest(".toggle-sidebar-btn")) {
+        return;
+    }
+    closeMobileSidebar();
+});
 
 document.querySelector(".sidebar")?.addEventListener("click", (event) => {
     const link = event.target.closest("a");
