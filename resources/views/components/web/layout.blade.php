@@ -77,5 +77,6 @@
 
     <x-web.footer />
     @stack('scripts')
+    <script src="{{ asset('assets/js/storefront-forms.js') }}?v={{ filemtime(public_path('assets/js/storefront-forms.js')) }}"></script>
 </body>
 </html>

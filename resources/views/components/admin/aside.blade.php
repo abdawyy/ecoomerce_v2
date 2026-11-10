@@ -56,7 +56,7 @@
     </ul>
 
     <div class="sidebar-footer pb-2">
-        <form action="{{ route('admin.logout') }}" method="POST">
+        <form action="{{ route('admin.logout') }}" method="POST" class="admin-logout-form">
             @csrf
             <button type="submit" class="btn admin-sidebar-logout w-100">
                 <i class="bi bi-box-arrow-right me-2"></i>{{ __('admin_sidebar.logout') }}

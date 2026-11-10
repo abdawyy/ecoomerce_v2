@@ -58,9 +58,12 @@
                         <form id="prevent" action="{{ route('products.edit', $model->id ?? null) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
-                            <div class="row">
+                            <div class="row g-4 product-edit-form">
                                 <div class="col-lg-6 col-12">
                                     <div class="row">
+                                        <div class="col-12 mb-2">
+                                            <h6 class="product-form-heading">{{ __('products.product_details') }}</h6>
+                                        </div>
                                         <div class="col-12 mb-3">
                                             <label for="productName"
                                                 class="form-label">{{ __('products.name') }}</label>
@@ -171,60 +174,77 @@
                                         </div>
 
                                         <div class="col-12 mb-3">
-                                            <label class="form-label">{{ __('products.sizes') }}</label>
+                                            <h6 class="product-form-heading">{{ __('products.sizes') }}</h6>
                                             <p class="small text-muted mb-2">{{ __('products.sizes_hint') }}</p>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                @foreach($sizes as $size)
-                                                    @php
-                                                        $item = isset($model) && $model->productItems
-                                                            ? $model->productItems->firstWhere('size', $size)
-                                                            : null;
-                                                        $sizeId = 'size-'.preg_replace('/[^A-Za-z0-9_-]+/', '-', $size);
-                                                        $oldQuantities = old('quantities', []);
-                                                        $oldQty = array_key_exists($size, $oldQuantities)
-                                                            ? $oldQuantities[$size]
-                                                            : ($item?->quantity);
-                                                    @endphp
-                                                    <div class="border rounded-3 p-2 d-flex align-items-center gap-2">
-                                                        <input class="form-check-input m-0" type="checkbox"
-                                                            id="{{ $sizeId }}" name="sizes[{{ $size }}]"
-                                                            value="{{ $size }}"
-                                                            {{ ($oldQty !== null && $oldQty !== '' && (int) $oldQty > 0) ? 'checked' : '' }}>
-                                                        <label class="form-check-label mb-0 fw-semibold"
-                                                            for="{{ $sizeId }}">{{ $size }}</label>
-                                                        <input type="number" class="form-control form-control-sm"
-                                                            name="quantities[{{ $size }}]"
-                                                            value="{{ $oldQty }}"
-                                                            placeholder="{{ __('products.qty') }}" min="0"
-                                                            style="width: 88px;">
-                                                    </div>
-                                                @endforeach
+                                            <div class="table-responsive product-sizes-wrap">
+                                                <table class="table table-sm align-middle mb-0 product-sizes-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="product-sizes-enabled">{{ __('products.size_enabled') }}</th>
+                                                            <th>{{ __('products.size_col') }}</th>
+                                                            <th class="product-sizes-qty">{{ __('products.qty') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($sizes as $size)
+                                                            @php
+                                                                $item = isset($model) && $model->productItems
+                                                                    ? $model->productItems->firstWhere('size', $size)
+                                                                    : null;
+                                                                $sizeId = 'size-'.preg_replace('/[^A-Za-z0-9_-]+/', '-', $size);
+                                                                $oldQuantities = old('quantities', []);
+                                                                $oldQty = array_key_exists($size, $oldQuantities)
+                                                                    ? $oldQuantities[$size]
+                                                                    : ($item?->quantity);
+                                                                $enabled = $oldQty !== null && $oldQty !== '';
+                                                            @endphp
+                                                            <tr>
+                                                                <td class="product-sizes-enabled">
+                                                                    <input class="form-check-input m-0 product-size-toggle" type="checkbox"
+                                                                        id="{{ $sizeId }}" name="sizes[{{ $size }}]"
+                                                                        value="{{ $size }}"
+                                                                        data-size-qty="qty-{{ $sizeId }}"
+                                                                        {{ $enabled ? 'checked' : '' }}>
+                                                                </td>
+                                                                <td>
+                                                                    <label class="form-check-label mb-0 fw-semibold" for="{{ $sizeId }}">{{ $size }}</label>
+                                                                </td>
+                                                                <td class="product-sizes-qty">
+                                                                    <input type="number" class="form-control form-control-sm product-size-qty"
+                                                                        id="qty-{{ $sizeId }}"
+                                                                        name="quantities[{{ $size }}]"
+                                                                        value="{{ $oldQty }}"
+                                                                        placeholder="0" min="0">
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
                                             </div>
+                                            <div class="product-sizes-add">
+                                                <input type="text" id="custom_size" name="custom_size"
+                                                    class="form-control form-control-sm @error('custom_size') is-invalid @enderror"
+                                                    value="{{ old('custom_size') }}"
+                                                    placeholder="{{ __('products.custom_size_placeholder') }}"
+                                                    maxlength="50" aria-label="{{ __('products.custom_size') }}">
+                                                <input type="number" id="custom_size_qty" name="custom_size_qty"
+                                                    class="form-control form-control-sm" value="{{ old('custom_size_qty') }}"
+                                                    placeholder="0" min="0" aria-label="{{ __('products.qty') }}">
+                                                <button type="button" class="btn btn-outline-dark btn-sm" id="addCustomSizeBtn">
+                                                    {{ __('products.add_size') }}
+                                                </button>
+                                            </div>
+                                            @error('custom_size')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
                                             @error('quantities')
                                                 <div class="text-danger small mt-2">{{ $message }}</div>
                                             @enderror
-
-                                            <div class="row g-2 align-items-end mt-3">
-                                                <div class="col-sm-5">
-                                                    <label class="form-label mb-1" for="custom_size">{{ __('products.custom_size') }}</label>
-                                                    <input type="text" id="custom_size" name="custom_size"
-                                                        class="form-control @error('custom_size') is-invalid @enderror"
-                                                        value="{{ old('custom_size') }}"
-                                                        placeholder="{{ __('products.custom_size_placeholder') }}"
-                                                        maxlength="50">
-                                                    @error('custom_size')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <label class="form-label mb-1" for="custom_size_qty">{{ __('products.qty') }}</label>
-                                                    <input type="number" id="custom_size_qty" name="custom_size_qty"
-                                                        class="form-control" value="{{ old('custom_size_qty') }}"
-                                                        placeholder="0" min="0">
-                                                </div>
-                                            </div>
                                         </div>
 
+                                        <div class="col-12 mb-2">
+                                            <h6 class="product-form-heading">{{ __('products.price_section') }}</h6>
+                                        </div>
                                         <div class="col-6 mb-3">
                                             <label class="form-label">{{ __('products.regular_price') }}</label>
                                             <input type="number" placeholder="80"
@@ -244,6 +264,7 @@
                                 </div>
 
                                 <div class="col-lg-6 col-12">
+                                    <h6 class="product-form-heading">{{ __('products.images_section') }}</h6>
                                     <div class="mb-3">
                                         <label class="form-label">{{ __('products.upload_image') }}</label>
                                         <div
@@ -256,14 +277,14 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <h4>{{ __('products.product_images') }}</h4>
-                                        <div class="d-flex flex-wrap gap-3">
+                                        <h6 class="fw-semibold">{{ __('products.product_images') }}</h6>
+                                        <div class="d-flex flex-wrap gap-3 product-image-thumbs">
                                             @if($model && $model->productImages)
                                                 @foreach($model->productImages as $image)
-                                                    <div class="text-center">
+                                                    <div class="product-image-thumb text-center">
                                                         <img src="{{ asset('storage/' . $image->images) }}"
-                                                            class="imgDisplay my-2" style="width: 150px; height: auto;"><br>
-                                                        <button type="submit" class="btn btn-danger mt-2"
+                                                            class="imgDisplay" alt="">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm mt-2"
                                                             form="delete-image-{{ $image->id }}">
                                                             {{ __('products.delete') }}
                                                         </button>
@@ -275,14 +296,14 @@
 
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary"
+                            <button type="submit" class="btn btn-primary mt-2"
                                 id="submitId">{{ __('products.submit') }}</button>
 
                         </form>
 
                         @if($model && $model->productImages)
                             @foreach($model->productImages as $image)
-                                <form id="delete-image-{{ $image->id }}" method="POST" action="{{ route('image.delete', $image->id) }}" class="d-none">
+                                <form id="delete-image-{{ $image->id }}" method="POST" action="{{ route('image.delete', $image->id) }}" class="d-none" data-admin-confirm-danger="1">
                                     @csrf
                                 </form>
                             @endforeach
@@ -451,6 +472,125 @@
         thumbnails.forEach(thumb => thumb.classList.remove('img-selected'));
         smallImage.classList.add('img-selected');
     }
+
+    function bindSizeRow(box) {
+        const qty = document.getElementById(box.getAttribute('data-size-qty'));
+        if (!qty || box.dataset.bound === '1') return;
+        box.dataset.bound = '1';
+        box.addEventListener('change', function () {
+            if (box.checked && qty.value === '') {
+                qty.value = '0';
+                qty.focus();
+            }
+        });
+        qty.addEventListener('input', function () {
+            box.checked = qty.value !== '';
+        });
+    }
+
+    document.querySelectorAll('.product-size-toggle').forEach(bindSizeRow);
+
+    function sizeKey(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    function sizeAlreadyListed(name) {
+        const wanted = sizeKey(name);
+        if (!wanted) return false;
+        return [...document.querySelectorAll('.product-sizes-table tbody label')].some(function (label) {
+            return sizeKey(label.textContent) === wanted;
+        }) || [...document.querySelectorAll('.product-sizes-table input[name^="quantities["]')].some(function (input) {
+            const match = input.name.match(/^quantities\[(.*)\]$/);
+            return match && sizeKey(match[1]) === wanted;
+        });
+    }
+
+    function slugSizeId(name) {
+        return 'size-' + String(name).replace(/[^A-Za-z0-9_-]+/g, '-') + '-' + Date.now();
+    }
+
+    async function addCustomSizeRow() {
+        const nameInput = document.getElementById('custom_size');
+        const qtyInput = document.getElementById('custom_size_qty');
+        const name = (nameInput?.value || '').trim();
+        if (!name) {
+            nameInput?.focus();
+            return;
+        }
+        if (sizeAlreadyListed(name)) {
+            if (window.AdminConfirm) {
+                await AdminConfirm.alert({ message: @json(__('products.size_exists')) });
+            }
+            return;
+        }
+        const addMessage = window.AdminConfirm && AdminConfirm.addSizeMessage
+            ? AdminConfirm.addSizeMessage(name)
+            : @json(__('admin.confirm_add_size'));
+        const confirmed = window.AdminConfirm
+            ? await AdminConfirm.ask({ message: addMessage.replace(':size', name) })
+            : true;
+        if (!confirmed) {
+            return;
+        }
+        const qty = qtyInput?.value === '' ? '0' : qtyInput.value;
+        const sizeId = slugSizeId(name);
+        const tbody = document.querySelector('.product-sizes-table tbody');
+        const tr = document.createElement('tr');
+
+        const enabledTd = document.createElement('td');
+        enabledTd.className = 'product-sizes-enabled';
+        const checkbox = document.createElement('input');
+        checkbox.className = 'form-check-input m-0 product-size-toggle';
+        checkbox.type = 'checkbox';
+        checkbox.id = sizeId;
+        checkbox.name = 'sizes[' + name + ']';
+        checkbox.value = name;
+        checkbox.setAttribute('data-size-qty', 'qty-' + sizeId);
+        checkbox.checked = true;
+        enabledTd.appendChild(checkbox);
+
+        const labelTd = document.createElement('td');
+        const label = document.createElement('label');
+        label.className = 'form-check-label mb-0 fw-semibold';
+        label.htmlFor = sizeId;
+        label.textContent = name;
+        labelTd.appendChild(label);
+
+        const qtyTd = document.createElement('td');
+        qtyTd.className = 'product-sizes-qty';
+        const qtyField = document.createElement('input');
+        qtyField.type = 'number';
+        qtyField.className = 'form-control form-control-sm product-size-qty';
+        qtyField.id = 'qty-' + sizeId;
+        qtyField.name = 'quantities[' + name + ']';
+        qtyField.value = qty;
+        qtyField.placeholder = '0';
+        qtyField.min = '0';
+        qtyTd.appendChild(qtyField);
+
+        tr.appendChild(enabledTd);
+        tr.appendChild(labelTd);
+        tr.appendChild(qtyTd);
+        tbody.appendChild(tr);
+        bindSizeRow(checkbox);
+        nameInput.value = '';
+        qtyInput.value = '';
+        tr.scrollIntoView({ block: 'nearest' });
+    }
+
+    document.getElementById('addCustomSizeBtn')?.addEventListener('click', addCustomSizeRow);
+    document.getElementById('custom_size')?.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addCustomSizeRow();
+        }
+    });
+    document.getElementById('custom_size_qty')?.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addCustomSizeRow();
+        }
+    });
 
     function openImage(img) {
         // Create a div element for the overlay

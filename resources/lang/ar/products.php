@@ -28,6 +28,13 @@ return [
     'sizes_hint' => 'كل المقاسات المستخدمة سابقاً في المتجر تظهر هنا. اكتب الكمية لإبقاء المقاس لهذا المنتج.',
     'sizes_required' => 'أضف كمية لمقاس واحد على الأقل.',
     'qty' => 'الكمية',
+    'size_col' => 'المقاس',
+    'size_enabled' => 'تفعيل',
+    'product_details' => 'بيانات المنتج',
+    'price_section' => 'السعر',
+    'images_section' => 'الصور',
     'custom_size' => 'إضافة مقاس جديد',
     'custom_size_placeholder' => 'مثال: One Size، 16، XS',
+    'add_size' => 'إضافة',
+    'size_exists' => 'المقاس موجود بالفعل في القائمة.',
 ];

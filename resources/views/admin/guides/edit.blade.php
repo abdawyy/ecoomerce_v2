@@ -214,24 +214,23 @@
 
     const sampleAr = @json(__('pdf_sample.html', [], 'ar'));
 
+    function confirmReplace(message, onYes) {
+        const ask = window.AdminConfirm ? AdminConfirm.ask({ message: message, danger: true }) : Promise.resolve(window.confirm(message));
+        ask.then(function (ok) {
+            if (ok) onYes();
+        });
+    }
+
     document.getElementById('load-sample-en')?.addEventListener('click', () => {
-
-        if (confirm('Replace English HTML with the sample template?')) {
-
+        confirmReplace('Replace English HTML with the sample template?', function () {
             document.getElementById('html_content_en').value = sampleEn;
-
-        }
-
+        });
     });
 
     document.getElementById('load-sample-ar')?.addEventListener('click', () => {
-
-        if (confirm('Replace Arabic HTML with the sample template?')) {
-
+        confirmReplace('Replace Arabic HTML with the sample template?', function () {
             document.getElementById('html_content_ar').value = sampleAr;
-
-        }
-
+        });
     });
 
 })();

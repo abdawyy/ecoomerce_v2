@@ -90,9 +90,9 @@ class ProductController extends Controller
             }
             $quantities = $request->quantities ?? [];
             $customSize = trim((string) $request->input('custom_size', ''));
-            $customQty = $request->input('custom_size_qty');
-            if ($customSize !== '' && $customQty !== null && $customQty !== '') {
-                $quantities[$customSize] = $customQty;
+            if ($customSize !== '') {
+                $customQty = $request->input('custom_size_qty');
+                $quantities[$customSize] = ($customQty === null || $customQty === '') ? 0 : $customQty;
             }
 
             if (collect($quantities)->filter(fn ($qty) => $qty !== null && $qty !== '')->isEmpty()) {
@@ -185,12 +185,13 @@ class ProductController extends Controller
     public function saveProductItems($quantities, $model)
     {
         foreach ($quantities as $size => $quantity) {
-            if ($quantity === null || $quantity === '') {
+            $size = trim((string) $size);
+            if ($size === '' || $quantity === null || $quantity === '') {
                 continue;
             }
 
             $values = [
-                'quantity' => $quantity,
+                'quantity' => (int) $quantity,
                 'size' => $size,
                 'products_id' => $model->id
             ];

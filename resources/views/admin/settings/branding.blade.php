@@ -283,27 +283,34 @@
     const policyBodyEn = @json(__('cart.policy_body_default', [], 'en'));
     const policyBodyAr = @json(__('cart.policy_body_default', [], 'ar'));
 
+    function confirmReplace(message, onYes) {
+        const ask = window.AdminConfirm ? AdminConfirm.ask({ message: message, danger: true }) : Promise.resolve(window.confirm(message));
+        ask.then(function (ok) {
+            if (ok) onYes();
+        });
+    }
+
     document.getElementById('load-invoice-notes-en')?.addEventListener('click', () => {
-        if (confirm('Replace English invoice notes with the sample?')) {
+        confirmReplace('Replace English invoice notes with the sample?', function () {
             document.getElementById('invoice_notes_en').value = notesEn;
-        }
+        });
     });
     document.getElementById('load-invoice-notes-ar')?.addEventListener('click', () => {
-        if (confirm('Replace Arabic invoice notes with the sample?')) {
+        confirmReplace('Replace Arabic invoice notes with the sample?', function () {
             document.getElementById('invoice_notes_ar').value = notesAr;
-        }
+        });
     });
     document.getElementById('load-cart-policy-en')?.addEventListener('click', () => {
-        if (confirm('Replace English cart policy with the sample?')) {
+        confirmReplace('Replace English cart policy with the sample?', function () {
             document.querySelector('input[name="cart_policy_title_en"]').value = policyTitleEn;
             document.getElementById('cart_policy_body_en').value = policyBodyEn;
-        }
+        });
     });
     document.getElementById('load-cart-policy-ar')?.addEventListener('click', () => {
-        if (confirm('Replace Arabic cart policy with the sample?')) {
+        confirmReplace('Replace Arabic cart policy with the sample?', function () {
             document.querySelector('input[name="cart_policy_title_ar"]').value = policyTitleAr;
             document.getElementById('cart_policy_body_ar').value = policyBodyAr;
-        }
+        });
     });
 })();
 </script>
