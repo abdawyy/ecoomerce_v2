@@ -213,8 +213,9 @@
                                                                     <input type="number" class="form-control form-control-sm product-size-qty"
                                                                         id="qty-{{ $sizeId }}"
                                                                         name="quantities[{{ $size }}]"
-                                                                        value="{{ $oldQty }}"
-                                                                        placeholder="0" min="0">
+                                                                        value="{{ $enabled ? $oldQty : '' }}"
+                                                                        placeholder="0" min="0"
+                                                                        @disabled(! $enabled)>
                                                                 </td>
                                                             </tr>
                                                         @endforeach
@@ -258,6 +259,7 @@
                                             <input type="number" placeholder="0" min="0" max="100"
                                                 class="form-control @error('sale') is-invalid @enderror" name="sale"
                                                 value="{{ old('sale', $model->sale ?? '') }}">
+                                            <div class="form-text">{{ __('products.sale_hint') }}</div>
                                             @error('sale')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                         </div>
                                     </div>
@@ -283,7 +285,7 @@
                                                 @foreach($model->productImages as $image)
                                                     <div class="product-image-thumb text-center">
                                                         <img src="{{ asset('storage/' . $image->images) }}"
-                                                            class="imgDisplay" alt="">
+                                                            class="imgDisplay" alt="" loading="lazy" decoding="async">
                                                         <button type="submit" class="btn btn-outline-danger btn-sm mt-2"
                                                             form="delete-image-{{ $image->id }}">
                                                             {{ __('products.delete') }}

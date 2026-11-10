@@ -29,6 +29,8 @@ return [
     'amount' => 'Amount',
     'no_payments' => 'No payments found for this order',
     'change_status' => 'Change Status',
+    'insufficient_stock' => 'Not enough stock for :product. Only :available left, so the status was not changed.',
+    'stock_item_missing' => 'A size from this order is no longer in stock records, so the status was not changed.',
     'update' => 'Update Status',
     'print_receipt' => 'Print Receipt',
     'breadcrumb_show' => 'Show Order',

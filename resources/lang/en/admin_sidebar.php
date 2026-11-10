@@ -37,6 +37,7 @@ return [
     'add_discount_code' => 'Add Discount Code',
     'free_shipping' => 'Free shipping', // ✅ This is the one you asked for
     'messages_list' => 'Messages List',
+    'guides' => 'Size guides',
 
     'section_operations' => 'Operations',
     'section_catalog' => 'Catalog',

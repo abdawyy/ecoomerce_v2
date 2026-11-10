@@ -40,6 +40,7 @@ return [
     'add_discount_code' => 'إضافة رمز خصم',
     'free_shipping' => 'الشحن المجاني', // ✅ Translated version
     'messages_list' => 'قائمة الرسائل',
+    'guides' => 'أدلة المقاسات',
 
     'section_operations' => 'العمليات',
     'section_catalog' => 'المخزون',

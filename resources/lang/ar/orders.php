@@ -29,6 +29,8 @@ return [
     'amount' => 'المبلغ',
     'no_payments' => 'لا توجد مدفوعات لهذا الطلب',
     'change_status' => 'تغيير الحالة',
+    'insufficient_stock' => 'المخزون لا يكفي لـ :product. المتاح :available فقط، ولم تتغير الحالة.',
+    'stock_item_missing' => 'مقاس من هذا الطلب لم يعد موجودًا في سجل المخزون، ولم تتغير الحالة.',
     'update' => 'تحديث الحالة',
     'print_receipt' => 'طباعة الفاتورة',
     'breadcrumb_show' => 'عرض الطلب',
