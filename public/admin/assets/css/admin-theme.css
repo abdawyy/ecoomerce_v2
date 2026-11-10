@@ -239,6 +239,21 @@ body.admin-body {
     color: var(--admin-nav-active-text) !important;
 }
 
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] > i.ms-auto,
+.sidebar-nav .nav-link[data-bs-toggle="collapse"] > i.me-auto {
+    transition: transform 0.2s ease;
+}
+
+.sidebar-nav .nav-link:not(.collapsed)[data-bs-toggle="collapse"] > i.bi-chevron-right.ms-auto,
+.sidebar-nav .nav-link:not(.collapsed)[data-bs-toggle="collapse"] > i.bi-chevron-right.me-auto {
+    transform: rotate(90deg);
+}
+
+.sidebar-nav .nav-link:not(.collapsed)[data-bs-toggle="collapse"] > i.bi-chevron-left.ms-auto,
+.sidebar-nav .nav-link:not(.collapsed)[data-bs-toggle="collapse"] > i.bi-chevron-left.me-auto {
+    transform: rotate(-90deg);
+}
+
 .sidebar-nav .nav-content a {
     color: var(--admin-nav-muted) !important;
     border-radius: 6px;

@@ -5,7 +5,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="{{ asset('admin/assets/js/admin-theme.js') }}?v={{ filemtime(public_path('admin/assets/js/admin-theme.js')) }}"></script>
 <script src="{{ asset('admin/assets/js/admin-confirm.js') }}?v={{ filemtime(public_path('admin/assets/js/admin-confirm.js')) }}"></script>
-<script src={{ asset("admin/assets/js/main-Dashboard.js")}}></script>
+<script src="{{ asset('admin/assets/js/main-Dashboard.js') }}?v={{ filemtime(public_path('admin/assets/js/main-Dashboard.js')) }}"></script>
 
 <style>
 	/* Global Toastr Styling */

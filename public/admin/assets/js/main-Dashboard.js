@@ -19,9 +19,18 @@ if (mainContent) {
 }
 
 document.querySelector(".sidebar")?.addEventListener("click", (event) => {
-    if (event.target.closest("a")) {
-        closeMobileSidebar();
+    const link = event.target.closest("a");
+    if (!link) {
+        return;
     }
+    if (link.dataset.bsToggle === "collapse") {
+        return;
+    }
+    const href = (link.getAttribute("href") || "").trim();
+    if (!href || href === "#") {
+        return;
+    }
+    closeMobileSidebar();
 });
 
 document.addEventListener("keydown", (event) => {
