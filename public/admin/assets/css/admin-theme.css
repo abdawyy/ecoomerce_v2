@@ -15,18 +15,18 @@
     --admin-text-muted: #6b7280;
     --admin-accent: #193049;
     --admin-accent-hover: #6F262B;
-    --admin-accent-soft: rgba(25, 48, 73, 0.12);
-    --admin-sidebar-bg: #ffffff;
-    --admin-navbar-bg: #ffffff;
+    --admin-accent-soft: rgba(111, 38, 43, 0.45);
+    --admin-sidebar-bg: #193049;
+    --admin-navbar-bg: #193049;
     --admin-navbar-height: 72px;
     --admin-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     --admin-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
-    --admin-nav-text: #374151;
-    --admin-nav-muted: #6b7280;
-    --admin-nav-hover: #f3f4f6;
-    --admin-nav-active-bg: rgba(25, 48, 73, 0.1);
-    --admin-nav-active-text: #193049;
-    --admin-nav-active-border: #6F262B;
+    --admin-nav-text: #FCF4E9;
+    --admin-nav-muted: rgba(252, 244, 233, 0.62);
+    --admin-nav-hover: rgba(255, 255, 255, 0.08);
+    --admin-nav-active-bg: rgba(111, 38, 43, 0.55);
+    --admin-nav-active-text: #FCF4E9;
+    --admin-nav-active-border: #C9898C;
 }
 
 [data-bs-theme="dark"] {
@@ -40,16 +40,16 @@
     --admin-text-muted: #8b949e;
     --admin-accent: #C9898C;
     --admin-accent-hover: #E4C4C6;
-    --admin-accent-soft: rgba(201, 137, 140, 0.16);
-    --admin-sidebar-bg: #161b22;
-    --admin-navbar-bg: #161b22;
+    --admin-accent-soft: rgba(111, 38, 43, 0.55);
+    --admin-sidebar-bg: #12263a;
+    --admin-navbar-bg: #12263a;
     --admin-navbar-height: 72px;
     --admin-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
     --admin-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --admin-nav-text: #c9d1d9;
-    --admin-nav-muted: #8b949e;
-    --admin-nav-hover: rgba(255, 255, 255, 0.06);
-    --admin-nav-active-bg: rgba(201, 137, 140, 0.16);
+    --admin-nav-text: #FCF4E9;
+    --admin-nav-muted: rgba(252, 244, 233, 0.62);
+    --admin-nav-hover: rgba(255, 255, 255, 0.08);
+    --admin-nav-active-bg: rgba(111, 38, 43, 0.55);
     --admin-nav-active-text: #F3DDE0;
     --admin-nav-active-border: #C9898C;
     color-scheme: dark;
@@ -201,7 +201,7 @@ body.admin-body {
 .sidebar-nav .nav-link:hover,
 .sidebar-nav .nav-link.collapsed:hover {
     background: var(--admin-nav-hover) !important;
-    color: var(--admin-text) !important;
+    color: var(--admin-nav-text) !important;
 }
 
 .sidebar-nav .nav-link.active:hover {
@@ -215,7 +215,7 @@ body.admin-body {
 
 .sidebar-nav .nav-link:hover i,
 .sidebar-nav .nav-link.collapsed:hover i {
-    color: var(--admin-text) !important;
+    color: var(--admin-nav-text) !important;
 }
 
 .sidebar-nav .nav-link.active {
@@ -276,22 +276,59 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
     background-color: var(--admin-nav-active-border) !important;
 }
 
+.admin-navbar .admin-icon-btn {
+    background: transparent !important;
+    border-color: rgba(252, 244, 233, 0.28) !important;
+    color: #FCF4E9 !important;
+}
+
+.admin-navbar .admin-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.admin-navbar .admin-view-store {
+    color: #FCF4E9;
+    border-color: rgba(252, 244, 233, 0.28);
+    background: transparent;
+}
+
+.admin-navbar .admin-view-store:hover {
+    color: #fff;
+    border-color: #C9898C;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-navbar .admin-lang-link {
+    color: rgba(252, 244, 233, 0.62) !important;
+}
+
+.admin-navbar .admin-lang-link.active,
+.admin-navbar .admin-lang-link:hover {
+    color: #FCF4E9 !important;
+}
+
+.admin-navbar .text-muted {
+    color: rgba(252, 244, 233, 0.55) !important;
+}
+
 .sidebar-footer {
     margin-top: auto;
     padding-top: 1rem;
-    border-top: 1px solid var(--admin-border);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .admin-sidebar-logout {
     border-radius: 8px;
     font-weight: 600;
-    background: var(--admin-surface-2) !important;
-    border: 1px solid var(--admin-border) !important;
-    color: var(--admin-text) !important;
+    background: transparent !important;
+    border: 1px solid rgba(252, 244, 233, 0.28) !important;
+    color: #FCF4E9 !important;
 }
 
 .admin-sidebar-logout:hover {
-    background: var(--admin-surface-hover) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #fff !important;
 }
 
 /* ---- Cards & dashboard ---- */

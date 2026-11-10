@@ -15,8 +15,10 @@
                 </button>
                 <a class="navbar-brand mb-0 d-inline-flex align-items-center" href="{{ route('admin.dashboard') }}">
                     <x-branding.logo
+                        compact
+                        dark
                         :link="false"
-                        style="width: 120px; height: 48px; object-fit: contain;"
+                        style="width: auto; height: 44px; max-height: 44px; max-width: 160px; object-fit: contain;"
                     />
                 </a>
             </div>
