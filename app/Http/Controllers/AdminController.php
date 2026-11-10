@@ -327,9 +327,10 @@ class AdminController extends Controller
                 'Total Amount' => $order->total_amount,
                 'Code' => $code,
                 'City' => $city,
-                'Status' => $order->status,
+                'Status' => OrderStatus::normalize($order->status),
                 'Created At' => $createdAt,
                 'href' => route('order.show', $order->id),
+                'status_url' => route('order.changeStatus', $order->id),
             ];
         });
 

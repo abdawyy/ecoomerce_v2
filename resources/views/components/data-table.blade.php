@@ -100,14 +100,30 @@
                                         @endif
                                     @elseif ($header === 'Status')
                                         @php
-                                            $status = $row['Status'] ?? '';
-                                            $statusClass = 'bg-secondary text-white';
-                                            if (strtolower($status) === 'completed') $statusClass = 'bg-success text-white';
-                                            if (strtolower($status) === 'pending') $statusClass = 'bg-warning text-dark';
-                                            if (strtolower($status) === 'processing') $statusClass = 'bg-info text-white';
-                                            if (strtolower($status) === 'cancelled') $statusClass = 'bg-danger text-white';
+                                            $status = \App\Support\OrderStatus::normalize($row['Status'] ?? '');
+                                            $statusClass = match (strtolower($status)) {
+                                                'completed' => 'bg-success text-white',
+                                                'processing' => 'bg-info text-white',
+                                                'cancelled' => 'bg-danger text-white',
+                                                default => 'bg-warning text-dark',
+                                            };
                                         @endphp
-                                        <span class="status-badge {{ $statusClass }}">{{ $row[$header] ?? $status }}</span>
+                                        @if (! empty($row['status_url']))
+                                            <form method="POST" action="{{ $row['status_url'] }}" class="order-status-form d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <select name="status"
+                                                    class="status-badge order-status-select {{ $statusClass }}"
+                                                    data-original="{{ $status }}"
+                                                    aria-label="{{ __('orders.change_status') }}">
+                                                    @foreach (\App\Support\OrderStatus::all() as $option)
+                                                        <option value="{{ $option }}" @selected($status === $option)>{{ $option }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </form>
+                                        @else
+                                            <span class="status-badge {{ $statusClass }}">{{ $status }}</span>
+                                        @endif
                                     @else
                                         {{ $row[$header] ?? '' }}
                                     @endif

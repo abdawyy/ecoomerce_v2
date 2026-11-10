@@ -203,6 +203,44 @@
         return { message: ds('msg-save') };
     }
 
+    function orderStatusClasses(status) {
+        switch (String(status || '').toLowerCase()) {
+            case 'completed': return 'bg-success text-white';
+            case 'processing': return 'bg-info text-white';
+            case 'cancelled':
+            case 'canceled': return 'bg-danger text-white';
+            default: return 'bg-warning text-dark';
+        }
+    }
+
+    function paintOrderStatusSelect(select) {
+        if (!select) return;
+        select.className = 'status-badge order-status-select ' + orderStatusClasses(select.value);
+    }
+
+    function restoreOrderStatusSelect(form) {
+        const select = form && form.querySelector('.order-status-select');
+        if (!select) return;
+        if (select.dataset.original) {
+            select.value = select.dataset.original;
+        }
+        paintOrderStatusSelect(select);
+    }
+
+    document.addEventListener('change', function (event) {
+        const select = event.target;
+        if (!(select instanceof HTMLSelectElement) || !select.classList.contains('order-status-select')) {
+            return;
+        }
+        paintOrderStatusSelect(select);
+        if (select.value === select.dataset.original) {
+            return;
+        }
+        if (select.form) {
+            select.form.requestSubmit();
+        }
+    });
+
     document.addEventListener('submit', function (event) {
         const form = event.target;
         if (shouldSkip(form)) {
@@ -221,6 +259,7 @@
         const prompt = promptForForm(form);
         window.AdminConfirm.ask(prompt).then(function (ok) {
             if (!ok) {
+                restoreOrderStatusSelect(form);
                 confirmForm = null;
                 return;
             }
