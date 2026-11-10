@@ -23,9 +23,12 @@ class ContactController extends Controller
         $data = $request->validated();
         Message::storeFromRequest($data);
 
-
-        $this->sendToAdmin($data);
-        $this->sendAutoReply($data);
+        try {
+            $this->sendToAdmin($data);
+            $this->sendAutoReply($data);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return back()->with('success', __('web.message_sent_successfully'));
     }
