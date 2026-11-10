@@ -3,7 +3,7 @@
 </div>
 
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
-    <div class="container">
+    <div class="container navbar-inner">
 
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-label="{{ __('web.menu') }}">
             <i class="fa-solid fa-bars-staggered"></i>
@@ -16,10 +16,10 @@
         @php $departments = $branding->departmentMenus(); @endphp
 
         <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav">
                 @foreach ($departments as $department)
                     <li class="nav-item nav-mega">
-                        <a class="nav-link px-3" href="{{ $department['url'] }}">{{ $department['label'] }}</a>
+                        <a class="nav-link" href="{{ $department['url'] }}">{{ $department['label'] }}</a>
                         <div class="mega-panel">
                             <a class="mega-feature" href="{{ $department['url'] }}">
                                 <img src="{{ $department['image'] }}" alt="">
@@ -39,7 +39,7 @@
             </ul>
         </div>
 
-        <div class="d-flex align-items-center gap-1 gap-md-2 storefront-toolbar">
+        <div class="d-flex align-items-center storefront-toolbar">
             <button type="button" class="storefront-icon-btn" data-storefront-theme-toggle
                 data-label-light="{{ __('account.theme_light') }}"
                 data-label-dark="{{ __('account.theme_dark') }}"
