@@ -141,22 +141,33 @@ body.admin-body {
 
 .admin-notify-menu {
     background: var(--admin-surface) !important;
+    color: var(--admin-text) !important;
     border-color: var(--admin-border) !important;
     box-shadow: var(--admin-shadow-lg) !important;
 }
 
-.admin-notify-menu .dropdown-header {
+.admin-notify-menu .dropdown-header,
+.admin-notify-menu .dropdown-item,
+.admin-notify-menu .dropdown-item-text,
+.admin-notify-item {
     background: var(--admin-surface);
-    color: var(--admin-text);
+    color: var(--admin-text) !important;
     border-color: var(--admin-border) !important;
 }
 
-.admin-notify-item {
-    color: var(--admin-text);
+.admin-navbar .admin-notify-menu .text-muted,
+.admin-notify-menu .text-muted {
+    color: var(--admin-text-muted) !important;
 }
 
-.admin-notify-item:hover {
+.admin-notify-item:hover,
+.admin-notify-menu .dropdown-item:hover {
     background: var(--admin-surface-hover) !important;
+    color: var(--admin-text) !important;
+}
+
+.admin-notify-close {
+    font-size: 0.7rem;
 }
 
 /* ---- Sidebar (clean commerce) ---- */
@@ -1325,16 +1336,6 @@ body.admin-body.modal-open {
         height: 40px;
     }
 
-    .admin-notify-menu {
-        position: fixed !important;
-        inset: 64px 12px auto 12px;
-        width: auto !important;
-        min-width: 0;
-        max-width: none;
-        max-height: min(70vh, 420px);
-        transform: none !important;
-    }
-
     #live-badge {
         width: 100%;
         text-align: center;
@@ -1635,11 +1636,19 @@ body.admin-confirm-open {
     flex-shrink: 0;
 }
 
+body.admin-notify-open::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    top: var(--admin-navbar-height);
+    z-index: 1070;
+    background: rgba(15, 23, 42, 0.45);
+}
+
 @media (max-width: 767.98px) {
     .admin-notify-dropdown .admin-notify-menu {
         position: fixed !important;
         top: var(--admin-navbar-height);
-        inset-inline: 0.5rem auto;
         left: 0.5rem;
         right: 0.5rem;
         width: auto;
@@ -1648,8 +1657,11 @@ body.admin-confirm-open {
         z-index: 1080;
         max-height: calc(100vh - var(--admin-navbar-height) - 1rem);
         overflow: hidden;
-        display: flex;
         flex-direction: column;
+    }
+
+    .admin-notify-dropdown .admin-notify-menu.show {
+        display: flex !important;
     }
 
     .admin-notify-feed {

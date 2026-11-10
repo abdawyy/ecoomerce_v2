@@ -50,6 +50,7 @@
                         type="button"
                         data-bs-toggle="dropdown"
                         data-bs-display="static"
+                        data-bs-auto-close="outside"
                         aria-expanded="false"
                         aria-label="{{ __('dashboard.notifications') }}">
                         <i class="bi bi-bell fs-5"></i>
@@ -60,9 +61,12 @@
                         </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end admin-notify-menu shadow-sm p-0">
-                        <li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center gap-2 px-3 py-2 border-bottom">
                             <span class="fw-semibold">{{ __('dashboard.notifications') }}</span>
-                            <a href="{{ route('admin.dashboard') }}" class="small text-decoration-none">{{ __('dashboard.view_all') }}</a>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ route('admin.dashboard') }}" class="small text-decoration-none">{{ __('dashboard.view_all') }}</a>
+                                <button type="button" class="btn-close admin-notify-close d-md-none" aria-label="Close"></button>
+                            </div>
                         </li>
                         <li>
                             <ul id="admin-notify-feed" class="list-unstyled mb-0 admin-notify-feed">

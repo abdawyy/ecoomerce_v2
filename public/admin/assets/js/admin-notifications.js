@@ -182,9 +182,51 @@
         }
     });
 
+    function notifyToggleBtn() {
+        return document.querySelector('.admin-notify-btn');
+    }
+
+    function hideNotifyMenu() {
+        const btn = notifyToggleBtn();
+        if (!btn || typeof bootstrap === 'undefined' || !bootstrap.Dropdown) return;
+        const instance = bootstrap.Dropdown.getInstance(btn);
+        if (instance) instance.hide();
+    }
+
+    function isNotifyDropdownEvent(event) {
+        const target = event.target;
+        if (!target) return false;
+        if (target.closest && target.closest('.admin-notify-dropdown')) return true;
+        if (target.classList && target.classList.contains('admin-notify-btn')) return true;
+        return false;
+    }
+
     document.addEventListener('shown.bs.dropdown', function (event) {
-        if (event.target && event.target.closest && event.target.closest('.admin-notify-dropdown')) {
-            loadFeed(true);
+        if (!isNotifyDropdownEvent(event)) return;
+        document.body.classList.add('admin-notify-open');
+        loadFeed(true);
+    });
+
+    document.addEventListener('hidden.bs.dropdown', function (event) {
+        if (!isNotifyDropdownEvent(event)) return;
+        document.body.classList.remove('admin-notify-open');
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!document.body.classList.contains('admin-notify-open')) return;
+        const target = event.target;
+        if (target.closest && (target.closest('.admin-notify-close') || target.closest('.admin-notify-menu a'))) {
+            hideNotifyMenu();
+            return;
+        }
+        if (target === document.body) {
+            hideNotifyMenu();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && document.body.classList.contains('admin-notify-open')) {
+            hideNotifyMenu();
         }
     });
 
