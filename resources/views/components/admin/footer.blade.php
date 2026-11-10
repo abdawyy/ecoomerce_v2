@@ -9,22 +9,23 @@
 @auth('admin')
 @php
     $broadcastConn = config('broadcasting.connections.'.config('broadcasting.default'), config('broadcasting.connections.pusher'));
+    $adminNotifyConfig = [
+        'enabled' => in_array(config('broadcasting.default'), ['pusher', 'reverb'], true),
+        'key' => $broadcastConn['key'] ?? '',
+        'cluster' => data_get($broadcastConn, 'options.cluster', 'mt1'),
+        'host' => data_get($broadcastConn, 'options.host', '127.0.0.1'),
+        'port' => (int) data_get($broadcastConn, 'options.port', 6001),
+        'forceTLS' => data_get($broadcastConn, 'options.scheme') === 'https',
+        'authEndpoint' => url('/broadcasting/auth'),
+        'countsUrl' => route('admin.notifications.counts'),
+        'feedUrl' => route('admin.notifications.feed'),
+        'emptyText' => __('dashboard.no_activity'),
+    ];
 @endphp
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 <script>
-    window.AdminNotifyConfig = {
-        enabled: @json(in_array(config('broadcasting.default'), ['pusher', 'reverb'], true)),
-        key: @json($broadcastConn['key'] ?? ''),
-        cluster: @json(data_get($broadcastConn, 'options.cluster', 'mt1')),
-        host: @json(data_get($broadcastConn, 'options.host', '127.0.0.1')),
-        port: @json((int) data_get($broadcastConn, 'options.port', 6001)),
-        forceTLS: @json(data_get($broadcastConn, 'options.scheme') === 'https'),
-        authEndpoint: @json(url('/broadcasting/auth')),
-        countsUrl: @json(route('admin.notifications.counts')),
-        feedUrl: @json(route('admin.notifications.feed')),
-        emptyText: @json(__('dashboard.no_activity')),
-    };
+    window.AdminNotifyConfig = @json($adminNotifyConfig);
 </script>
 <script src="{{ asset('admin/assets/js/admin-notifications.js') }}?v={{ filemtime(public_path('admin/assets/js/admin-notifications.js')) }}"></script>
 @endauth
