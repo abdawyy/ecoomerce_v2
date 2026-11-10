@@ -62,7 +62,7 @@ class AdminNotificationService
 
     public function feedPayload(int $limit = 15): array
     {
-        return $this->activityFeed($limit)->map(function ($item) {
+        return $this->activityFeed($limit, true)->map(function ($item) {
             return [
                 'type' => $item['type'],
                 'title' => $item['title'],
@@ -109,11 +109,16 @@ class AdminNotificationService
             ->get();
     }
 
-    public function activityFeed(int $limit = 15): \Illuminate\Support\Collection
+    public function activityFeed(int $limit = 15, bool $pendingOrdersOnly = false): \Illuminate\Support\Collection
     {
         $items = collect();
 
-        foreach (orders::with(['user', 'guestUser'])->orderByDesc('created_at')->limit(8)->get() as $order) {
+        $orders = orders::with(['user', 'guestUser'])->orderByDesc('created_at');
+        if ($pendingOrdersOnly) {
+            $orders->whereIn('status', OrderStatus::pendingValues());
+        }
+
+        foreach ($orders->limit($pendingOrdersOnly ? $limit : 8)->get() as $order) {
             $customer = $order->user?->name ?? $order->guestUser?->name ?? __('dashboard.guest');
             $items->push([
                 'type' => 'order',

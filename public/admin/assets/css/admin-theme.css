@@ -1621,9 +1621,20 @@ body.admin-confirm-open {
     z-index: 1080;
 }
 
+.admin-notify-pin {
+    flex-shrink: 0;
+}
+
+.admin-notify-feed-wrap {
+    min-height: 0;
+    overflow: hidden;
+}
+
 .admin-notify-feed {
     max-height: min(50vh, 360px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
 }
 
 .admin-notify-icon {
@@ -1668,9 +1679,17 @@ body.admin-notify-open::after {
         display: flex !important;
     }
 
-    .admin-notify-feed {
+    .admin-notify-feed-wrap {
         flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .admin-notify-feed {
+        height: 100%;
         max-height: none;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
     }
 }

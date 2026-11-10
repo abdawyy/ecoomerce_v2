@@ -61,19 +61,19 @@
                         </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end admin-notify-menu shadow-sm p-0">
-                        <li class="dropdown-header d-flex justify-content-between align-items-center gap-2 px-3 py-2 border-bottom">
+                        <li class="dropdown-header admin-notify-pin d-flex justify-content-between align-items-center gap-2 px-3 py-2 border-bottom">
                             <span class="fw-semibold">{{ __('dashboard.notifications') }}</span>
                             <div class="d-flex align-items-center gap-2">
                                 <a href="{{ route('admin.dashboard') }}" class="small text-decoration-none">{{ __('dashboard.view_all') }}</a>
                                 <button type="button" class="btn-close admin-notify-close d-md-none" aria-label="Close"></button>
                             </div>
                         </li>
-                        <li>
+                        <li class="admin-notify-feed-wrap">
                             <ul id="admin-notify-feed" class="list-unstyled mb-0 admin-notify-feed">
                                 <li class="dropdown-item-text text-muted small px-3 py-3">{{ __('dashboard.no_activity') }}</li>
                             </ul>
                         </li>
-                        <li class="border-top">
+                        <li class="border-top admin-notify-pin">
                             <div class="d-flex flex-wrap gap-2 p-2 small">
                                 <a href="{{ route('order.list') }}?status=Pending" class="badge bg-warning text-dark text-decoration-none">
                                     {{ __('dashboard.pending_orders') }}: <span id="nav-pending-orders">{{ $notify['pending_orders'] ?? 0 }}</span>
