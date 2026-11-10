@@ -15,7 +15,7 @@
     --font-display: "El Messiri", "Cairo", serif;
     --font-body: "Cairo", sans-serif;
     --shadow-soft: 0 12px 40px rgba(25, 48, 73, 0.08);
-    --header-height: 72px;
+    --header-height: 136px;
     --bs-body-bg: var(--brand-cream);
     --bs-body-color: var(--brand-navy);
     --bs-primary: var(--brand-navy);
@@ -96,13 +96,14 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     text-overflow: ellipsis;
 }
 
-.navbar-custom {
-    background: rgba(252, 244, 233, 0.92);
-    border-bottom: 1px solid var(--brand-border);
+.navbar.navbar-custom {
+    background: #fff;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
+    padding-top: 6px;
+    padding-bottom: 6px;
     overflow: visible;
 }
 
@@ -286,6 +287,7 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
 
 .navbar-custom .navbar-brand {
     min-width: 0;
+    margin-inline: 0;
 }
 
 .branding-logo-img.is-theme-dark {
@@ -300,38 +302,37 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     display: inline-block;
 }
 
-.navbar-custom > .container {
-    flex-wrap: nowrap;
+.navbar-custom > .container-fluid.navbar-inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: none;
+    column-gap: 1rem;
+    padding-inline: clamp(1rem, 3vw, 2.75rem);
+}
+
+.navbar-custom .navbar-start {
+    grid-column: 1;
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+}
+
+.navbar-custom .navbar-brand {
+    grid-column: 2;
+    justify-self: center;
+}
+
+.navbar-custom .storefront-toolbar {
+    grid-column: 3;
+    justify-self: end;
+    gap: 0.5rem;
 }
 
 @media (min-width: 992px) {
-    .navbar-custom > .container.navbar-inner {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        column-gap: 1.25rem;
-    }
-
-    .navbar-custom .navbar-brand {
-        justify-self: start;
-        grid-column: 1;
-    }
-
-    .navbar-custom .navbar-collapse {
-        grid-column: 2;
-        justify-self: center;
-        flex-grow: 0;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .navbar-custom .storefront-toolbar {
-        grid-column: 3;
-        justify-self: end;
-        gap: 0.5rem;
-    }
-
     .navbar-custom .navbar-nav {
         flex-direction: row;
         gap: 2.25rem;
@@ -351,18 +352,17 @@ h1, h2, h3, .display-1, .display-2, .display-3, .display-4 {
     }
 }
 
-@media (max-width: 575.98px) {
-    .promo-bar {
-        font-size: 0.58rem;
-        letter-spacing: 0.08em;
-        padding: 6px 10px;
-    }
+.navbar-custom .storefront-icon-btn {
+    width: 36px;
+    height: 36px;
+}
 
+@media (max-width: 575.98px) {
     .navbar-custom .navbar-brand img {
         width: auto !important;
-        height: 40px !important;
-        max-height: 40px !important;
-        max-width: 150px !important;
+        height: 96px !important;
+        max-height: 96px !important;
+        max-width: 250px !important;
     }
 }
 
