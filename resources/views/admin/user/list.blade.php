@@ -52,7 +52,7 @@
             </div>
 
             <div class="admin-card card">
-                <div class="table-responsive">
+                <div class="table-responsive admin-table-wrap">
                     <table class="table table-modern align-middle mb-0">
                         <thead>
                             <tr>
@@ -63,7 +63,7 @@
                                 <th>{{ __('users.kpi_last_order') }}</th>
                                 <th>{{ __('users.joined') }}</th>
                                 <th>{{ __('users.status') }}</th>
-                                <th></th>
+                                <th class="admin-col-action"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,17 +87,17 @@
                                     </td>
                                     <td>{{ $user->created_at->format('M d, Y') }}</td>
                                     <td>
-                                        <span class="badge {{ $user->is_active ? 'bg-success' : 'bg-warning text-dark' }}">
+                                        <span class="admin-status-pill {{ $user->is_active ? 'is-on' : '' }}">
                                             {{ $user->is_active ? __('users.status_active') : __('users.status_inactive') }}
                                         </span>
                                     </td>
-                                    <td data-label="{{ __('table.headers.action') }}">
+                                    <td class="admin-col-action" data-label="{{ __('table.headers.action') }}">
                                         @php $actionsAlign = $isRtl ? 'justify-content-start' : 'justify-content-end'; @endphp
                                         <div class="table-actions {{ $actionsAlign }} table-actions--multi">
                                             <x-admin.view-link :href="route('user.show', $user->id)" />
                                             <form method="POST" action="{{ route('admin.users.toggleStatus', $user->id) }}" class="table-actions-form">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm {{ $user->is_active ? 'btn-success' : 'btn-warning' }}">
+                                                <button type="submit" class="btn btn-sm admin-status-pill {{ $user->is_active ? 'is-on' : '' }}">
                                                     {{ $user->is_active ? __('table.status_active') : __('table.status_inactive') }}
                                                 </button>
                                             </form>

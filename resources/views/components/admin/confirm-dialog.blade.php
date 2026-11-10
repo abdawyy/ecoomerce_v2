@@ -26,10 +26,10 @@
         <h2 class="admin-confirm-title" id="admin-confirm-title">{{ __('admin.confirm_title') }}</h2>
         <p class="admin-confirm-message" id="admin-confirm-message"></p>
         <div class="admin-confirm-actions">
-            <button type="button" class="btn btn-outline-secondary" id="admin-confirm-cancel" data-admin-confirm-dismiss>
+            <button type="button" class="btn admin-confirm-cancel" id="admin-confirm-cancel" data-admin-confirm-dismiss>
                 {{ __('admin.cancel_btn') }}
             </button>
-            <button type="button" class="btn btn-primary" id="admin-confirm-ok">
+            <button type="button" class="btn admin-confirm-ok" id="admin-confirm-ok">
                 {{ __('admin.confirm_btn') }}
             </button>
         </div>

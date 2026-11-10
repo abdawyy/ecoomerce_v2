@@ -3,6 +3,6 @@
     'label' => null,
 ])
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => 'btn btn-primary btn-sm']) }}>
+<a href="{{ $href }}" {{ $attributes->merge(['class' => 'btn btn-sm admin-table-view']) }}>
     {{ $label ?? __('table.view') }}
 </a>

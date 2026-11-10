@@ -2,76 +2,6 @@
 <x-admin.aside />
 <x-admin.navbar />
 
-<style>
-    .filter-card {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-    }
-    .filter-header {
-        background: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        padding: 12px 15px;
-    }
-    .filter-header h5 {
-        margin: 0;
-        font-weight: 600;
-        font-size: 0.95rem;
-    }
-    .filter-body {
-        padding: 15px;
-    }
-    .form-control, .form-select {
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #80bdff;
-        box-shadow: none;
-    }
-    .filter-buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #dee2e6;
-    }
-    .btn-apply, .btn-clear {
-        flex: 1;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        font-size: 0.85rem;
-        border-radius: 4px;
-        border: none;
-        cursor: pointer;
-    }
-    .btn-apply {
-        background: #007bff;
-        color: white;
-    }
-    .btn-apply:hover {
-        background: #0056b3;
-    }
-    .btn-clear {
-        background: #e9ecef;
-        color: #333;
-        border: 1px solid #dee2e6;
-    }
-    .btn-clear:hover {
-        background: #dee2e6;
-    }
-    .btn-danger {
-        display: none;
-    }
-
-    svg {
-        width: 5px !important;
-        height: 5px !important;
-    }
-</style>
-
 <main id="main">
     <div class="container">
         <div class="row pt-4">
@@ -121,18 +51,6 @@
             </div>
 
             <x-data-table :headers="$headers" :rows="$rows" :url="$url" />
-
-            <style>
-                .btn-danger {
-                    display: none;
-                }
-
-                svg {
-                    width: 5px !important;
-                    height: 5px !important;
-
-                }
-            </style>
 
             <div>
                 <div class="mt-4">

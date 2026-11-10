@@ -77,8 +77,7 @@
 
         cancelBtn.hidden = mode === 'alert';
         okBtn.textContent = mode === 'alert' ? ds('ok', 'OK') : ds('confirm', 'Confirm');
-        okBtn.classList.toggle('btn-danger', !!opts.danger && mode !== 'alert');
-        okBtn.classList.toggle('btn-primary', !opts.danger || mode === 'alert');
+        okBtn.classList.toggle('is-danger', !!opts.danger && mode !== 'alert');
 
         setOpen(true);
 

@@ -36,8 +36,9 @@
                             $headerKey = 'table.headers.' . strtolower($header);
                             $headerLabel = __($headerKey);
                             $headerLabel = $headerLabel === $headerKey ? $header : $headerLabel;
+                            $colClass = 'admin-col-' . str_replace(' ', '-', strtolower($header));
                         @endphp
-                        <th scope="col">{{ $headerLabel }}</th>
+                        <th scope="col" class="{{ $colClass }}">{{ $headerLabel }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -56,8 +57,9 @@
                                     $headerKey = 'table.headers.' . strtolower($header);
                                     $headerLabel = __($headerKey);
                                     $headerLabel = $headerLabel === $headerKey ? $header : $headerLabel;
+                                    $colClass = 'admin-col-' . str_replace(' ', '-', strtolower($header));
                                 @endphp
-                                <td data-label="{{ $headerLabel }}">
+                                <td class="{{ $colClass }}" data-label="{{ $headerLabel }}">
                                     @if ($header === 'Action')
                                         @php
                                             $actionsAlign = $isArabic ? 'justify-content-start' : 'justify-content-end';
@@ -71,7 +73,7 @@
                                             @if (isset($row['is_active']))
                                                 <form method="POST" action="{{ $url }}/status/{{ $row['ID'] }}" class="table-actions-form">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm {{ $row['is_active'] == 1 ? 'btn-success' : 'btn-warning' }}">
+                                                    <button type="submit" class="btn btn-sm admin-status-pill {{ $row['is_active'] == 1 ? 'is-on' : '' }}">
                                                         {{ $row['is_active'] == 1 ? __('table.status_active') : __('table.status_inactive') }}
                                                     </button>
                                                 </form>
@@ -80,7 +82,8 @@
                                             @if (isset($row['is_highest']))
                                                 <form method="POST" action="{{ route('admin.products.toggleHighestStatus', $row['ID']) }}" class="table-actions-form">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm {{ $row['is_highest'] == 1 ? 'btn-primary' : 'btn-secondary' }}">
+                                                    <button type="submit" class="btn btn-sm admin-status-pill admin-status-featured {{ $row['is_highest'] == 1 ? 'is-on' : '' }}">
+                                                        <i class="bi {{ $row['is_highest'] == 1 ? 'bi-star-fill' : 'bi-star' }}" aria-hidden="true"></i>
                                                         {{ $row['is_highest'] == 1 ? __('table.status_highest') : __('table.status_normal') }}
                                                     </button>
                                                 </form>
