@@ -678,6 +678,43 @@
 [data-bs-theme="dark"] .carousel-control-next-icon,
 [data-bs-theme="dark"] .custom-ctrl-icon {
     background-color: #FCF4E9 !important;
+    filter: none;
+}
+
+[data-bs-theme="dark"] .custom-ctrl {
+    background: #FCF4E9;
+    color: #193049;
+}
+
+[data-bs-theme="dark"] .custom-ctrl:hover,
+[data-bs-theme="dark"] .custom-ctrl:focus-visible {
+    background: #C9898C;
+    color: #FCF4E9;
+}
+
+[data-bs-theme="dark"] .custom-ctrl.is-disabled,
+[data-bs-theme="dark"] .custom-ctrl:disabled {
+    opacity: 0.4;
+}
+
+[data-bs-theme="dark"] .custom-ctrl.is-disabled:hover,
+[data-bs-theme="dark"] .custom-ctrl:disabled:hover {
+    background: #FCF4E9;
+    color: #193049;
+}
+
+[data-bs-theme="dark"] .footer-social-bar {
+    border-top-color: #2C4664;
+}
+
+[data-bs-theme="dark"] .footer-social-bar .social-link {
+    background: #14263A;
+    color: #FCF4E9;
+}
+
+[data-bs-theme="dark"] .footer-social-bar .social-link:hover {
+    background: #FCF4E9;
+    color: #193049;
 }
 
 [data-bs-theme="dark"] .filter-section-toggle:focus-visible {

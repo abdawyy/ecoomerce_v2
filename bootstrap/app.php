@@ -1,5 +1,13 @@
 <?php
 
+$dbName = (string) ($_ENV['DB_DATABASE'] ?? $_SERVER['DB_DATABASE'] ?? getenv('DB_DATABASE') ?: '');
+if (str_contains($dbName, 'browser-verify')) {
+    foreach (['DB_CONNECTION', 'DB_DATABASE'] as $key) {
+        putenv($key);
+        unset($_ENV[$key], $_SERVER[$key]);
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Create The Application

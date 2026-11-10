@@ -36,6 +36,16 @@ class SiteSetting extends Model
         'telegram_url',
         'pinterest_url',
         'snapchat_url',
+        'instagram_hidden',
+        'facebook_hidden',
+        'tiktok_hidden',
+        'youtube_hidden',
+        'whatsapp_hidden',
+        'twitter_hidden',
+        'linkedin_hidden',
+        'telegram_hidden',
+        'pinterest_hidden',
+        'snapchat_hidden',
         'pdf_footer_en',
         'pdf_footer_ar',
         'pdf_thank_you_en',
@@ -66,6 +76,19 @@ class SiteSetting extends Model
         'robots',
         'canonical_url',
         'free_shipping_min_amount',
+    ];
+
+    protected $casts = [
+        'instagram_hidden' => 'boolean',
+        'facebook_hidden' => 'boolean',
+        'tiktok_hidden' => 'boolean',
+        'youtube_hidden' => 'boolean',
+        'whatsapp_hidden' => 'boolean',
+        'twitter_hidden' => 'boolean',
+        'linkedin_hidden' => 'boolean',
+        'telegram_hidden' => 'boolean',
+        'pinterest_hidden' => 'boolean',
+        'snapchat_hidden' => 'boolean',
     ];
 
     public static function current(): self

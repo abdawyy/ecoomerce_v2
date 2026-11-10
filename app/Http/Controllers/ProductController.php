@@ -436,8 +436,7 @@ class ProductController extends Controller
             'sort' => $sort !== 'newest' ? $sort : null,
         ];
 
-        // Sort and paginate
-        $data = $query->paginate(30)
+        $data = $query->paginate(40)
             ->appends(array_filter($queryParams, fn ($v) => $v !== null && $v !== ''));
 
         $categories = Category::where('is_active', 1)->get();

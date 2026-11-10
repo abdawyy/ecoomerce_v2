@@ -50,6 +50,7 @@ class SiteSettingsController extends Controller
 
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
             $rules["{$platform}_url"] = 'nullable|string|max:500';
+            $rules["{$platform}_hidden"] = 'nullable|boolean';
         }
 
         $validated = $request->validate($rules);
@@ -73,11 +74,12 @@ class SiteSettingsController extends Controller
 
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
             $field = "{$platform}_url";
-            if (! array_key_exists($field, $validated)) {
-                continue;
+            if (array_key_exists($field, $validated)) {
+                $raw = trim($validated[$field] ?? '');
+                $validated[$field] = $raw === '' ? null : $branding->normalizeSocialUrl($raw, $platform);
             }
-            $raw = trim($validated[$field] ?? '');
-            $validated[$field] = $raw === '' ? null : $branding->normalizeSocialUrl($raw, $platform);
+            $hiddenField = "{$platform}_hidden";
+            $validated[$hiddenField] = $request->boolean($hiddenField);
         }
 
         $scalarFields = [
@@ -92,6 +94,7 @@ class SiteSettingsController extends Controller
         ];
         foreach (array_keys(config('branding.social_platforms', [])) as $platform) {
             $scalarFields[] = "{$platform}_url";
+            $scalarFields[] = "{$platform}_hidden";
         }
 
         foreach ($scalarFields as $field) {

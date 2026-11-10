@@ -193,11 +193,6 @@ body {
     transition: opacity 0.3s ease;
 }
 
-#newCollectionCarousel:hover .carousel-control-prev,
-#newCollectionCarousel:hover .carousel-control-next {
-    opacity: 1;
-}
-
 .carousel-control-prev-icon, .carousel-control-next-icon {
     background-color: var(--color-black) !important;
     padding: 1.5rem;

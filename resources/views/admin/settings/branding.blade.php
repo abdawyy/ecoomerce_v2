@@ -64,6 +64,16 @@
                                     <input type="text" name="{{ $platform }}_url" class="form-control"
                                            placeholder="{{ $placeholder }}"
                                            value="{{ old($platform.'_url', $settings->{$platform.'_url'}) }}">
+                                    <input type="hidden" name="{{ $platform }}_hidden" value="0">
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox"
+                                               name="{{ $platform }}_hidden" value="1"
+                                               id="{{ $platform }}_hidden"
+                                               @checked(old($platform.'_hidden', $settings->{$platform.'_hidden'}))>
+                                        <label class="form-check-label" for="{{ $platform }}_hidden">
+                                            {{ __('branding.social_hidden') }}
+                                        </label>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>

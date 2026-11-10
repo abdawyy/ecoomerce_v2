@@ -97,15 +97,6 @@
     .category-box:hover .category-overlay {
         padding-bottom: 50px;
     }
-
-    .custom-ctrl { opacity: 1; width: 40px; }
-    .custom-ctrl-icon {
-        background-color: var(--brand-black) !important;
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        background-size: 40%;
-    }
 </style>
 @endpush
 
@@ -132,7 +123,7 @@
 
 <section id="newCollection" class="py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-5">
+        <div class="d-flex justify-content-between align-items-end mb-4 mb-md-5">
             <div class="section-title">
                 <h2 class="fw-bold display-5 mb-0">{{ __('web.new_collection') }}</h2>
                 <p class="text-muted mt-2">{{ __('web.new_collection_desc') }}</p>
@@ -141,31 +132,24 @@
                 {{ __('web.show_all') }}
             </a>
         </div>
-
-        <div id="newCollectionCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                @foreach($products->chunk(4) as $chunkIndex => $chunk)
-                    <div class="carousel-item {{ $chunkIndex === 0 ? 'active' : '' }}">
-                        <div class="row g-3 g-md-4">
-                            @foreach($chunk as $product)
-                                <div class="col-6 col-lg-3">
-                                    <x-web.product-card :product="$product" />
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <button class="carousel-control-prev custom-ctrl" type="button" data-bs-target="#newCollectionCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon custom-ctrl-icon"></span>
-            </button>
-            <button class="carousel-control-next custom-ctrl" type="button" data-bs-target="#newCollectionCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon custom-ctrl-icon"></span>
-            </button>
-        </div>
-        <p class="carousel-swipe-hint d-md-none"><i class="bi bi-arrow-left-right me-1"></i> Swipe to browse</p>
     </div>
+
+    <div class="collection-carousel-wrap">
+        <button type="button" class="custom-ctrl collection-ctrl collection-ctrl-prev" aria-label="Previous">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </button>
+        <div id="newCollectionTrack" class="collection-track" tabindex="0">
+            @foreach($products as $product)
+                <div class="collection-slide">
+                    <x-web.product-card :product="$product" />
+                </div>
+            @endforeach
+        </div>
+        <button type="button" class="custom-ctrl collection-ctrl collection-ctrl-next" aria-label="Next">
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </button>
+    </div>
+    <p class="carousel-swipe-hint d-md-none"><i class="bi bi-arrow-left-right me-1"></i> Swipe to browse</p>
 </section>
 
 <section id="category" class="py-5 home-categories">

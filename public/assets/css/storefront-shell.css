@@ -548,6 +548,36 @@ body:has(.modal.show) {
     color: #E4C4C6;
 }
 
+.footer-social-bar {
+    margin-top: 2.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    display: flex;
+    justify-content: center;
+}
+
+.footer-social-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.footer-social-bar .social-link {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 1.55rem;
+}
+
+.footer-social-bar .social-link:hover {
+    background: #fff;
+    color: var(--brand-navy);
+    transform: translateY(-3px);
+}
+
 .social-link {
     display: inline-flex;
     align-items: center;
@@ -599,12 +629,19 @@ body:has(.modal.show) {
     overflow: hidden;
     border-radius: var(--radius-md);
     background: var(--brand-soft);
+    aspect-ratio: 4 / 5;
+    width: 100%;
+}
+
+.product-card .image-wrapper > a.product-card-image-link {
+    display: block;
+    height: 100%;
 }
 
 .product-card .product-img,
 .product-card .list-product-img {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    height: 100%;
     object-fit: cover;
     transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
@@ -639,18 +676,24 @@ body:has(.modal.show) {
     background: #fff;
     border: none;
     border-radius: 50%;
-    width: 46px;
-    height: 46px;
+    width: 46px !important;
+    height: 46px !important;
+    max-width: 46px;
+    max-height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+    flex: 0 0 46px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     opacity: 0;
     transform: translateY(12px);
-    transition: all 0.35s ease;
+    transition: opacity 0.35s ease, transform 0.35s ease, background 0.35s ease, color 0.35s ease;
     z-index: 3;
     color: var(--brand-black);
     text-decoration: none;
+    overflow: hidden;
 }
 
 [dir="rtl"] .product-card .btn-cart-overlay {
@@ -1198,6 +1241,115 @@ body:has(.modal.show) {
     color: var(--brand-burgundy);
     border-bottom-color: var(--brand-burgundy);
     opacity: 1;
+}
+
+.collection-carousel-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.collection-track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.collection-track::-webkit-scrollbar {
+    display: none;
+}
+
+.collection-slide {
+    flex: 0 0 calc((100% - 4rem) / 5.35);
+    scroll-snap-align: start;
+    min-width: 0;
+}
+
+@media (max-width: 1199.98px) {
+    .collection-slide {
+        flex-basis: calc((100% - 3rem) / 4.25);
+    }
+}
+
+@media (max-width: 991.98px) {
+    .collection-slide {
+        flex-basis: calc((100% - 2rem) / 3.25);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .collection-slide {
+        flex-basis: min(70vw, 280px);
+    }
+}
+
+.custom-ctrl {
+    position: absolute;
+    top: 38%;
+    transform: translateY(-50%);
+    z-index: 4;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: var(--brand-navy);
+    color: var(--brand-cream);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    line-height: 1;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    opacity: 1;
+}
+
+.custom-ctrl:hover,
+.custom-ctrl:focus-visible {
+    background: var(--brand-burgundy);
+    color: #fff;
+    outline: none;
+}
+
+.custom-ctrl.is-disabled,
+.custom-ctrl:disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: default;
+    box-shadow: none;
+}
+
+.custom-ctrl.is-disabled:hover,
+.custom-ctrl:disabled:hover {
+    background: var(--brand-navy);
+    color: var(--brand-cream);
+}
+
+.collection-ctrl-prev {
+    left: 10px;
+}
+
+.collection-ctrl-next {
+    right: 10px;
+}
+
+[dir="rtl"] .collection-ctrl-prev {
+    left: auto;
+    right: 10px;
+}
+
+[dir="rtl"] .collection-ctrl-next {
+    right: auto;
+    left: 10px;
+}
+
+[dir="rtl"] .collection-ctrl-prev .bi,
+[dir="rtl"] .collection-ctrl-next .bi {
+    transform: scaleX(-1);
 }
 
 .home-hero-section {

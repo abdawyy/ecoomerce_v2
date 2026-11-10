@@ -118,8 +118,9 @@ class BrandingService
 
         foreach ($platforms as $platform => $meta) {
             $raw = trim((string) ($this->settings()->{"{$platform}_url"} ?? config("branding.defaults.{$platform}_url") ?? ''));
+            $hidden = (bool) ($this->settings()->{"{$platform}_hidden"} ?? false);
 
-            if ($raw === '') {
+            if ($raw === '' || $hidden) {
                 continue;
             }
 
@@ -436,9 +437,14 @@ class BrandingService
             return file_exists($full) ? $full : null;
         }
 
-        $full = public_path('storage/'.$path);
+        $public = public_path('storage/'.$path);
+        if (file_exists($public)) {
+            return $public;
+        }
 
-        return file_exists($full) ? $full : null;
+        $stored = storage_path('app/public/'.$path);
+
+        return file_exists($stored) ? $stored : null;
     }
 
     public function uploadFile(UploadedFile $file, string $field): string

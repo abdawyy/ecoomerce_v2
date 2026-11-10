@@ -5,8 +5,9 @@
 ])
 
 @php
-    $image = $product->productImages?->isNotEmpty()
-        ? asset('storage/' . $product->productImages->first()->images)
+    $imagePath = $product->productImages?->first()?->images;
+    $image = $branding->filesystemPath($imagePath)
+        ? $branding->assetUrl($imagePath)
         : $branding->placeholderProductUrl();
     $salePrice = $product->sale
         ? $product->price - ($product->price * $product->sale / 100)
@@ -26,8 +27,8 @@
             <div class="sale-badge">-{{ $product->sale }}%</div>
         @endif
 
-        <a href="{{ $productUrl }}">
-            <img src="{{ $image }}" class="{{ $imageClass }}" alt="{{ $product->name }}">
+        <a href="{{ $productUrl }}" class="product-card-image-link">
+            <img src="{{ $image }}" class="{{ $imageClass }}" alt="{{ $product->name }}" onerror="this.style.visibility='hidden'">
         </a>
 
         @if ($showCartOverlay)

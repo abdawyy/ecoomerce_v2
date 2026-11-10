@@ -33,13 +33,14 @@
                 @if ($branding->tagline())
                     <p class="small text-white-50 mb-3">{{ $branding->tagline() }}</p>
                 @endif
-                @if (count($branding->socialLinks()) > 0)
-                    <h6 class="footer-heading">{{ __('web.footer_social') }}</h6>
-                    <x-web.social-links class="d-flex gap-3 mb-3" />
-                @endif
                 <p class="mb-0 small text-white-50">{!! __('web.footer_rights') !!}</p>
             </div>
         </div>
+        @if (count($branding->socialLinks()) > 0)
+            <div class="footer-social-bar">
+                <x-web.social-links class="footer-social-links" />
+            </div>
+        @endif
     </div>
 </footer>
 
@@ -64,7 +65,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="{{ asset('assets/js/main.js') }}"></script>
+<script src="{{ asset('assets/js/main.js') }}?v={{ filemtime(public_path('assets/js/main.js')) }}"></script>
 
 <script>
     $(document).ready(function() {
