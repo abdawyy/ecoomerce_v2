@@ -54,18 +54,17 @@ class VisitorPresenceTest extends TestCase
         $this->assertSame(0, app(AnalyticsService::class)->liveVisitorCount());
     }
 
-    public function test_heartbeat_only_updates_existing_presence(): void
+    public function test_heartbeat_creates_missing_presence_and_refreshes_it(): void
     {
         $this->withSession(['analytics_session_id' => 'hb-session']);
 
         $this->post('/analytics/presence')->assertNoContent();
-        $this->assertDatabaseMissing('visitor_presence', ['session_id' => 'hb-session']);
 
-        VisitorPresence::create([
-            'session_id' => 'hb-session',
-            'current_path' => '/',
+        $this->assertSame(1, app(AnalyticsService::class)->liveVisitorCount());
+        $this->assertDatabaseHas('visitor_presence', ['session_id' => 'hb-session']);
+
+        VisitorPresence::where('session_id', 'hb-session')->update([
             'last_seen_at' => now()->subSeconds(20),
-            'first_seen_at' => now()->subMinute(),
         ]);
 
         $this->post('/analytics/presence')->assertNoContent();

@@ -214,14 +214,15 @@ class AnalyticsService
         }
 
         $sessionId = $this->sessionId($request);
+        $presence = VisitorPresence::firstOrNew(['session_id' => $sessionId]);
 
-        if ($heartbeat) {
-            VisitorPresence::where('session_id', $sessionId)->update(['last_seen_at' => now()]);
+        if ($heartbeat && $presence->exists) {
+            $presence->last_seen_at = now();
+            $presence->save();
 
             return;
         }
 
-        $presence = VisitorPresence::firstOrNew(['session_id' => $sessionId]);
         if (! $presence->exists) {
             $presence->first_seen_at = now();
         }
