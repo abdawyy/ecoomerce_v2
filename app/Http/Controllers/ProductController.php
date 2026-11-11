@@ -258,19 +258,12 @@ class ProductController extends Controller
             return;
         }
 
-        $directory = public_path('storage/uploads');
-        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
-            throw new \RuntimeException(__('products.images_save_failed'));
-        }
-
         foreach ($request->file('images') as $file) {
-            if (! $file || ! $file->isValid()) {
-                throw new \RuntimeException(__('products.images_too_large'));
+            if (! $file) {
+                continue;
             }
 
-            $fileName = time().'-'.uniqid().'.'.$file->getClientOriginalExtension();
-            $file->move($directory, $fileName);
-            $relative = 'uploads/'.$fileName;
+            $relative = $this->storePublicUpload($file, 'uploads');
             $stored[] = $relative;
 
             $imageModel = new productImages();
@@ -282,11 +275,7 @@ class ProductController extends Controller
 
     protected function deleteStoredUpload(string $relative): void
     {
-        $relative = str_replace(['../', '..\\'], '', $relative);
-        $path = public_path('storage/'.ltrim($relative, '/\\'));
-        if (is_file($path)) {
-            unlink($path);
-        }
+        $this->deletePublicUpload($relative);
     }
 
     protected function requestExceededPostMax(Request $request): bool

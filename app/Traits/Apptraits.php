@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
@@ -131,59 +132,108 @@ trait Apptraits
      */
 protected function deleteImageFromStorage($imagePath)
 {
-    if (! is_string($imagePath) || $imagePath === '') {
-        return false;
-    }
-
-    $storageRoot = realpath(public_path('storage'));
-    if (! $storageRoot) {
-        return false;
-    }
-
-    $normalized = str_replace(['../', '..\\'], '', $imagePath);
-    $candidate = public_path('storage/'.ltrim($normalized, '/\\'));
-    $real = realpath($candidate);
-
-    if (! $real || ! is_file($real)) {
-        return false;
-    }
-
-    if (! str_starts_with($real, $storageRoot)) {
-        return false;
-    }
-
-    return unlink($real);
+    return $this->deletePublicUpload($imagePath);
 }
+
+    protected function ensurePublicStorageLink(): void
+    {
+        $link = public_path('storage');
+        $target = storage_path('app/public');
+
+        if (is_link($link)) {
+            return;
+        }
+
+        $linkReal = realpath($link);
+        $targetReal = realpath($target);
+        if ($linkReal && $targetReal && $linkReal === $targetReal) {
+            return;
+        }
+
+        if (! file_exists($link)) {
+            @symlink($target, $link);
+        }
+    }
+
+    protected function storePublicUpload(UploadedFile $file, string $directory = 'uploads'): string
+    {
+        if (! $file->isValid()) {
+            throw new \RuntimeException(__('products.images_too_large'));
+        }
+
+        $directory = trim($directory, '/');
+        $diskDir = storage_path('app/public/'.$directory);
+        if (! is_dir($diskDir) && ! @mkdir($diskDir, 0775, true) && ! is_dir($diskDir)) {
+            throw new \RuntimeException(__('products.images_save_failed'));
+        }
+
+        $this->ensurePublicStorageLink();
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
+        $fileName = time().'-'.uniqid().'.'.$extension;
+        $relative = $directory.'/'.$fileName;
+
+        $stored = Storage::disk('public')->putFileAs($directory, $file, $fileName);
+        if (! $stored) {
+            throw new \RuntimeException(__('products.images_save_failed'));
+        }
+
+        $diskPath = storage_path('app/public/'.$relative);
+        $publicPath = public_path('storage/'.$relative);
+        if (is_file($diskPath) && realpath($diskPath) !== realpath($publicPath)) {
+            $publicDir = dirname($publicPath);
+            if ((is_dir($publicDir) || @mkdir($publicDir, 0775, true)) && is_writable($publicDir) && ! is_file($publicPath)) {
+                @copy($diskPath, $publicPath);
+            }
+        }
+
+        return $relative;
+    }
+
+    protected function deletePublicUpload($imagePath): bool
+    {
+        if (! is_string($imagePath) || $imagePath === '') {
+            return false;
+        }
+
+        $relative = ltrim(str_replace(['../', '..\\'], '', $imagePath), '/\\');
+        if ($relative === '') {
+            return false;
+        }
+
+        $deleted = false;
+        if (Storage::disk('public')->exists($relative)) {
+            $deleted = Storage::disk('public')->delete($relative) || $deleted;
+        }
+
+        $publicPath = public_path('storage/'.$relative);
+        if (is_file($publicPath)) {
+            $deleted = @unlink($publicPath) || $deleted;
+        }
+
+        return $deleted;
+    }
 
     public function uploadImages(Request $request, $model, int $product_id, string $fieldName = 'images', string $storagePath = 'uploads')
     {
         if ($request->hasFile($fieldName)) {
-            // Iterate through each uploaded file
             foreach ($request->file($fieldName) as $file) {
-                // Generate a unique filename
-                $fileName = time() . '-' . uniqid() . '.' . $file->getClientOriginalExtension(); // Ensure unique filenames
+                if (! $file) {
+                    continue;
+                }
 
-                // Define the target path within public/storage/uploads
-                $targetPath = public_path('storage/' . $storagePath . '/' . $fileName); // public/storage/uploads/filename.jpg
+                $relative = $this->storePublicUpload($file, $storagePath);
 
-                // Move the file to the specified path
-                $file->move(public_path('storage/' . $storagePath), $fileName); // Move file to public/storage/uploads
-
-                // Create a new instance of the model for each image
                 $imageModel = new $model;
-
-                // Set the properties
-                $imageModel->products_id = $product_id; // Set the product ID
-                $imageModel->images = $storagePath . '/' . $fileName; // Store the relative file path
-
-                // Save the model instance to the database
+                $imageModel->products_id = $product_id;
+                $imageModel->images = $relative;
                 $imageModel->save();
             }
 
-            return true; // Indicate that images were uploaded successfully
+            return true;
         }
 
-        return false; // No images uploaded
+        return false;
     }
 
     // Step 1: Function to filter out null values from the quantities array
