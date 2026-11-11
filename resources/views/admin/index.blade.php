@@ -40,7 +40,7 @@
                         {{ __('dashboard.unread_messages') }}
                         <span class="badge bg-light text-dark ms-1" id="unread-messages-count" data-admin-notify="unread_messages">{{ $notify['unread_messages'] ?? 0 }}</span>
                     </a>
-                    <a href="{{ route('products.edit') }}" class="action-strip-btn btn btn-sm btn-dark">
+                    <a href="{{ \App\Support\AdminListReturn::addUrl('products.edit', 'products') }}" class="action-strip-btn btn btn-sm btn-dark">
                         <i class="bi bi-plus-lg me-1"></i>{{ __('dashboard.quick_add_product') }}
                     </a>
                     <a href="{{ route('admin.analytics') }}" class="action-strip-btn btn btn-sm btn-outline-dark">
@@ -184,10 +184,10 @@
                             <a href="{{ route('admin.contact.list') }}" class="btn btn-outline-danger text-start">
                                 <i class="bi bi-envelope me-2"></i>{{ __('dashboard.view_messages') }}
                             </a>
-                            <a href="{{ route('products.edit') }}" class="btn btn-outline-dark text-start">
+                            <a href="{{ \App\Support\AdminListReturn::addUrl('products.edit', 'products') }}" class="btn btn-outline-dark text-start">
                                 <i class="bi bi-box-seam me-2"></i>{{ __('dashboard.quick_add_product') }}
                             </a>
-                            <a href="{{ route('discountCodes.edit') }}" class="btn btn-outline-secondary text-start">
+                            <a href="{{ \App\Support\AdminListReturn::addUrl('discountCodes.edit', 'discountCodes') }}" class="btn btn-outline-secondary text-start">
                                 <i class="bi bi-percent me-2"></i>{{ __('dashboard.quick_add_discount') }}
                             </a>
                             <a href="{{ route('users.list') }}?new=1" class="btn btn-outline-info text-start">

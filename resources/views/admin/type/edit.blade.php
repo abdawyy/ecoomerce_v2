@@ -26,7 +26,7 @@
                 <div class="card-body">
                     <form id="prevent" action="{{ route('type.edit',  $model->id ?? null) }}" method="POST">
                         @csrf
-                        <input type="hidden" name="return" value="{{ request('return') }}">
+                        <input type="hidden" name="return" value="{{ \App\Support\AdminListReturn::fieldValue('types') }}">
                         <div class="row">
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">

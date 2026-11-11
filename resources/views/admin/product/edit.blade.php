@@ -58,7 +58,7 @@
                         <form id="prevent" action="{{ route('products.edit', $model->id ?? null) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
-                            <input type="hidden" name="return" value="{{ request('return') }}">
+                            <input type="hidden" name="return" value="{{ \App\Support\AdminListReturn::fieldValue('products') }}">
                             <div class="row g-4 product-edit-form">
                                 <div class="col-lg-6 col-12">
                                     <div class="row">

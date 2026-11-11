@@ -40,15 +40,15 @@ class AdminNav
                 'items' => [
                     self::collapse('products-nav', 'admin_sidebar.products', 'bi-box-seam', Route::is('products.*'), [
                         self::child('products.list', 'admin_sidebar.view_products', Route::is('products.list')),
-                        self::child('products.edit', 'admin_sidebar.add_product', Route::is('products.edit')),
+                        self::child('products.edit', 'admin_sidebar.add_product', Route::is('products.edit'), null, [], 'warning', AdminListReturn::addUrl('products.edit', 'products')),
                     ]),
                     self::collapse('categories-nav', 'admin_sidebar.categories', 'bi-tags', Route::is('categories.*'), [
                         self::child('categories.list', 'admin_sidebar.view_categories', Route::is('categories.list')),
-                        self::child('categories.edit', 'admin_sidebar.add_category', Route::is('categories.edit')),
+                        self::child('categories.edit', 'admin_sidebar.add_category', Route::is('categories.edit'), null, [], 'warning', AdminListReturn::addUrl('categories.edit', 'categories')),
                     ]),
                     self::collapse('discount-nav', 'admin_sidebar.discount_codes', 'bi-percent', Route::is('discountCodes.*'), [
                         self::child('discountCodes.list', 'admin_sidebar.view_discount_codes', Route::is('discountCodes.list')),
-                        self::child('discountCodes.edit', 'admin_sidebar.add_discount_code', Route::is('discountCodes.edit')),
+                        self::child('discountCodes.edit', 'admin_sidebar.add_discount_code', Route::is('discountCodes.edit'), null, [], 'warning', AdminListReturn::addUrl('discountCodes.edit', 'discountCodes')),
                         self::child('discountCodes.freeShipping', 'admin_sidebar.free_shipping', Route::is('discountCodes.freeShipping')),
                     ]),
                 ],
@@ -61,11 +61,11 @@ class AdminNav
                     self::link('guides.admin.list', 'admin_sidebar.guides', 'bi-journal-text', Route::is('guides.admin.*')),
                     self::collapse('cities-nav', 'admin_sidebar.cities', 'bi-geo-alt', Route::is('cities.*'), [
                         self::child('cities.list', 'admin_sidebar.view_cities', Route::is('cities.list')),
-                        self::child('cities.edit', 'admin_sidebar.add_city', Route::is('cities.edit')),
+                        self::child('cities.edit', 'admin_sidebar.add_city', Route::is('cities.edit'), null, [], 'warning', AdminListReturn::addUrl('cities.edit', 'cities')),
                     ]),
                     self::collapse('types-nav', 'admin_sidebar.types', 'bi-layers', Route::is('type.*'), [
                         self::child('type.list', 'admin_sidebar.view_types', Route::is('type.list')),
-                        self::child('type.edit', 'admin_sidebar.add_type', Route::is('type.edit')),
+                        self::child('type.edit', 'admin_sidebar.add_type', Route::is('type.edit'), null, [], 'warning', AdminListReturn::addUrl('type.edit', 'types')),
                     ]),
                 ],
             ],

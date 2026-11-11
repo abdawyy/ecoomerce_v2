@@ -10,6 +10,7 @@
             'route' => 'discountCodes.edit',
             'label' => __('discount_codes.tab_add'),
             'active' => request()->routeIs('discountCodes.edit'),
+            'url' => \App\Support\AdminListReturn::addUrl('discountCodes.edit', 'discountCodes'),
         ],
         [
             'route' => 'discountCodes.freeShipping',
@@ -23,7 +24,7 @@
     @foreach ($tabs as $tab)
         <li class="nav-item">
             <a class="nav-link {{ $tab['active'] ? 'active' : '' }}"
-               href="{{ route($tab['route']) }}">{{ $tab['label'] }}</a>
+               href="{{ $tab['url'] ?? route($tab['route']) }}">{{ $tab['label'] }}</a>
         </li>
     @endforeach
 </ul>

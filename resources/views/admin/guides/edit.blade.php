@@ -65,7 +65,7 @@
                     <form action="{{ route('guides.admin.edit', $model->id ?? null) }}" method="POST" enctype="multipart/form-data" id="guide-form">
 
                         @csrf
-                        <input type="hidden" name="return" value="{{ request('return') }}">
+                        <input type="hidden" name="return" value="{{ \App\Support\AdminListReturn::fieldValue('guides') }}">
 
                         <div class="row g-3">
 

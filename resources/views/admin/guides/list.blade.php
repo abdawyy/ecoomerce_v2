@@ -16,7 +16,7 @@
 
                 <h1>{{ __('guides.admin_title') }}</h1>
 
-                <a href="{{ route('guides.admin.edit') }}" class="btn btn-primary btn-sm">{{ __('guides.add') }}</a>
+                <a href="{{ \App\Support\AdminListReturn::addUrl('guides.admin.edit', 'guides') }}" class="btn btn-primary btn-sm">{{ __('guides.add') }}</a>
 
             </div>
 
@@ -64,7 +64,7 @@
 
                                 <a href="{{ route('guides.admin.sample.preview', ['lang' => 'ar']) }}" class="btn btn-outline-secondary btn-sm" target="_blank">{{ __('guides.sample_preview_ar') }}</a>
 
-                                <a href="{{ route('guides.admin.edit') }}?template=sample" class="btn btn-secondary btn-sm">{{ __('guides.load_sample_template') }}</a>
+                                <a href="{{ \App\Support\AdminListReturn::addUrl('guides.admin.edit', 'guides', ['template' => 'sample']) }}" class="btn btn-secondary btn-sm">{{ __('guides.load_sample_template') }}</a>
 
                             </div>
 
