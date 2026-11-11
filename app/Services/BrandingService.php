@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\SiteSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 
 class BrandingService
 {
@@ -437,31 +436,16 @@ class BrandingService
             return file_exists($full) ? $full : null;
         }
 
-        $public = public_path('storage/'.$path);
-        if (file_exists($public)) {
-            return $public;
-        }
-
-        $stored = storage_path('app/public/'.$path);
-
-        return file_exists($stored) ? $stored : null;
+        return app(PublicUpload::class)->locate($path);
     }
 
     public function uploadFile(UploadedFile $file, string $field): string
     {
         $directory = config('branding.storage_directory', 'branding');
-        $extension = $file->getClientOriginalExtension();
-        $fileName = $field.'_'.time().'.'.$extension;
-        $relativePath = $directory.'/'.$fileName;
-        $targetDir = public_path('storage/'.$directory);
+        $extension = strtolower((string) ($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg'));
+        $extension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'jpg';
 
-        if (! is_dir($targetDir)) {
-            mkdir($targetDir, 0775, true);
-        }
-
-        $file->move($targetDir, $fileName);
-
-        return $relativePath;
+        return app(PublicUpload::class)->store($file, $directory, $field.'_'.time().'.'.$extension);
     }
 
     public function deleteStoredFile(?string $path): void
@@ -470,10 +454,7 @@ class BrandingService
             return;
         }
 
-        $full = public_path('storage/'.$path);
-        if (file_exists($full)) {
-            File::delete($full);
-        }
+        app(PublicUpload::class)->delete($path);
     }
 
     protected function versionQuery(): string

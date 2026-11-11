@@ -5,9 +5,10 @@ namespace App\Services;
 use App\Models\Guide;
 use App\Models\orders;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\File;
+use Illuminate\Http\UploadedFile;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class PdfService
 {
@@ -90,11 +91,11 @@ class PdfService
         );
     }
 
-    public function streamGuide(Guide $guide, ?string $locale = null): Response
+    public function streamGuide(Guide $guide, ?string $locale = null): BaseResponse
     {
         if ($guide->content_type === 'upload' && $guide->file_path) {
-            $full = public_path('storage/'.$guide->file_path);
-            if (file_exists($full)) {
+            $full = app(PublicUpload::class)->locate($guide->file_path);
+            if ($full) {
                 return response()->download($full, $guide->slug.'.pdf');
             }
         }
@@ -345,17 +346,13 @@ class PdfService
         return $order;
     }
 
-    public function uploadGuideFile($file): string
+    public function uploadGuideFile(UploadedFile $file): string
     {
         $directory = config('pdf.guides_directory', 'guides');
-        $targetDir = public_path('storage/'.$directory);
-        if (! is_dir($targetDir)) {
-            mkdir($targetDir, 0775, true);
-        }
-        $fileName = 'guide_'.time().'.'.$file->getClientOriginalExtension();
-        $file->move($targetDir, $fileName);
+        $extension = strtolower((string) ($file->getClientOriginalExtension() ?: 'pdf'));
+        $extension = preg_replace('/[^a-z0-9]/', '', $extension) ?: 'pdf';
 
-        return $directory.'/'.$fileName;
+        return app(PublicUpload::class)->store($file, $directory, 'guide_'.time().'.'.$extension);
     }
 
     public function deleteGuideFile(?string $path): void
@@ -363,9 +360,7 @@ class PdfService
         if (empty($path)) {
             return;
         }
-        $full = public_path('storage/'.$path);
-        if (file_exists($full)) {
-            File::delete($full);
-        }
+
+        app(PublicUpload::class)->delete($path);
     }
 }

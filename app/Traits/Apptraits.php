@@ -2,9 +2,9 @@
 
 namespace App\Traits;
 
+use App\Services\PublicUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 
@@ -135,83 +135,14 @@ protected function deleteImageFromStorage($imagePath)
     return $this->deletePublicUpload($imagePath);
 }
 
-    protected function ensurePublicStorageLink(): void
-    {
-        $link = public_path('storage');
-        $target = storage_path('app/public');
-
-        if (is_link($link)) {
-            return;
-        }
-
-        $linkReal = realpath($link);
-        $targetReal = realpath($target);
-        if ($linkReal && $targetReal && $linkReal === $targetReal) {
-            return;
-        }
-
-        if (! file_exists($link)) {
-            @symlink($target, $link);
-        }
-    }
-
     protected function storePublicUpload(UploadedFile $file, string $directory = 'uploads'): string
     {
-        if (! $file->isValid()) {
-            throw new \RuntimeException(__('products.images_too_large'));
-        }
-
-        $directory = trim($directory, '/');
-        $diskDir = storage_path('app/public/'.$directory);
-        if (! is_dir($diskDir) && ! @mkdir($diskDir, 0775, true) && ! is_dir($diskDir)) {
-            throw new \RuntimeException(__('products.images_save_failed'));
-        }
-
-        $this->ensurePublicStorageLink();
-
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
-        $fileName = time().'-'.uniqid().'.'.$extension;
-        $relative = $directory.'/'.$fileName;
-
-        $stored = Storage::disk('public')->putFileAs($directory, $file, $fileName);
-        if (! $stored) {
-            throw new \RuntimeException(__('products.images_save_failed'));
-        }
-
-        $diskPath = storage_path('app/public/'.$relative);
-        $publicPath = public_path('storage/'.$relative);
-        if (is_file($diskPath) && realpath($diskPath) !== realpath($publicPath)) {
-            $publicDir = dirname($publicPath);
-            if ((is_dir($publicDir) || @mkdir($publicDir, 0775, true)) && is_writable($publicDir) && ! is_file($publicPath)) {
-                @copy($diskPath, $publicPath);
-            }
-        }
-
-        return $relative;
+        return app(PublicUpload::class)->store($file, $directory);
     }
 
     protected function deletePublicUpload($imagePath): bool
     {
-        if (! is_string($imagePath) || $imagePath === '') {
-            return false;
-        }
-
-        $relative = ltrim(str_replace(['../', '..\\'], '', $imagePath), '/\\');
-        if ($relative === '') {
-            return false;
-        }
-
-        $deleted = false;
-        if (Storage::disk('public')->exists($relative)) {
-            $deleted = Storage::disk('public')->delete($relative) || $deleted;
-        }
-
-        $publicPath = public_path('storage/'.$relative);
-        if (is_file($publicPath)) {
-            $deleted = @unlink($publicPath) || $deleted;
-        }
-
-        return $deleted;
+        return app(PublicUpload::class)->delete(is_string($imagePath) ? $imagePath : null);
     }
 
     public function uploadImages(Request $request, $model, int $product_id, string $fieldName = 'images', string $storagePath = 'uploads')

@@ -21,6 +21,7 @@ use App\Http\Controllers\GuideController;
 use App\Http\Controllers\AdminGuideController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\StorageFileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,10 @@ use App\Http\Controllers\AccountController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/storage/{path}', [StorageFileController::class, 'show'])
+    ->where('path', '.*')
+    ->name('storage.fallback');
+
 Route::get('/legal', function () {
     return view('legal');
 })->name('legal');
