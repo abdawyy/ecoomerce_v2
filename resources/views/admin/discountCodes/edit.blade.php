@@ -34,7 +34,7 @@
                             <!-- Code -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="code" class="form-label">{{ __('discount_codes.code') }}</label>
+                                    <label for="code" class="form-label">{{ __('discount_codes.code') }} <x-admin.required /></label>
                                     <input type="text" name="code" class="form-control"
                                            placeholder="{{ __('discount_codes.code_placeholder') }}"
                                            value="{{ old('code', $model->code ?? '') }}" required>
@@ -47,7 +47,7 @@
                             <!-- Discount Percentage -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="discount_percentage" class="form-label">{{ __('discount_codes.discount_percentage') }}</label>
+                                    <label for="discount_percentage" class="form-label">{{ __('discount_codes.discount_percentage') }} <x-admin.required /></label>
                                     <input type="number" name="discount_percentage" min="1" max="100"
                                            class="form-control"
                                            placeholder="{{ __('discount_codes.discount_percentage_placeholder') }}"
@@ -61,7 +61,7 @@
                             <!-- Expiry Date -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="expiry_date" class="form-label">{{ __('discount_codes.expiry_date') }}</label>
+                                    <label for="expiry_date" class="form-label">{{ __('discount_codes.expiry_date') }} <x-admin.required /></label>
                                     <input type="date" name="expiry_date" class="form-control"
                                            value="{{ old('expiry_date', $model->expiry_date ?? '') }}" required>
                                     @error('expiry_date')

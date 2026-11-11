@@ -13,22 +13,21 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle mb-3">
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
-                    <div>
-                        <h1 class="mb-1">{{ __('admin_list.title') }}</h1>
-                        <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
-                            dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('admin_list.breadcrumb_main') }}</a>
-                            </li>
-                            <li class="mx-2">-</li>
-                            <li class="breadcrumb-item active">
-                                {{ __('admin_list.breadcrumb_active') }}
-                            </li>
-                        </ol>
-                    </div>
+            <div class="pagetitle mb-3 d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h1 class="mb-1">{{ __('admin_list.title') }}</h1>
+                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
+                        dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+                        <li class="breadcrumb-item">
+                            <a href="#">{{ __('admin_list.breadcrumb_main') }}</a>
+                        </li>
+                        <li class="mx-2">-</li>
+                        <li class="breadcrumb-item active">
+                            {{ __('admin_list.breadcrumb_active') }}
+                        </li>
+                    </ol>
                 </div>
+                <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('admin.create', 'admins')" :label="__('admin_sidebar.add_admin')" />
             </div>
 
             <!-- Filter -->

@@ -53,7 +53,7 @@
                                     <x-alert-error />
 
                                     <div class="mb-3">
-                                        <label for="email" class="form-label">{{ __('admin.email') }}</label>
+                                        <label for="email" class="form-label">{{ __('admin.email') }} <x-admin.required /></label>
                                         <input type="email" name="email" id="email" class="form-control form-control-lg" value="{{ old('email') }}" required autocomplete="username">
                                         @error('email')
                                             <div class="text-danger mt-1">{{ $message }}</div>
@@ -61,7 +61,7 @@
                                     </div>
 
                                     <div class="mb-4">
-                                        <label for="password" class="form-label">{{ __('admin.password') }}</label>
+                                        <label for="password" class="form-label">{{ __('admin.password') }} <x-admin.required /></label>
                                         <input type="password" name="password" id="password" class="form-control form-control-lg" required autocomplete="current-password">
                                         @error('password')
                                             <div class="text-danger mt-1">{{ $message }}</div>

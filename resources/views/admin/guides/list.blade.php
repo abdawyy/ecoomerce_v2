@@ -16,7 +16,7 @@
 
                 <h1>{{ __('guides.admin_title') }}</h1>
 
-                <a href="{{ \App\Support\AdminListReturn::addUrl('guides.admin.edit', 'guides') }}" class="btn btn-primary btn-sm">{{ __('guides.add') }}</a>
+                <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('guides.admin.edit', 'guides')" :label="__('guides.add')" />
 
             </div>
 

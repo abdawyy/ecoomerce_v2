@@ -9,20 +9,23 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ __('category_list.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
-                        dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item">
-                            <a href="#">{{ __('category_list.breadcrumb_main') }}</a>
-                        </li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">
-                            {{ __('category_list.breadcrumb_active') }}
-                        </li>
-                    </ol>
-                </nav>
+            <div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h1>{{ __('category_list.title') }}</h1>
+                    <nav>
+                        <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
+                            dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+                            <li class="breadcrumb-item">
+                                <a href="#">{{ __('category_list.breadcrumb_main') }}</a>
+                            </li>
+                            <li class="mx-2">-</li>
+                            <li class="breadcrumb-item active">
+                                {{ __('category_list.breadcrumb_active') }}
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('categories.edit', 'categories')" :label="__('admin_sidebar.add_category')" />
             </div>
 
             <!-- Filter -->

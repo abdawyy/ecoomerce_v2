@@ -96,6 +96,9 @@ Route::middleware(['admin'])->group(function () {
     Route::get('admin/notifications/counts', [AdminNotificationController::class, 'counts'])->name('admin.notifications.counts');
     Route::get('admin/notifications/feed', [AdminNotificationController::class, 'feed'])->name('admin.notifications.feed');
     Route::get('admin/list', [AdminController::class, 'list'])->name('admin.list');
+    Route::get('admin/create', [AdminController::class, 'create'])->name('admin.create');
+    Route::post('admin/create', [AdminController::class, 'create'])->middleware('throttle:10,1');
+    Route::match(['get', 'post'], 'admin/edit/{id}', [AdminController::class, 'edit'])->name('admin.edit');
     Route::post('admin/list/delete/{id}', [AdminController::class, 'delete'])->name('admin.delete');
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 

@@ -8,15 +8,18 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ __('products.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item"><a href="#">{{ __('products.breadcrumb_main') }}</a></li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">{{ __('products.breadcrumb_list') }}</li>
-                    </ol>
-                </nav>
+            <div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                    <h1>{{ __('products.title') }}</h1>
+                    <nav>
+                        <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+                            <li class="breadcrumb-item"><a href="#">{{ __('products.breadcrumb_main') }}</a></li>
+                            <li class="mx-2">-</li>
+                            <li class="breadcrumb-item active">{{ __('products.breadcrumb_list') }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('products.edit', 'products')" :label="__('admin_sidebar.add_product')" />
             </div>
 
             <!-- Filter Card -->

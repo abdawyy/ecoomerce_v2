@@ -69,6 +69,14 @@ body.admin-body {
     letter-spacing: -0.02em;
 }
 
+.admin-required-mark {
+    display: inline-block;
+    margin-inline-start: 0.2em;
+    font-size: 0.55em;
+    color: #dc3545;
+    vertical-align: super;
+}
+
 .breadcrumb-item,
 .breadcrumb-item a {
     color: var(--admin-text-muted);
@@ -516,8 +524,20 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
     width: 3.25rem;
 }
 
-.table-modern .admin-col-created-at {
-    width: 6.1rem;
+.table-modern .admin-col-created-at,
+.table-modern .admin-col-modified-at {
+    width: 9.75rem;
+    min-width: 9.75rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.table-modern .admin-col-created-by,
+.table-modern .admin-col-modified-by {
+    width: 7.5rem;
+    min-width: 7.5rem;
+    white-space: nowrap;
 }
 
 .table-modern .admin-col-price,
@@ -1207,9 +1227,13 @@ body.admin-body.modal-open {
 .table-responsive.shadow-sm.rounded-4 {
     box-shadow: var(--admin-shadow) !important;
     max-height: min(70vh, 720px);
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
     overflow-y: auto;
     max-width: 100%;
+}
+
+.admin-table-wrap .table-modern:has(.admin-col-modified-at) {
+    min-width: 72rem;
 }
 
 /* ---- Dashboard + analytics: all screen sizes ---- */

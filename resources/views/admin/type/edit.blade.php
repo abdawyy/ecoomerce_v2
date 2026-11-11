@@ -30,7 +30,7 @@
                         <div class="row">
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="productName" class="form-label">{{ __('types.form_label_name') }}</label>
+                                    <label for="productName" class="form-label">{{ __('types.form_label_name') }} <x-admin.required /></label>
                                     <input type="text" name="name" class="form-control"
                                            placeholder="{{ __('types.form_placeholder_name') }}"
                                            id="productName"

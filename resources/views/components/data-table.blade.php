@@ -76,7 +76,11 @@
                                         @endphp
                                         <div class="table-actions {{ $actionsAlign }} {{ $actionCount >= 3 ? 'table-actions--multi' : '' }}">
                                             @if ($rowHref)
-                                                <x-admin.view-link :href="$rowHref" />
+                                                @php
+                                                    $rowPath = parse_url($rowHref, PHP_URL_PATH) ?: '';
+                                                    $isEditAction = (bool) preg_match('#^/admin/(products|categories|discountCodes|cities|type|guides)/edit|^/admin/edit/#', $rowPath);
+                                                @endphp
+                                                <x-admin.view-link :href="$rowHref" :label="$isEditAction ? __('table.edit') : __('table.view')" />
                                             @endif
 
                                             @if (isset($row['is_active']))

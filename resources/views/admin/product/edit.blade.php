@@ -67,7 +67,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <label for="productName"
-                                                class="form-label">{{ __('products.name') }}</label>
+                                                class="form-label">{{ __('products.name') }} <x-admin.required /></label>
                                             <input type="text" placeholder="{{ __('products.name_placeholder') }}"
                                                 value="{{ old('name', $model->name ?? '') }}"
                                                 class="form-control @error('name') is-invalid @enderror"
@@ -134,7 +134,7 @@
                                         @endif
 
                                         <div class="col-12 mb-3">
-                                            <label class="form-label">{{ __('products.category') }}</label>
+                                            <label class="form-label">{{ __('products.category') }} <x-admin.required /></label>
                                             <select name="category_id"
                                                 class="form-select @error('category_id') is-invalid @enderror">
                                                 <option disabled {{ !$model || !$model->category ? 'selected' : '' }}>
@@ -152,7 +152,7 @@
                                         </div>
 
                                         <div class="col-12 mb-3">
-                                            <label class="form-label">{{ __('products.type') }}</label>
+                                            <label class="form-label">{{ __('products.type') }} <x-admin.required /></label>
                                             <select name="type_id"
                                                 class="form-select @error('type_id') is-invalid @enderror">
                                                 <option disabled {{ !$model || !$model->type ? 'selected' : '' }}>
@@ -168,14 +168,14 @@
                                         </div>
 
                                         <div class="col-12 mb-3">
-                                            <label class="form-label">{{ __('products.color') }}</label>
+                                            <label class="form-label">{{ __('products.color') }} <x-admin.required /></label>
                                             <input type="text" name="color" class="form-control"
                                                 placeholder="{{ __('products.color_placeholder') }}"
                                                 value="{{ old('color', $model->color ?? '') }}">
                                         </div>
 
                                         <div class="col-12 mb-3">
-                                            <h6 class="product-form-heading">{{ __('products.sizes') }}</h6>
+                                            <h6 class="product-form-heading">{{ __('products.sizes') }} <x-admin.required /></h6>
                                             <p class="small text-muted mb-2">{{ __('products.sizes_hint') }}</p>
                                             <div class="table-responsive product-sizes-wrap">
                                                 <table class="table table-sm align-middle mb-0 product-sizes-table">
@@ -248,7 +248,7 @@
                                             <h6 class="product-form-heading">{{ __('products.price_section') }}</h6>
                                         </div>
                                         <div class="col-6 mb-3">
-                                            <label class="form-label">{{ __('products.regular_price') }}</label>
+                                            <label class="form-label">{{ __('products.regular_price') }} <x-admin.required /></label>
                                             <input type="number" placeholder="80"
                                                 class="form-control @error('price') is-invalid @enderror" name="price"
                                                 value="{{ old('price', $model->price ?? '') }}">

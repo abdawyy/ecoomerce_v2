@@ -34,7 +34,7 @@
                             <!-- Name Field -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="productName" class="form-label">{{ __('category_list.form_name') }}</label>
+                                    <label for="productName" class="form-label">{{ __('category_list.form_name') }} <x-admin.required /></label>
                                     <input type="text" name="name" placeholder="{{ __('category_list.form_placeholder') }}" class="form-control" id="productName" value="{{ old('name', $model->name ?? '') }}" required>
                                     @error('name')
                                         <div class="text-danger">{{ $message }}</div>
@@ -45,7 +45,7 @@
                             <!-- Type Select -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="typeSelect" class="form-label">{{ __('category_list.form_type') }}</label>
+                                    <label for="typeSelect" class="form-label">{{ __('category_list.form_type') }} <x-admin.required /></label>
                                     <select name="type_id" id="typeSelect" class="form-control" required>
                                         <option value="">{{ __('category_list.form_choose') }}</option>
                                         @foreach($types as $type)

@@ -71,7 +71,7 @@
 
                             <div class="col-md-6">
 
-                                <label class="form-label">Title (EN) *</label>
+                                <label class="form-label">Title (EN) <x-admin.required /></label>
 
                                 <input type="text" name="title_en" class="form-control" value="{{ $titleEn }}" required>
 
@@ -103,7 +103,7 @@
 
                             <div class="col-md-3">
 
-                                <label class="form-label">Content type</label>
+                                <label class="form-label">Content type <x-admin.required /></label>
 
                                 <select name="content_type" class="form-select">
 

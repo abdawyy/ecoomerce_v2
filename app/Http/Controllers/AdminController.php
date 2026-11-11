@@ -219,6 +219,7 @@ class AdminController extends Controller
     }
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('admins');
         // Get the search parameter from the request
         $search = $request->input('search');
 
@@ -232,10 +233,13 @@ class AdminController extends Controller
         ];
 
         // Use the search scope defined in the AppTrait
-        $admins = Admin::search($search, $headerMap)->paginate(10)->appends(['search' => $search]); // 👈 This preserves the search query;
+        $admins = Admin::with(['creator', 'updater'])
+            ->search($search, $headerMap)
+            ->paginate(10)
+            ->appends(['search' => $search]);
 
         // Define the headers for the table
-        $headers = ['ID', 'Name', 'Email', 'Created At', 'Action'];
+        $headers = ['ID', 'Name', 'Email', 'Created By', 'Created At', 'Modified By', 'Modified At', 'Action'];
 
         // Prepare the rows by mapping through the admins collection
         $rows = $admins->map(function ($admin) {
@@ -243,14 +247,82 @@ class AdminController extends Controller
                 'ID' => $admin->id,
                 'Name' => $admin->username,
                 'Email' => $admin->email,
-                'Created At' => $admin->created_at->format('m/d/Y'),
-                'is_active' => $admin->is_active
+                'Created By' => $admin->creator->username ?? '—',
+                'Created At' => $admin->created_at?->format('m/d/Y H:i') ?? '—',
+                'Modified By' => $admin->updater->username ?? '—',
+                'Modified At' => $admin->updated_at?->format('m/d/Y H:i') ?? '—',
+                'href' => route('admin.edit', $admin->id),
+                'is_active' => $admin->is_active,
             ];
         });
         $url = '/admin';
 
         // Return the view with headers and rows data
         return view('admin.admin.list', compact('headers', 'rows', 'admins', 'search', 'url'));
+    }
+
+    public function create(Request $request)
+    {
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:admins',
+                'email' => 'required|email|unique:admins',
+                'password' => 'required|min:6|confirmed',
+            ]);
+
+            $admin = new Admin([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'is_active' => 1,
+            ]);
+            $admin->stampCurrentAdmin(true);
+            $admin->save();
+
+            return $this->redirectToAdminList(
+                $request,
+                'admin.list',
+                'admins',
+                $admin->id,
+                __('admin_list.created')
+            );
+        }
+
+        return view('admin.admin.edit', ['model' => null]);
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $model = Admin::with(['creator', 'updater'])->find($id);
+        if (! $model) {
+            return redirect()->route('admin.list')->with('error', __('admin_list.missing'));
+        }
+
+        if ($request->isMethod('post')) {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:admins,username,'.$model->id,
+                'email' => 'required|email|unique:admins,email,'.$model->id,
+                'password' => 'nullable|min:6|confirmed',
+            ]);
+
+            $model->username = $request->username;
+            $model->email = $request->email;
+            if ($request->filled('password')) {
+                $model->password = Hash::make($request->password);
+            }
+            $model->stampCurrentAdmin();
+            $model->save();
+
+            return $this->redirectToAdminList(
+                $request,
+                'admin.list',
+                'admins',
+                $model->id,
+                __('admin_list.updated')
+            );
+        }
+
+        return view('admin.admin.edit', compact('model'));
     }
 
     public function delete($id)
@@ -411,7 +483,10 @@ class AdminController extends Controller
     {
         $admin = Admin::findOrFail($id);
 
-        self::toggleStatus($admin); // now using self
+        self::toggleStatus($admin);
+        $admin->stampCurrentAdmin();
+        $admin->save();
+
         return back()->with('success', 'Status toggled');
     }
 }

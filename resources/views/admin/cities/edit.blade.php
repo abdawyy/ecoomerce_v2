@@ -31,7 +31,7 @@
                         <div class="row">
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="productName" class="form-label">{{ __('cities.name') }}</label>
+                                    <label for="productName" class="form-label">{{ __('cities.name') }} <x-admin.required /></label>
                                     <input type="text" name="name" placeholder="{{ __('cities.name_placeholder') }}" class="form-control" id="productName" value="{{ old('name', $model->name ?? '') }}" required>
                                     @error('name')
                                         <div class="text-danger">{{ $message }}</div>
@@ -40,7 +40,7 @@
                             </div>
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="citiesPrice" class="form-label">{{ __('cities.price') }}</label>
+                                    <label for="citiesPrice" class="form-label">{{ __('cities.price') }} <x-admin.required /></label>
                                     <input type="text" name="price" placeholder="{{ __('cities.price_placeholder') }}" class="form-control" id="productprice" value="{{ old('price', $model->price ?? '') }}" required>
                                     @error('price')
                                         <div class="text-danger">{{ $message }}</div>

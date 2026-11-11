@@ -15,8 +15,6 @@ class AdminNav
             'new_guests' => 0,
         ];
 
-        $allowAdminRegister = Route::has('admin.register');
-
         return [
             [
                 'items' => [
@@ -72,10 +70,10 @@ class AdminNav
             [
                 'heading' => 'admin_sidebar.section_system',
                 'items' => [
-                    self::collapse('admins-nav', 'admin_sidebar.admins', 'bi-shield-lock', Route::is('admin.list') || ($allowAdminRegister && Route::is('admin.register')), array_filter([
+                    self::collapse('admins-nav', 'admin_sidebar.admins', 'bi-shield-lock', Route::is('admin.list') || Route::is('admin.create') || Route::is('admin.edit'), [
                         self::child('admin.list', 'admin_sidebar.view_admins', Route::is('admin.list')),
-                        $allowAdminRegister ? self::child('admin.register', 'admin_sidebar.add_admin', Route::is('admin.register')) : null,
-                    ])),
+                        self::child('admin.create', 'admin_sidebar.add_admin', Route::is('admin.create'), null, [], 'warning', AdminListReturn::addUrl('admin.create', 'admins')),
+                    ]),
                 ],
             ],
         ];
