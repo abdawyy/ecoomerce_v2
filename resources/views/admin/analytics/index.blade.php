@@ -398,7 +398,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
 (function () {
-    const refreshMs = {{ (int) config('analytics.live_refresh_seconds', 45) * 1000 }};
+    const refreshMs = {{ (int) config('analytics.live_refresh_seconds', 15) * 1000 }};
     function pollLive() {
         fetch('{{ route('admin.analytics.live') }}', { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
             .then(r => r.json())

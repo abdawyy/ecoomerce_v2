@@ -178,8 +178,6 @@ class AnalyticsService
         }
 
         if ($this->isBot($request->userAgent())) {
-            $this->touchPresence($request, $pageKey, $productId);
-
             return;
         }
 
@@ -209,13 +207,20 @@ class AnalyticsService
         $this->touchPresence($request, $pageKey, $productId);
     }
 
-    public function touchPresence(Request $request, ?string $pageKey = null, ?int $productId = null): void
+    public function touchPresence(Request $request, ?string $pageKey = null, ?int $productId = null, bool $heartbeat = false): void
     {
-        if (! Schema::hasTable('visitor_presence')) {
+        if (! Schema::hasTable('visitor_presence') || $this->isBot($request->userAgent())) {
             return;
         }
 
         $sessionId = $this->sessionId($request);
+
+        if ($heartbeat) {
+            VisitorPresence::where('session_id', $sessionId)->update(['last_seen_at' => now()]);
+
+            return;
+        }
+
         $presence = VisitorPresence::firstOrNew(['session_id' => $sessionId]);
         if (! $presence->exists) {
             $presence->first_seen_at = now();
@@ -231,15 +236,32 @@ class AnalyticsService
         $presence->save();
     }
 
+    public function leavePresence(Request $request): void
+    {
+        if (! Schema::hasTable('visitor_presence')) {
+            return;
+        }
+
+        VisitorPresence::where('session_id', $this->sessionId($request))->delete();
+    }
+
+    public function presenceCutoff(): Carbon
+    {
+        $seconds = (int) config('analytics.presence_timeout_seconds', 0);
+        if ($seconds <= 0) {
+            $seconds = (int) config('analytics.presence_timeout_minutes', 5) * 60;
+        }
+
+        return now()->subSeconds(max(15, $seconds));
+    }
+
     public function liveVisitorCount(): int
     {
         if (! Schema::hasTable('visitor_presence')) {
             return 0;
         }
 
-        $cutoff = now()->subMinutes(config('analytics.presence_timeout_minutes', 5));
-
-        return VisitorPresence::where('last_seen_at', '>=', $cutoff)->count();
+        return VisitorPresence::where('last_seen_at', '>=', $this->presenceCutoff())->count();
     }
 
     public function liveVisitors(int $limit = 20)
@@ -248,10 +270,8 @@ class AnalyticsService
             return collect();
         }
 
-        $cutoff = now()->subMinutes(config('analytics.presence_timeout_minutes', 5));
-
         return VisitorPresence::with(['user', 'product'])
-            ->where('last_seen_at', '>=', $cutoff)
+            ->where('last_seen_at', '>=', $this->presenceCutoff())
             ->orderByDesc('last_seen_at')
             ->limit($limit)
             ->get();

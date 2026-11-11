@@ -286,6 +286,25 @@
 
     buildCharts();
     window.addEventListener('admin-theme-changed', buildCharts);
+
+    const liveRefreshMs = {{ (int) config('analytics.live_refresh_seconds', 15) * 1000 }};
+    function pollLiveCount() {
+        fetch(@json(route('admin.dashboard.stats')), {
+            headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                const count = data.live_count;
+                if (count === undefined || count === null) return;
+                const badge = document.getElementById('live-count');
+                const card = document.getElementById('live-count-card');
+                if (badge) badge.textContent = count;
+                if (card) card.textContent = count;
+            })
+            .catch(function () {});
+    }
+    setInterval(pollLiveCount, liveRefreshMs);
 })();
 </script>
 

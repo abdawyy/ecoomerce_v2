@@ -45,6 +45,7 @@ class ImplementationManifest
             'resources/views/admin/analytics/index.blade.php' => 'analytics dashboard',
             'resources/views/admin/analytics/product.blade.php' => 'analytics product drill-down',
             'config/analytics.php' => 'analytics config',
+            'public/assets/js/storefront-presence.js' => 'storefront live presence heartbeat',
             'resources/lang/en/analytics.php' => 'analytics lang EN',
             'resources/lang/ar/analytics.php' => 'analytics lang AR',
 
@@ -82,6 +83,8 @@ class ImplementationManifest
             'admin.settings.branding',
             'admin.settings.seo',
             'admin.analytics',
+            'analytics.presence',
+            'analytics.presence.leave',
             'guides.admin.list',
             'order.invoice',
             'admin.settings.pdf.preview',

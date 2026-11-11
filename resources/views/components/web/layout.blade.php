@@ -80,5 +80,13 @@
     <script src="{{ asset('assets/js/storefront-confirm.js') }}?v={{ filemtime(public_path('assets/js/storefront-confirm.js')) }}"></script>
     @stack('scripts')
     <script src="{{ asset('assets/js/storefront-forms.js') }}?v={{ filemtime(public_path('assets/js/storefront-forms.js')) }}"></script>
+    <script>
+        window.StorefrontPresence = {
+            pingUrl: @json(route('analytics.presence')),
+            leaveUrl: @json(route('analytics.presence.leave')),
+            intervalSeconds: {{ (int) config('analytics.presence_heartbeat_seconds', 15) }},
+        };
+    </script>
+    <script src="{{ asset('assets/js/storefront-presence.js') }}?v={{ filemtime(public_path('assets/js/storefront-presence.js')) }}"></script>
 </body>
 </html>

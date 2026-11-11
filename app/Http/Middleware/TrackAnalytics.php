@@ -13,7 +13,7 @@ class TrackAnalytics
     {
         $response = $next($request);
 
-        if ($request->is('admin/*') || $request->is('api/*') || $request->ajax()) {
+        if ($request->is('admin/*') || $request->is('api/*') || $request->is('analytics/presence*') || $request->ajax()) {
             return $response;
         }
 

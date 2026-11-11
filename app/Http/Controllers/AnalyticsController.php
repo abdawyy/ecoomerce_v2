@@ -58,6 +58,20 @@ class AnalyticsController extends Controller
         ]);
     }
 
+    public function pingPresence(Request $request, AnalyticsService $analytics)
+    {
+        $analytics->touchPresence($request, heartbeat: true);
+
+        return response()->noContent();
+    }
+
+    public function leavePresence(Request $request, AnalyticsService $analytics)
+    {
+        $analytics->leavePresence($request);
+
+        return response()->noContent();
+    }
+
     public function live(AnalyticsService $analytics)
     {
         return response()->json([

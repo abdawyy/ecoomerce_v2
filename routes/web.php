@@ -74,6 +74,13 @@ Route::get('p/{slug}', [ProductController::class, 'productBySlug'])->name('produ
 Route::get('/sitemap.xml', [SeoPublicController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SeoPublicController::class, 'robots'])->name('robots');
 Route::match(['get', 'post'], 'product/list/category/{id?}', [ProductController::class, 'productWebList'])->name('product.List');
+Route::post('/analytics/presence', [AnalyticsController::class, 'pingPresence'])
+    ->middleware('throttle:30,1')
+    ->name('analytics.presence');
+Route::post('/analytics/presence/leave', [AnalyticsController::class, 'leavePresence'])
+    ->middleware('throttle:30,1')
+    ->name('analytics.presence.leave');
+
 Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
 Route::get('/guides/{slug}/download', [GuideController::class, 'download'])->name('guides.download');
 
