@@ -7,15 +7,9 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ __('reviews.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item"><a href="#">{{ __('reviews.breadcrumb_main') }}</a></li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">{{ __('reviews.breadcrumb_list') }}</li>
-                    </ol>
-                </nav>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-1">{{ __('reviews.title') }}</h1>
+                <x-admin.return-button :href="isset($productId) ? route('products.edit', $productId) : \App\Support\AdminListReturn::href('products', 'products.list')" />
             </div>
 
             <!-- Data Table -->

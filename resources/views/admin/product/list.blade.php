@@ -3,22 +3,11 @@
 
 <x-admin.navbar />
 
-@php $isRtl = app()->getLocale() === 'ar'; @endphp
-
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2">
-                <div>
-                    <h1>{{ __('products.title') }}</h1>
-                    <nav>
-                        <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                            <li class="breadcrumb-item"><a href="#">{{ __('products.breadcrumb_main') }}</a></li>
-                            <li class="mx-2">-</li>
-                            <li class="breadcrumb-item active">{{ __('products.breadcrumb_list') }}</li>
-                        </ol>
-                    </nav>
-                </div>
+            <div class="pagetitle d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h1 class="mb-0">{{ __('products.title') }}</h1>
                 <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('products.edit', 'products')" :label="__('admin_sidebar.add_product')" />
             </div>
 

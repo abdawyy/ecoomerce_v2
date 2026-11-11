@@ -5,21 +5,8 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            @php $isRtl = app()->getLocale() === 'ar'; @endphp
-
-            <div class="pagetitle">
-                <h1>{{ __('messages.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item">
-                            <a href="#">{{ __('messages.breadcrumb_main') }}</a>
-                        </li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">
-                            {{ __('messages.breadcrumb_active') }}
-                        </li>
-                    </ol>
-                </nav>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-0">{{ __('messages.title') }}</h1>
             </div>
 
             <!-- Filter -->

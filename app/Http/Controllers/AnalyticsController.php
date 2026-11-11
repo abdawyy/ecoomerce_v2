@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\Schema;
 
 class AnalyticsController extends Controller
 {
+    use \App\Traits\Apptraits;
+
     public function index(Request $request, AnalyticsService $analytics)
     {
+        $this->rememberAdminListUrl('analytics');
         [$start, $end] = $analytics->parseDateRange(
             $request->get('range', 'last_30'),
             $request->get('from'),

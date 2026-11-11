@@ -341,6 +341,7 @@ class AdminController extends Controller
     }
     public function orderList(Request $request)
     {
+        $this->rememberAdminListUrl('orders');
         // Get the filter parameters from the request
         $search = $request->input('search');
         $status = $request->input('status');

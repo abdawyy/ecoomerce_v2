@@ -10,7 +10,10 @@
 
 <div {{ $attributes->merge(['class' => 'admin-page-header pagetitle d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4']) }}>
     <div>
-        <h1>{{ $title }}</h1>
+        <h1 class="mb-1">{{ $title }}</h1>
+        @if (isset($under))
+            {{ $under }}
+        @endif
         @if ($breadcrumb || $activeBreadcrumb)
             <nav>
                 <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }} mb-0" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">

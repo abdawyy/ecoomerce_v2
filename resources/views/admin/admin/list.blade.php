@@ -1,11 +1,6 @@
 <x-admin.header />
 <x-admin.aside />
 <x-admin.navbar />
-@php
-    $locale = app()->getLocale();
-    $isRtl = $locale === 'ar';
-@endphp
-
 <style>
     .pagination .page-link { border-radius: 10px; }
 </style>
@@ -13,20 +8,8 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle mb-3 d-flex justify-content-between align-items-start flex-wrap gap-2">
-                <div>
-                    <h1 class="mb-1">{{ __('admin_list.title') }}</h1>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
-                        dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item">
-                            <a href="#">{{ __('admin_list.breadcrumb_main') }}</a>
-                        </li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">
-                            {{ __('admin_list.breadcrumb_active') }}
-                        </li>
-                    </ol>
-                </div>
+            <div class="pagetitle d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h1 class="mb-0">{{ __('admin_list.title') }}</h1>
                 <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('admin.create', 'admins')" :label="__('admin_sidebar.add_admin')" />
             </div>
 

@@ -17,6 +17,7 @@ class userController extends Controller
 
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('users');
         $query = User::query()
             ->withCount('order')
             ->withMax('order as last_order_at', 'created_at');

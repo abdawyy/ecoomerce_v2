@@ -12,9 +12,9 @@
 
         <div class="row pt-4">
 
-            <div class="pagetitle d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="pagetitle d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 
-                <h1>{{ __('guides.admin_title') }}</h1>
+                <h1 class="mb-0">{{ __('guides.admin_title') }}</h1>
 
                 <x-admin.add-button :href="\App\Support\AdminListReturn::addUrl('guides.admin.edit', 'guides')" :label="__('guides.add')" />
 

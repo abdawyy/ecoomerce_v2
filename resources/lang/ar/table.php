@@ -36,6 +36,7 @@ return [
     'view' => 'عرض',
     'edit' => 'تعديل',
     'add' => 'إضافة',
+    'return' => 'رجوع',
     'required' => 'مطلوب',
     'delete' => 'حذف',
     'search_placeholder' => 'ابحث...',

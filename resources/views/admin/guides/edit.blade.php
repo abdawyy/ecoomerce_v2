@@ -34,11 +34,14 @@
 
         <div class="row pt-4">
 
-            <div class="pagetitle d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="pagetitle d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
 
-                <h1>{{ __('guides.admin_title') }}</h1>
+                <div>
+                    <h1 class="mb-1">{{ __('guides.admin_title') }}</h1>
+                    <x-admin.return-button :href="\App\Support\AdminListReturn::href('guides', 'guides.admin.list')" />
+                </div>
 
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
 
                     <a href="{{ route('guides.admin.sample.preview', ['lang' => 'en']) }}" class="btn btn-outline-secondary btn-sm" target="_blank">{{ __('guides.sample_preview_en') }}</a>
 

@@ -7,17 +7,9 @@
         <div class="row pt-4">
             @php $isRtl = app()->getLocale() === 'ar'; @endphp
 
-            <div class="pagetitle">
-                <h1>{{ __('messages.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('admin.contact.list') }}">{{ __('messages.breadcrumb_active') }}</a>
-                        </li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">{{ __('messages.breadcrumb_show') }}</li>
-                    </ol>
-                </nav>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-1">{{ __('messages.title') }}</h1>
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('messages', 'admin.contact.list')" />
             </div>
 
             <div class="card">
@@ -27,8 +19,7 @@
                     <p><strong>{{ __('messages.phone') }}:</strong> {{ $message->phone ?: '—' }}</p>
                     <p><strong>{{ __('messages.received') }}:</strong> {{ $message->created_at?->format('Y-m-d H:i') }}</p>
                     <p class="mb-0"><strong>{{ __('messages.body') }}:</strong></p>
-                    <p class="mt-2" style="white-space: pre-wrap;">{{ $message->message }}</p>
-                    <a href="{{ route('admin.contact.list') }}" class="btn btn-outline-dark">{{ __('messages.breadcrumb_active') }}</a>
+                    <p class="mt-2 mb-0" style="white-space: pre-wrap;">{{ $message->message }}</p>
                 </div>
             </div>
         </div>

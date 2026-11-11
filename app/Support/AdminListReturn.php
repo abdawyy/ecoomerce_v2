@@ -40,6 +40,13 @@ class AdminListReturn
         return self::remembered($listKey) ?? '';
     }
 
+    public static function href(string $listKey, string $defaultRoute): string
+    {
+        $value = self::fieldValue($listKey);
+
+        return $value !== '' ? $value : route($defaultRoute);
+    }
+
     public static function addUrl(string $route, string $listKey, array $query = []): string
     {
         $url = route($route);

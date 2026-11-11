@@ -9,19 +9,9 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ __('admin_list.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('admin.list') }}">{{ __('admin_list.breadcrumb_main') }}</a>
-                        </li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">
-                            {{ $isEdit ? __('admin_list.breadcrumb_edit') : __('admin_list.breadcrumb_add') }}
-                        </li>
-                    </ol>
-                </nav>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-1">{{ __('admin_list.title') }}</h1>
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('admins', 'admin.list')" />
             </div>
 
             <div class="card">

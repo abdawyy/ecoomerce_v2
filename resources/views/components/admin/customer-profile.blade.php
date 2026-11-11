@@ -6,13 +6,16 @@
 
 <div class="admin-customer-profile">
     <x-admin.page-header
-        :title="$profile['show_title']"
-        :breadcrumb="__('users.breadcrumb_main')"
-        :activeBreadcrumb="$profile['name']">
+        :title="$profile['show_title']">
+        <x-slot:under>
+            <x-admin.return-button
+                :href="\App\Support\AdminListReturn::href(
+                    ($profile['type'] ?? '') === 'guest' ? 'guests' : 'users',
+                    ($profile['type'] ?? '') === 'guest' ? 'admin.guest.list' : 'users.list'
+                )"
+            />
+        </x-slot:under>
         <x-slot:actions>
-            <a href="{{ $profile['list_route'] }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left"></i> {{ __('users.back_to_list') }}
-            </a>
             @if ($profile['last_order_id'])
                 <x-admin.view-link :href="route('order.show', $profile['last_order_id'])" :label="__('users.open_latest_order')" />
             @endif

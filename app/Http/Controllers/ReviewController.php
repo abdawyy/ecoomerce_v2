@@ -100,7 +100,7 @@ public function store(ReviewRequest $request)
 
         $url = $this->url;
 
-        return view('admin.product.review', compact('headers', 'rows', 'data', 'search', 'url'));
+        return view('admin.product.review', compact('headers', 'rows', 'data', 'search', 'url', 'productId'));
     }
 
     public function toggleUserStatus($id)

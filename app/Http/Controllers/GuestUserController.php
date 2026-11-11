@@ -9,10 +9,13 @@ use Illuminate\Http\Request;
 
 class GuestUserController extends Controller
 {
+    use \App\Traits\Apptraits;
+
     public $url = '/admin/guest';
 
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('guests');
         $query = GuestUser::query()
             ->withCount('orders')
             ->withMax('orders as last_order_at', 'created_at');

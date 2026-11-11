@@ -9,33 +9,16 @@
 <main id="main">
     <div class="container-fluid">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ __('products.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex align-items-center justify-content-between flex-wrap {{ $isRtl ? 'text-end' : 'text-start' }}"
-                        dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <li class="breadcrumb-item">
-                                <a href="#">{{ __('products.breadcrumb_main') }}</a>
-                            </li>
-                            <li class="breadcrumb-separator">-</li>
-                            <li class="breadcrumb-item active">
-                                {{ __('products.breadcrumb_active') }}
-                            </li>
-                        </div>
-
-                        @if (optional($model)->id)
-                            <div class="ms-auto">
-                                <a href="{{ url('admin/reviews/' . $model->id) }}" class="btn btn-warning btn-sm">
-                                    {{ __('products.reviews_button') }}
-                                </a>
-                            </div>
-                        @endif
-
-                    </ol>
-
-                </nav>
+            <div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                <div>
+                    <h1 class="mb-1">{{ __('products.title') }}</h1>
+                    <x-admin.return-button :href="\App\Support\AdminListReturn::href('products', 'products.list')" />
+                </div>
+                @if (optional($model)->id)
+                    <a href="{{ url('admin/reviews/' . $model->id) }}" class="btn btn-warning btn-sm">
+                        {{ __('products.reviews_button') }}
+                    </a>
+                @endif
             </div>
 
             <div class="col-12 pb-4">

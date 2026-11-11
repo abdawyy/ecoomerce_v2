@@ -33,6 +33,7 @@ return [
     'view' => 'View',
     'edit' => 'Edit',
     'add' => 'Add',
+    'return' => 'Return',
     'required' => 'Required',
     'delete' => 'Delete',
     'search_placeholder' => 'Search...',

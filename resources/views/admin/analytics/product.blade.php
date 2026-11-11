@@ -5,9 +5,10 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <div class="pagetitle">
-                <h1>{{ $product->name }}</h1>
-                <p class="text-muted">{{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}</p>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-1">{{ $product->name }}</h1>
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('analytics', 'admin.analytics')" />
+                <p class="text-muted mb-0 mt-1">{{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}</p>
             </div>
             <div class="card">
                 <div class="table-responsive">
@@ -27,7 +28,6 @@
                     </table>
                 </div>
             </div>
-            <a href="{{ route('admin.analytics') }}" class="btn btn-secondary mt-3">{{ __('analytics.back') }}</a>
         </div>
     </div>
 </main>

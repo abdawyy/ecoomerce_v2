@@ -12,6 +12,8 @@ use App\Models\Message;
 
 class ContactController extends Controller
 {
+    use \App\Traits\Apptraits;
+
     public $url = '/admin/contact';
 
     // Show the contact page
@@ -86,6 +88,7 @@ class ContactController extends Controller
 
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('messages');
         // Get the filter parameters from the request
         $search = $request->input('search');
         $email = $request->input('email');

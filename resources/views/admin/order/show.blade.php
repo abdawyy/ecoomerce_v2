@@ -6,16 +6,9 @@
     <div class="container-fluid">
         <div class="row pt-4">
             @php $isRtl = app()->getLocale() === 'ar'; @endphp
-            <div class="pagetitle">
-                <h1>{{ __('orders.title') }}</h1>
-                <nav>
-                    <ol class="breadcrumb d-flex {{ $isRtl ? 'text-end' : 'text-start' }}"
-                        dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
-                        <li class="breadcrumb-item"><a href="#">{{ __('orders.breadcrumb_main') }}</a></li>
-                        <li class="mx-2">-</li>
-                        <li class="breadcrumb-item active">{{ __('orders.breadcrumb_show') }}</li>
-                    </ol>
-                </nav>
+            <div class="pagetitle mb-3">
+                <h1 class="mb-1">{{ __('orders.title') }}</h1>
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('orders', 'order.list')" />
             </div>
         </div>
 

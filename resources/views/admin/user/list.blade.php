@@ -6,10 +6,7 @@
 <main id="main">
     <div class="container">
         <div class="row pt-4">
-            <x-admin.page-header
-                :title="__('users.users_title')"
-                :breadcrumb="__('users.breadcrumb_main')"
-                :activeBreadcrumb="__('users.breadcrumb_users')" />
+            <x-admin.page-header :title="__('users.users_title')" />
 
             <div class="admin-card card mb-4 filter-card">
                 <div class="card-header filter-header bg-white fw-bold">{{ __('web.filter') }}</div>
