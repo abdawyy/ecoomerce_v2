@@ -76,6 +76,8 @@
     @stack('styles')
 
     <x-web.footer />
+    <x-web.confirm-dialog />
+    <script src="{{ asset('assets/js/storefront-confirm.js') }}?v={{ filemtime(public_path('assets/js/storefront-confirm.js')) }}"></script>
     @stack('scripts')
     <script src="{{ asset('assets/js/storefront-forms.js') }}?v={{ filemtime(public_path('assets/js/storefront-forms.js')) }}"></script>
 </body>

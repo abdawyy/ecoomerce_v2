@@ -100,3 +100,16 @@
 		@endif
 	});
 </script>
+@if (session('highlight_id'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var row = document.getElementById('admin-row-{{ session('highlight_id') }}');
+        if (!row) return;
+        row.classList.add('is-highlighted');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.setTimeout(function () {
+            row.classList.remove('is-highlighted');
+        }, 4000);
+    });
+</script>
+@endif

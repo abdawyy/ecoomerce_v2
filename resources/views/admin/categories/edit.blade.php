@@ -29,6 +29,7 @@
                 <div class="card-body">
                     <form id="prevent" action="{{ route('categories.edit', $model->id ?? null) }}" method="POST">
                         @csrf
+                        <input type="hidden" name="return" value="{{ request('return') }}">
                         <div class="row">
                             <!-- Name Field -->
                             <div class="col-lg-12 col-12">

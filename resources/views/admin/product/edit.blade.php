@@ -58,6 +58,7 @@
                         <form id="prevent" action="{{ route('products.edit', $model->id ?? null) }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
+                            <input type="hidden" name="return" value="{{ request('return') }}">
                             <div class="row g-4 product-edit-form">
                                 <div class="col-lg-6 col-12">
                                     <div class="row">
@@ -268,14 +269,17 @@
                                 <div class="col-lg-6 col-12">
                                     <h6 class="product-form-heading">{{ __('products.images_section') }}</h6>
                                     <div class="mb-3">
-                                        <label class="form-label">{{ __('products.upload_image') }}</label>
-                                        <div
-                                            class="uploadDiv d-flex align-items-center justify-content-center flex-column form-control">
-                                            <i class='bx bx-image fs-1'></i>
-                                            <p class="mb-0">{{ __('products.drop_or_browse') }}</p>
-                                            <p>{{ __('products.allowed_images') }}</p>
-                                            <input type="file" multiple name="images[]" accept="image/*">
-                                        </div>
+                                        <label class="form-label fw-semibold">{{ __('products.upload_image') }}</label>
+                                        <label class="uploadDiv product-upload-dropzone" for="product-images-input">
+                                            <input type="file" id="product-images-input" class="product-upload-input" multiple name="images[]" accept="image/jpeg,image/png,image/webp,image/gif">
+                                            <span class="product-upload-copy">
+                                                <i class="bx bx-cloud-upload"></i>
+                                                <span class="product-upload-title">{{ __('products.drop_or_browse') }}</span>
+                                                <span class="product-upload-hint">{{ __('products.allowed_images') }} — JPG, PNG, WEBP</span>
+                                                <span class="product-upload-btn">{{ __('products.choose_files') }}</span>
+                                            </span>
+                                        </label>
+                                        <div class="product-upload-previews" id="product-upload-previews" hidden></div>
                                     </div>
 
                                     <div class="mb-3">
@@ -283,12 +287,14 @@
                                         <div class="d-flex flex-wrap gap-3 product-image-thumbs">
                                             @if($model && $model->productImages)
                                                 @foreach($model->productImages as $image)
-                                                    <div class="product-image-thumb text-center">
+                                                    <div class="product-image-thumb">
                                                         <img src="{{ asset('storage/' . $image->images) }}"
                                                             class="imgDisplay" alt="" loading="lazy" decoding="async">
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm mt-2"
-                                                            form="delete-image-{{ $image->id }}">
-                                                            {{ __('products.delete') }}
+                                                        <button type="submit" class="product-image-delete"
+                                                            form="delete-image-{{ $image->id }}"
+                                                            aria-label="{{ __('products.delete') }}"
+                                                            title="{{ __('products.delete') }}">
+                                                            <i class="bi bi-trash3-fill"></i>
                                                         </button>
                                                     </div>
                                                 @endforeach
@@ -650,6 +656,47 @@
             }
         };
     }
+
+    (function () {
+        const input = document.getElementById('product-images-input');
+        const previews = document.getElementById('product-upload-previews');
+        const dropzone = document.querySelector('.product-upload-dropzone');
+        if (!input || !previews) {
+            return;
+        }
+
+        function renderPreviews() {
+            previews.replaceChildren();
+            const files = Array.from(input.files || []);
+            previews.hidden = files.length === 0;
+            files.forEach(function (file) {
+                const figure = document.createElement('figure');
+                figure.className = 'product-upload-preview';
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.alt = file.name;
+                const caption = document.createElement('figcaption');
+                caption.textContent = file.name;
+                figure.appendChild(img);
+                figure.appendChild(caption);
+                previews.appendChild(figure);
+            });
+        }
+
+        input.addEventListener('change', renderPreviews);
+        if (dropzone) {
+            dropzone.addEventListener('dragover', function (event) {
+                event.preventDefault();
+                dropzone.classList.add('is-dragover');
+            });
+            dropzone.addEventListener('dragleave', function () {
+                dropzone.classList.remove('is-dragover');
+            });
+            dropzone.addEventListener('drop', function () {
+                dropzone.classList.remove('is-dragover');
+            });
+        }
+    })();
 </script>
 
 

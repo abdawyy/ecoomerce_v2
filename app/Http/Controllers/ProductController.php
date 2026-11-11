@@ -123,9 +123,10 @@ class ProductController extends Controller
             }
 
             $storedFiles = [];
+            $savedId = $id;
 
             try {
-                DB::transaction(function () use ($request, $values, $id, $quantities, &$storedFiles) {
+                DB::transaction(function () use ($request, $values, $id, $quantities, &$storedFiles, &$savedId) {
                     if ($id) {
                         $model = $this->model::query()->find($id);
                         if (! $model) {
@@ -136,6 +137,7 @@ class ProductController extends Controller
                     } else {
                         $model = $this->model::query()->create($values);
                     }
+                    $savedId = $model->id;
 
                     $this->storeUploadedImages($request, $model->id, $storedFiles);
                     $this->saveProductItems($quantities, $model);
@@ -158,7 +160,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            return redirect()->route('products.list')->with('success', 'Your product has been successfully saved.');
+            return $this->redirectToAdminList($request, 'products.list', 'products', $savedId, 'Your product has been successfully saved.');
         }
         $categories = Category::all();
         $types = Type::all();
@@ -318,6 +320,7 @@ class ProductController extends Controller
 
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('products');
         // Get the search and filter parameters from the request
         $search = $request->input('search');
         $category_id = $request->input('category_id');

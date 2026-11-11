@@ -114,7 +114,7 @@
                                         </div>
                                         <div>
                                             @if (!$isGuestItem)
-                                                <form action="{{ route('cart.delete', $item->id) }}" method="POST" class="d-inline cart-delete-form">
+                                                <form action="{{ route('cart.delete', $item->id) }}" method="POST" class="d-inline cart-delete-form" data-storefront-confirm="{{ __('cart.remove_confirm') }}" data-storefront-confirm-danger>
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-link text-danger p-0 border-0" aria-label="{{ __('cart.delete') }}">
@@ -122,7 +122,7 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <form action="{{ route('cart.guest.delete', $item->key) }}" method="POST" class="d-inline cart-delete-form">
+                                                <form action="{{ route('cart.guest.delete', $item->key) }}" method="POST" class="d-inline cart-delete-form" data-storefront-confirm="{{ __('cart.remove_confirm') }}" data-storefront-confirm-danger>
                                                     @csrf
                                                     <button type="submit" class="btn btn-link text-danger p-0 border-0" aria-label="{{ __('cart.delete') }}">
                                                         <i class="fa-regular fa-trash-can fs-5"></i>
@@ -216,11 +216,6 @@
             if (!input) return;
             const val = parseInt(input.value, 10) || 1;
             input.value = Math.max(1, val + (btn.classList.contains('qty-plus') ? 1 : -1));
-        });
-    });
-    document.querySelectorAll('.cart-delete-form').forEach(form => {
-        form.addEventListener('submit', e => {
-            if (!confirm(@json(__('cart.remove_confirm')))) e.preventDefault();
         });
     });
 </script>

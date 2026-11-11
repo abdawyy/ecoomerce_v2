@@ -28,6 +28,7 @@
                 <div class="card-body">
                     <form id="prevent" action="{{ route('discountCodes.edit', $model->id ?? null) }}" method="POST" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
                         @csrf
+                        <input type="hidden" name="return" value="{{ request('return') }}">
 
                         <div class="row">
                             <!-- Code -->

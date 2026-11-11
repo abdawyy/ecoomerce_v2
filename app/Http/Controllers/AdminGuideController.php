@@ -19,6 +19,8 @@ class AdminGuideController extends Controller
             return redirect()->route('admin.dashboard')->with('error', 'Run migrations first.');
         }
 
+        $this->rememberAdminListUrl('guides');
+
         $search = $request->input('search');
         $data = Guide::query()
             ->when($search, fn ($q) => $q->where('title_en', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
@@ -84,7 +86,7 @@ class AdminGuideController extends Controller
 
             $guide->save();
 
-            return redirect()->route('guides.admin.list')->with('success', __('guides.saved'));
+            return $this->redirectToAdminList($request, 'guides.admin.list', 'guides', $guide->id, __('guides.saved'));
         }
 
         return view('admin.guides.edit', compact('model'));

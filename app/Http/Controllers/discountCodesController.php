@@ -51,10 +51,10 @@ class discountCodesController extends Controller
             $model = self::updateOrCreate($this->model, $attributes, $values);
 
             if ($model) {
-                return redirect()->route('discountCodes.list')->with('success', 'your Discount Code has been successful saved.');
+                return $this->redirectToAdminList($request, 'discountCodes.list', 'discountCodes', $model->id, 'your Discount Code has been successful saved.');
 
             } else {
-                return redirect()->route('discountCodes.list')->with('error', 'cannot be saved saved.');
+                return $this->redirectToAdminList($request, 'discountCodes.list', 'discountCodes', $id, null, 'cannot be saved saved.');
 
             }
             // Optionally return a view with the model data for editing
@@ -67,6 +67,7 @@ class discountCodesController extends Controller
     // Method to list types with search functionality
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('discountCodes');
         // Get the filter parameters from the request
         $search = $request->input('search');
         $minDiscount = $request->input('min_discount');

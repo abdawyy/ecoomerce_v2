@@ -83,7 +83,7 @@
                                     {{ __('account.edit_address') }}
                                 </button>
                                 <form action="{{ route('account.addresses.destroy', $address->id) }}" method="POST"
-                                    onsubmit="return confirm('{{ __('account.delete_address') }}?');">
+                                    data-storefront-confirm="{{ __('account.delete_address') }}" data-storefront-confirm-danger>
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('account.delete_address') }}</button>

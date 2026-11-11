@@ -51,8 +51,14 @@
                     </tr>
                 @else
                     @foreach ($rows as $row)
-                        @php $rowHref = $row['href'] ?? null; @endphp
-                        <tr>
+                        @php
+                            $rowHref = $row['href'] ?? null;
+                            if ($rowHref) {
+                                $rowHref .= (str_contains($rowHref, '?') ? '&' : '?').http_build_query(['return' => url()->full()]);
+                            }
+                            $rowId = $row['ID'] ?? null;
+                        @endphp
+                        <tr @if ($rowId) id="admin-row-{{ $rowId }}" @endif class="{{ (string) session('highlight_id') === (string) $rowId ? 'is-highlighted' : '' }}">
                             @foreach ($headers as $header)
                                 @php
                                     $headerKey = 'table.headers.' . strtolower($header);

@@ -218,4 +218,61 @@ protected function generatePdfInvoice($order)
     return app(\App\Services\PdfService::class)->saveInvoices($order);
 }
 
+    protected function rememberAdminListUrl(string $key): void
+    {
+        session(['admin.list_url.'.$key => url()->full()]);
+    }
+
+    protected function isSafeAdminUrl(?string $url): bool
+    {
+        if (! is_string($url) || $url === '') {
+            return false;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH) ?: '';
+        if (! str_starts_with($path, '/admin')) {
+            return false;
+        }
+
+        $host = parse_url($url, PHP_URL_HOST);
+        if ($host && ! in_array($host, [parse_url((string) config('app.url'), PHP_URL_HOST), request()->getHost()], true)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function resolveAdminListUrl(\Illuminate\Http\Request $request, string $defaultRoute, string $listKey): string
+    {
+        foreach ([$request->input('return'), session('admin.list_url.'.$listKey)] as $candidate) {
+            if ($this->isSafeAdminUrl(is_string($candidate) ? $candidate : null)) {
+                return $candidate;
+            }
+        }
+
+        return route($defaultRoute);
+    }
+
+    protected function redirectToAdminList(\Illuminate\Http\Request $request, string $defaultRoute, string $listKey, mixed $id = null, ?string $success = null, ?string $error = null)
+    {
+        $url = $this->resolveAdminListUrl($request, $defaultRoute, $listKey);
+        if ($id) {
+            $url = preg_replace('/#.*$/', '', $url) ?: $url;
+            $url .= '#admin-row-'.$id;
+        }
+
+        $redirect = redirect()->to($url);
+        if ($success) {
+            $redirect->with('success', $success);
+        }
+        if ($error) {
+            $redirect->with('error', $error);
+        }
+        if ($id) {
+            $redirect->with('highlight_id', $id);
+        }
+
+        return $redirect;
+    }
+
 }

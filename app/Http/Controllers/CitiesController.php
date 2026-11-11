@@ -33,9 +33,9 @@ class CitiesController extends Controller
             $model = self::updateOrCreate($this->model, $attributes, $values);
 
             if ($model) {
-                return redirect()->route('cities.list')->with('success', 'your cities price has been successful saved.');
+                return $this->redirectToAdminList($request, 'cities.list', 'cities', $model->id, 'your cities price has been successful saved.');
             } else {
-                return redirect()->route('cities.list')->with('error', 'cannot be saved saved.');
+                return $this->redirectToAdminList($request, 'cities.list', 'cities', $id, null, 'cannot be saved saved.');
             }
             // Optionally return a view with the model data for editing
         }
@@ -45,6 +45,7 @@ class CitiesController extends Controller
     // Method to list types with search functionality
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('cities');
         // Get the filter parameters from the request
         $search = $request->input('search');
         $minPrice = $request->input('min_price');

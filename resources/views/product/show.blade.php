@@ -54,6 +54,18 @@
         display: inline-block;
         background: rgba(40, 167, 69, 0.12);
     }
+    .stock-badge.is-out {
+        border-color: #dc3545;
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.1);
+    }
+    .stock-badge.is-low {
+        border-color: var(--brand-burgundy);
+        color: var(--brand-burgundy);
+        background: rgba(111, 38, 43, 0.1);
+        font-weight: 800;
+        font-size: 0.82rem;
+    }
 
     .selector-label {
         border: 1px solid var(--brand-border);
@@ -141,7 +153,15 @@
                 <div class="content-card p-4 p-md-5">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         @php $totalQuantity = $product->productItems->sum('quantity'); @endphp
-                        <span class="stock-badge">{{ $totalQuantity > 0 ? __('web.in_stock') : __('web.out_of_stock') }}</span>
+                        <span class="stock-badge {{ $totalQuantity <= 0 ? 'is-out' : '' }}"
+                            id="stock-badge"
+                            data-in-stock="{{ __('web.in_stock') }}"
+                            data-out-of-stock="{{ __('web.out_of_stock') }}"
+                            data-only="{{ __('web.only_in_stock') }}"
+                            data-threshold="5"
+                            data-total="{{ $totalQuantity }}">
+                            {{ $totalQuantity > 0 ? __('web.in_stock') : __('web.out_of_stock') }}
+                        </span>
                     </div>
 
                     <h1 class="fw-bold fs-3 mb-1">{{ $product->name }}</h1>
@@ -178,7 +198,8 @@
                         <div class="d-flex flex-wrap gap-2">
                             @foreach ($product->productItems as $productItem)
                                 <input type="radio" class="btn-check" name="productItem_id" id="size_{{ $productItem->id }}"
-                                       value="{{ $productItem->id }}" {{ $productItem->quantity <= 0 ? 'disabled' : '' }}>
+                                       value="{{ $productItem->id }}" data-qty="{{ (int) $productItem->quantity }}"
+                                       {{ $productItem->quantity <= 0 ? 'disabled' : '' }}>
                                 <label class="selector-label" for="size_{{ $productItem->id }}">{{ $productItem->size }}</label>
                             @endforeach
                         </div>
@@ -321,11 +342,52 @@
         overlay.onclick = () => document.body.removeChild(overlay);
     }
 
+    function selectedStock() {
+        const selected = document.querySelector('input[name="productItem_id"]:checked');
+        if (selected) {
+            return parseInt(selected.getAttribute('data-qty'), 10) || 0;
+        }
+        const badge = document.getElementById('stock-badge');
+        return parseInt(badge?.getAttribute('data-total'), 10) || 0;
+    }
+
+    function updateStockBadge() {
+        const badge = document.getElementById('stock-badge');
+        if (!badge) return;
+        const qty = selectedStock();
+        const threshold = parseInt(badge.getAttribute('data-threshold'), 10) || 5;
+        badge.classList.remove('is-low', 'is-out');
+        if (qty <= 0) {
+            badge.textContent = badge.getAttribute('data-out-of-stock') || '';
+            badge.classList.add('is-out');
+            return;
+        }
+        if (qty <= threshold) {
+            const template = badge.getAttribute('data-only') || 'Only :count in stock!!';
+            badge.textContent = template.replace(':count', String(qty));
+            badge.classList.add('is-low');
+            return;
+        }
+        badge.textContent = badge.getAttribute('data-in-stock') || '';
+    }
+
     /* Quantity Logic */
     function changeQuantity(val) {
-        let qty = parseInt($('#quantity').val());
-        if (qty + val >= 1 && qty + val <= 10) $('#quantity').val(qty + val);
+        let qty = parseInt($('#quantity').val(), 10) || 1;
+        const max = Math.max(1, Math.min(10, selectedStock() || 10));
+        const next = qty + val;
+        if (next >= 1 && next <= max) $('#quantity').val(next);
     }
+
+    document.querySelectorAll('input[name="productItem_id"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            const max = Math.max(1, selectedStock());
+            const current = parseInt($('#quantity').val(), 10) || 1;
+            if (current > max) $('#quantity').val(max);
+            updateStockBadge();
+        });
+    });
+    updateStockBadge();
 
     /* Stars Rating Logic */
     $('#submitStars i').on('click', function() {

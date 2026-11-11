@@ -35,10 +35,10 @@ class TypeController extends Controller
             $model = self::updateOrCreate($this->model, $attributes, $values);
 
             if ($model) {
-                return redirect()->route('type.list')->with('success', 'your type has been successful saved.');
+                return $this->redirectToAdminList($request, 'type.list', 'types', $model->id, 'your type has been successful saved.');
 
             } else {
-                return redirect()->route('type.list')->with('error', 'cannot be saved saved.');
+                return $this->redirectToAdminList($request, 'type.list', 'types', $id, null, 'cannot be saved saved.');
 
             }
             // Optionally return a view with the model data for editing
@@ -50,6 +50,7 @@ class TypeController extends Controller
     // Method to list types with search functionality
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('types');
         // Get the search parameter from the request
         $search = $request->input('search');
 

@@ -37,10 +37,10 @@ class categoriesController extends Controller
         $model = self::updateOrCreate($this->model,$attributes,$values);
 
         if($model){
-            return redirect()->route('categories.list')->with('success', 'your category has been successful saved.');
+            return $this->redirectToAdminList($request, 'categories.list', 'categories', $model->id, 'your category has been successful saved.');
 
         }else{
-            return redirect()->route('categories.list')->with('error', 'cannot be saved saved.');
+            return $this->redirectToAdminList($request, 'categories.list', 'categories', $id, null, 'cannot be saved saved.');
 
         }
          // Optionally return a view with the model data for editing
@@ -53,6 +53,7 @@ class categoriesController extends Controller
     // Method to list types with search functionality
     public function list(Request $request)
     {
+        $this->rememberAdminListUrl('categories');
         // Get the search parameter from the request
         $search = $request->input('search');
 
