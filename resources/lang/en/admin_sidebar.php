@@ -27,6 +27,7 @@ return [
 
 
     'branding' => 'Branding & Media',
+    'guides' => 'Size guides',
     'pages' => 'Pages',
     'order_list' => 'Order List',
     'user_list' => 'User List',
