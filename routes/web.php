@@ -19,6 +19,7 @@ use App\Http\Controllers\SeoPublicController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\AdminGuideController;
+use App\Http\Controllers\AdminCatalogFilterController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\StorageFileController;
@@ -121,6 +122,8 @@ Route::middleware(['admin'])->group(function () {
     Route::match(['get', 'post'], 'admin/guides/edit/{id?}', [AdminGuideController::class, 'edit'])->name('guides.admin.edit');
     Route::post('admin/guides/delete/{id}', [AdminGuideController::class, 'delete'])->name('guides.admin.delete');
     Route::post('admin/guides/status/{id}', [AdminGuideController::class, 'toggleStatus'])->name('guides.admin.toggleStatus');
+    Route::get('admin/catalog-filters', [AdminCatalogFilterController::class, 'edit'])->name('admin.catalogFilters.edit');
+    Route::post('admin/catalog-filters', [AdminCatalogFilterController::class, 'update'])->name('admin.catalogFilters.update');
     Route::get('admin/settings/seo', [SiteSeoController::class, 'edit'])->name('admin.settings.seo');
     Route::post('admin/settings/seo', [SiteSeoController::class, 'update'])->name('admin.settings.seo.update');
 

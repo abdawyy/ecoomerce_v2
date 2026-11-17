@@ -57,6 +57,7 @@ class AdminNav
                     self::link('admin.settings.branding', 'admin_sidebar.branding', 'bi-palette', Route::is('admin.settings.branding')),
                     self::link('admin.settings.seo', 'seo.title', 'bi-search', Route::is('admin.settings.seo')),
                     self::link('guides.admin.list', 'admin_sidebar.guides', 'bi-journal-text', Route::is('guides.admin.*')),
+                    self::link('admin.catalogFilters.edit', 'admin_sidebar.catalog_filters', 'bi-funnel', Route::is('admin.catalogFilters.*')),
                     self::collapse('cities-nav', 'admin_sidebar.cities', 'bi-geo-alt', Route::is('cities.*'), [
                         self::child('cities.list', 'admin_sidebar.view_cities', Route::is('cities.list')),
                         self::child('cities.edit', 'admin_sidebar.add_city', Route::is('cities.edit'), null, [], 'warning', AdminListReturn::addUrl('cities.edit', 'cities')),

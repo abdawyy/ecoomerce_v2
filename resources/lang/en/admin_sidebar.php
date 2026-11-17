@@ -38,6 +38,7 @@ return [
     'free_shipping' => 'Free shipping', // ✅ This is the one you asked for
     'messages_list' => 'Messages List',
     'guides' => 'Size guides',
+    'catalog_filters' => 'Catalog filters',
 
     'section_operations' => 'Operations',
     'section_catalog' => 'Catalog',

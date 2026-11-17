@@ -1,3 +1,77 @@
+.plp-filter-bar {
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding: 12px;
+    background: var(--brand-white, #fffbf6);
+    border: 1px solid var(--brand-border, #e4d5c3);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft, 0 12px 40px rgba(25, 48, 73, 0.08));
+}
+
+.plp-filter-btn,
+.plp-filter-check {
+    border: 1px solid var(--brand-border, #e4d5c3);
+    background: transparent;
+    color: var(--brand-navy, #193049);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.plp-filter-btn.is-active,
+.plp-filter-check.is-active {
+    background: #193049;
+    color: #fcf4e9;
+    border-color: #193049;
+}
+
+.plp-filter-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.plp-filter-check input {
+    accent-color: #193049;
+}
+
+.plp-filter-check.is-active input {
+    accent-color: #fcf4e9;
+}
+
+.plp-filter-menu {
+    min-width: 230px;
+    max-height: 280px;
+    overflow: auto;
+    padding: 12px 14px;
+    border: 1px solid var(--brand-border, #e4d5c3);
+    border-radius: 14px;
+    box-shadow: var(--shadow-soft, 0 12px 40px rgba(25, 48, 73, 0.08));
+}
+
+.plp-filter-menu .form-check {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.plp-filter-actions {
+    display: flex;
+    gap: 8px;
+    margin-inline-start: auto;
+}
+
+.plp-filter-actions .btn-filter {
+    flex: none;
+    min-width: 92px;
+    border-radius: 999px;
+}
+
 .card-aside {
     border: 1px solid #dee2e6;
     background: #fff;

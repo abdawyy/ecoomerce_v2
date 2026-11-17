@@ -11,6 +11,7 @@ use App\Models\productImages;
 
 use App\Models\Guide;
 use App\Services\AnalyticsService;
+use App\Services\CatalogFilterService;
 use App\Services\MetaPixelService;
 use App\Traits\Apptraits;
 use Illuminate\Support\Facades\DB;
@@ -435,7 +436,7 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Failed to delete the record. Record may not exist.');
         }
     }
-    public function productWebList(Request $request, $id = null)
+    public function productWebList(Request $request, CatalogFilterService $catalogFilters, $id = null)
     {
         // Get filter parameters from the request
         $search = $request->input('search');
@@ -447,6 +448,12 @@ class ProductController extends Controller
         $stock_status = $request->input('stock_status');
         $onSale = $request->boolean('on_sale');
         $sort = $request->input('sort', 'newest');
+        $priceBand = $catalogFilters->priceBand($request->input('price_band'));
+        if ($priceBand) {
+            $minPrice = $priceBand['min'];
+            $maxPrice = $priceBand['max'];
+        }
+        $categoryId = $request->filled('category_id') ? $request->input('category_id') : $id;
 
         // Base query for products
         $query = products::with([
@@ -458,12 +465,18 @@ class ProductController extends Controller
 
         // Apply category filter
         $categoryName = null;
-        if ($id) {
-            $categoryName = Category::where('id', $id)->where('is_active', 1)->first();
-            if (! $categoryName) {
+        if ($categoryId) {
+            $categoryName = Category::where('id', $categoryId)->where('is_active', 1)->first();
+            if (! $categoryName && $id && ! $request->filled('category_id')) {
                 abort(404);
             }
-            $query->where('category_id', $id);
+            if ($categoryName) {
+                $query->where('category_id', $categoryName->id);
+                $id = $categoryName->id;
+            } else {
+                $categoryId = null;
+                $id = null;
+            }
         }
 
         // Apply search filter
@@ -529,11 +542,13 @@ class ProductController extends Controller
         // Build query string for pagination links
         $queryParams = [
             'search' => $search,
+            'category_id' => $request->filled('category_id') ? ($categoryName->id ?? null) : null,
             'type_id' => $type_id,
             'color' => $color,
             'size' => $size,
-            'min_price' => $minPrice,
-            'max_price' => $maxPrice,
+            'min_price' => $priceBand ? null : $minPrice,
+            'max_price' => $priceBand ? null : $maxPrice,
+            'price_band' => $priceBand['id'] ?? null,
             'stock_status' => $stock_status,
             'on_sale' => $onSale ? '1' : null,
             'sort' => $sort !== 'newest' ? $sort : null,
@@ -542,13 +557,11 @@ class ProductController extends Controller
         $data = $query->paginate(40)
             ->appends(array_filter($queryParams, fn ($v) => $v !== null && $v !== ''));
 
-        $categories = Category::where('is_active', 1)->get();
         $types = Type::where('is_active', 1)->get();
-        $colors = products::sellable()->distinct()->pluck('color')->filter()->values();
-        $sizes = productItems::whereHas('products', fn ($q) => $q->sellable())->distinct()->pluck('size')->filter()->values();
         $maxProductPrice = products::sellable()->max('price');
+        $filterBar = $catalogFilters->forStorefront();
 
-        return view('product.list', compact('data', 'categories', 'types', 'colors', 'sizes', 'maxProductPrice', 'id', 'categoryName', 'search', 'type_id', 'color', 'size', 'minPrice', 'maxPrice', 'stock_status', 'onSale', 'sort'));
+        return view('product.list', compact('data', 'types', 'maxProductPrice', 'filterBar', 'priceBand', 'id', 'categoryName', 'search', 'type_id', 'color', 'size', 'minPrice', 'maxPrice', 'stock_status', 'onSale', 'sort'));
     }
 
     protected function relatedProducts(products $product, int $limit = 4)

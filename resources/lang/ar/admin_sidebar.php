@@ -41,6 +41,7 @@ return [
     'free_shipping' => 'الشحن المجاني', // ✅ Translated version
     'messages_list' => 'قائمة الرسائل',
     'guides' => 'أدلة المقاسات',
+    'catalog_filters' => 'فلاتر المنتجات',
 
     'section_operations' => 'العمليات',
     'section_catalog' => 'المخزون',
