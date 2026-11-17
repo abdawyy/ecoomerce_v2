@@ -20,6 +20,7 @@ class SiteSetting extends Model
         'hero_image_path',
         'category_image_1_path',
         'category_image_2_path',
+        'size_chart_path',
         'logo_alt_en',
         'logo_alt_ar',
         'primary_color',

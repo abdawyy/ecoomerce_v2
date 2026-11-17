@@ -12,7 +12,6 @@
             <div class="col-6 col-md-3">
                 <h6 class="footer-heading">{{ __('web.footer_help') }}</h6>
                 <a href="{{ route('contact.show') }}" class="footer-link">{{ __('web.title_contact') }}</a>
-                <a href="{{ route('guides.index') }}" class="footer-link">{{ __('web.footer_guides') }}</a>
                 <a href="{{ route('cart.index') }}" class="footer-link">{{ __('web.footer_cart') }}</a>
                 @auth
                     <a href="{{ route('account.orders') }}" class="footer-link">{{ __('account.orders') }}</a>

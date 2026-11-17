@@ -96,6 +96,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('admin/settings/pdf-preview', [SiteSettingsController::class, 'pdfPreview'])->name('admin.settings.pdf.preview');
 
     Route::get('admin/guides/list', [AdminGuideController::class, 'list'])->name('guides.admin.list');
+    Route::post('admin/guides/list', [AdminGuideController::class, 'updateSizeChart'])->name('guides.admin.sizeChart');
     Route::get('admin/guides/manual/download', [AdminGuideController::class, 'downloadManual'])->name('guides.admin.manual');
     Route::get('admin/guides/sample/preview', [AdminGuideController::class, 'previewSample'])->name('guides.admin.sample.preview');
     Route::get('admin/guides/preview/{id}', [AdminGuideController::class, 'previewGuide'])->name('guides.admin.preview');

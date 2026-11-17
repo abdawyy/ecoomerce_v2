@@ -65,6 +65,19 @@ class BrandingService
         return $this->settings()->support_phone ?: config('branding.defaults.support_phone');
     }
 
+    public function sizeChartUrl(): ?string
+    {
+        $path = $this->settings()->size_chart_path ?? null;
+
+        if (! is_string($path) || trim($path) === '') {
+            return null;
+        }
+
+        $url = $this->assetUrl($path);
+
+        return $url !== '' ? $url : null;
+    }
+
     public function cartPolicyTitle(): string
     {
         $locale = app()->getLocale();
