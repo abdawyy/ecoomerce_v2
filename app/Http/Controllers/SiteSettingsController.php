@@ -25,6 +25,14 @@ class SiteSettingsController extends Controller
             'site_name' => 'nullable|string|max:255',
             'tagline_en' => 'nullable|string|max:255',
             'tagline_ar' => 'nullable|string|max:255',
+            'hero_title_en' => 'nullable|string|max:255',
+            'hero_title_ar' => 'nullable|string|max:255',
+            'hero_lead_en' => 'nullable|string|max:500',
+            'hero_lead_ar' => 'nullable|string|max:500',
+            'collection_title_en' => 'nullable|string|max:255',
+            'collection_title_ar' => 'nullable|string|max:255',
+            'collection_lead_en' => 'nullable|string|max:500',
+            'collection_lead_ar' => 'nullable|string|max:500',
             'support_email' => 'nullable|email|max:255',
             'support_phone' => 'nullable|string|max:50',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
@@ -69,7 +77,7 @@ class SiteSettingsController extends Controller
             }
         }
 
-        foreach (['cart_policy_title_en', 'cart_policy_title_ar', 'home_tile_1_title_en', 'home_tile_1_title_ar', 'home_tile_2_title_en', 'home_tile_2_title_ar', 'tagline_en', 'tagline_ar'] as $titleField) {
+        foreach (['cart_policy_title_en', 'cart_policy_title_ar', 'home_tile_1_title_en', 'home_tile_1_title_ar', 'home_tile_2_title_en', 'home_tile_2_title_ar', 'tagline_en', 'tagline_ar', 'hero_title_en', 'hero_title_ar', 'hero_lead_en', 'hero_lead_ar', 'collection_title_en', 'collection_title_ar', 'collection_lead_en', 'collection_lead_ar'] as $titleField) {
             if (array_key_exists($titleField, $validated)) {
                 $validated[$titleField] = trim(strip_tags($validated[$titleField] ?? '')) ?: null;
             }
@@ -86,7 +94,10 @@ class SiteSettingsController extends Controller
         }
 
         $scalarFields = [
-            'site_name', 'tagline_en', 'tagline_ar', 'accent_color', 'support_email', 'support_phone',
+            'site_name', 'tagline_en', 'tagline_ar',
+            'hero_title_en', 'hero_title_ar', 'hero_lead_en', 'hero_lead_ar',
+            'collection_title_en', 'collection_title_ar', 'collection_lead_en', 'collection_lead_ar',
+            'accent_color', 'support_email', 'support_phone',
             'pdf_footer_en', 'pdf_footer_ar', 'pdf_thank_you_en', 'pdf_thank_you_ar',
             'invoice_notes_en', 'invoice_notes_ar',
             'cart_policy_title_en', 'cart_policy_title_ar',

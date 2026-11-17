@@ -319,6 +319,7 @@ class ProductController extends Controller
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
         $stock_status = $request->input('stock_status');
+        $highest = $request->input('highest');
 
         // Define the mapping of headers to fields
         $headerMap = [
@@ -378,6 +379,14 @@ class ProductController extends Controller
             }
         }
 
+        if ($highest === '1') {
+            $query = $query->where('is_highest', 1);
+        } elseif ($highest === '0') {
+            $query = $query->where(function ($q) {
+                $q->where('is_highest', 0)->orWhereNull('is_highest');
+            });
+        }
+
         // Paginate with appends for filter preservation
         $data = $query->paginate(10)->appends([
             'search' => $search,
@@ -386,7 +395,8 @@ class ProductController extends Controller
             'color' => $color,
             'min_price' => $minPrice,
             'max_price' => $maxPrice,
-            'stock_status' => $stock_status
+            'stock_status' => $stock_status,
+            'highest' => $highest,
         ]);
 
         // Define the headers for the table
@@ -675,6 +685,13 @@ class ProductController extends Controller
 
         self::toggleStatus($product, "is_highest");
         return back()->with('success', 'Status toggled');
+    }
+
+    public function clearHighest()
+    {
+        products::query()->where('is_highest', 1)->update(['is_highest' => 0]);
+
+        return back()->with('success', __('products.cleared_highest'));
     }
 
 

@@ -17,12 +17,30 @@
                     <form action="{{ route('admin.settings.branding.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
+                        <h5 class="mb-1">{{ __('branding.store_contact') }}</h5>
+                        <p class="text-muted small">{{ __('branding.store_contact_hint') }}</p>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <label class="form-label">{{ __('branding.site_name') }}</label>
                                 <input type="text" name="site_name" class="form-control"
                                        value="{{ old('site_name', $settings->site_name ?? $branding->siteName()) }}">
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.support_email') }}</label>
+                                <input type="email" name="support_email" class="form-control"
+                                       value="{{ old('support_email', $settings->support_email) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.support_phone') }}</label>
+                                <input type="text" name="support_phone" class="form-control"
+                                       value="{{ old('support_phone', $settings->support_phone) }}">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-1">{{ __('branding.hero_copy') }}</h5>
+                        <p class="text-muted small">{{ __('branding.hero_copy_hint') }}</p>
+                        <div class="row g-3" dir="ltr">
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.tagline_en') }}</label>
                                 <input type="text" name="tagline_en" class="form-control"
@@ -34,14 +52,46 @@
                                        value="{{ old('tagline_ar', $settings->tagline_ar) }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.support_email') }}</label>
-                                <input type="email" name="support_email" class="form-control"
-                                       value="{{ old('support_email', $settings->support_email) }}">
+                                <label class="form-label">{{ __('branding.hero_title_en') }}</label>
+                                <input type="text" name="hero_title_en" class="form-control"
+                                       value="{{ old('hero_title_en', $settings->hero_title_en) }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">{{ __('branding.support_phone') }}</label>
-                                <input type="text" name="support_phone" class="form-control"
-                                       value="{{ old('support_phone', $settings->support_phone) }}">
+                                <label class="form-label">{{ __('branding.hero_title_ar') }}</label>
+                                <input type="text" name="hero_title_ar" class="form-control" dir="rtl"
+                                       value="{{ old('hero_title_ar', $settings->hero_title_ar) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_lead_en') }}</label>
+                                <textarea name="hero_lead_en" class="form-control" rows="3">{{ old('hero_lead_en', $settings->hero_lead_en) }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_lead_ar') }}</label>
+                                <textarea name="hero_lead_ar" class="form-control" rows="3" dir="rtl">{{ old('hero_lead_ar', $settings->hero_lead_ar) }}</textarea>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-1">{{ __('branding.collection_copy') }}</h5>
+                        <p class="text-muted small">{{ __('branding.collection_copy_hint') }}</p>
+                        <div class="row g-3" dir="ltr">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.collection_title_en') }}</label>
+                                <input type="text" name="collection_title_en" class="form-control"
+                                       value="{{ old('collection_title_en', $settings->collection_title_en) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.collection_title_ar') }}</label>
+                                <input type="text" name="collection_title_ar" class="form-control" dir="rtl"
+                                       value="{{ old('collection_title_ar', $settings->collection_title_ar) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.collection_lead_en') }}</label>
+                                <textarea name="collection_lead_en" class="form-control" rows="3">{{ old('collection_lead_en', $settings->collection_lead_en) }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.collection_lead_ar') }}</label>
+                                <textarea name="collection_lead_ar" class="form-control" rows="3" dir="rtl">{{ old('collection_lead_ar', $settings->collection_lead_ar) }}</textarea>
                             </div>
                         </div>
 

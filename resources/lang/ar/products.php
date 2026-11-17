@@ -41,4 +41,7 @@ return [
     'custom_size_placeholder' => 'مثال: One Size، 16، XS',
     'add_size' => 'إضافة',
     'size_exists' => 'المقاس موجود بالفعل في القائمة.',
+    'clear_highest' => 'إلغاء الأعلى للكل',
+    'confirm_clear_highest' => 'إزالة الأعلى من كل المنتجات؟',
+    'cleared_highest' => 'تم إزالة الأعلى من كل المنتجات.',
 ];

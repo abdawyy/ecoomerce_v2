@@ -40,4 +40,7 @@ return [
     'custom_size_placeholder' => 'e.g. One Size, 16, XS',
     'add_size' => 'Add',
     'size_exists' => 'That size is already in the list.',
+    'clear_highest' => 'Unhighest all',
+    'confirm_clear_highest' => 'Remove Highest from every product?',
+    'cleared_highest' => 'Highest was removed from all products.',
 ];

@@ -162,6 +162,7 @@ Route::middleware(['admin'])->group(function () {
     Route::post('admin/products/image/delete/{id}', [ProductController::class, 'deleteImage'])->name('image.delete');
     Route::post('/admin/products/status/{id}', [ProductController::class, 'toggleUserStatus'])->name('admin.products.toggleStatus');
     Route::post('/admin/products/toggleHighestStatus/{id}', [ProductController::class, 'toggleHighestStatus'])->name('admin.products.toggleHighestStatus');
+    Route::post('/admin/products/clearHighest', [ProductController::class, 'clearHighest'])->name('admin.products.clearHighest');
 
     // cities routes
     Route::match(['get', 'post'], 'admin/cities/edit/{id?}', [CitiesController::class, 'edit'])->name('cities.edit');

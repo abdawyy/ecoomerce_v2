@@ -72,12 +72,32 @@
                             </select>
                         </div>
 
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">{{ __('table.status_highest') }}</label>
+                            <select name="highest" class="form-select">
+                                <option value="">All</option>
+                                <option value="1" {{ request('highest') === '1' ? 'selected' : '' }}>{{ __('table.status_highest') }}</option>
+                                <option value="0" {{ request('highest') === '0' ? 'selected' : '' }}>{{ __('table.status_normal') }}</option>
+                            </select>
+                            @if (request('highest') === '1')
+                                <button type="submit" form="clear-highest-form" class="btn btn-clear mt-2 w-100">
+                                    {{ __('products.clear_highest') }}
+                                </button>
+                            @endif
+                        </div>
+
                         <div class="col-12">
                             <div class="filter-buttons">
                                 <button type="submit" class="btn btn-apply">Apply</button>
                                 <a href="{{ route('products.list') }}" class="btn btn-clear">Clear</a>
                             </div>
                         </div>
+                    </form>
+                    <form id="clear-highest-form"
+                        method="POST"
+                        action="{{ route('admin.products.clearHighest') }}"
+                        data-admin-confirm-message="{{ __('products.confirm_clear_highest') }}">
+                        @csrf
                     </form>
                 </div>
             </div>

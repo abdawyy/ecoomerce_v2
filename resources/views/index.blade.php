@@ -107,8 +107,8 @@
             <span class="hero-kicker text-uppercase fw-bold mb-2 d-block">
                 {{ $branding->tagline() ?: __('web.hero_tagline') }}
             </span>
-            <h1 class="display-2 fw-bold mb-3">{{ __('web.brand_collection_title') }}</h1>
-            <p class="lead hero-lead mb-4 d-none d-md-block">{{ __('web.brand_collection_desc') }}</p>
+            <h1 class="display-2 fw-bold mb-3">{{ $branding->heroTitle() }}</h1>
+            <p class="lead hero-lead mb-4 d-none d-md-block">{{ $branding->heroLead() }}</p>
             @php $departments = $branding->departmentMenus(); @endphp
             <div class="hero-actions">
                 @forelse ($departments as $department)
@@ -125,8 +125,8 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-end mb-4 mb-md-5">
             <div class="section-title">
-                <h2 class="fw-bold display-5 mb-0">{{ __('web.new_collection') }}</h2>
-                <p class="text-muted mt-2">{{ __('web.new_collection_desc') }}</p>
+                <h2 class="fw-bold display-5 mb-0">{{ $branding->collectionTitle() }}</h2>
+                <p class="text-muted mt-2">{{ $branding->collectionLead() }}</p>
             </div>
             <a href="{{ route('product.List') }}" class="home-show-all fw-bold text-decoration-none d-none d-md-block">
                 {{ __('web.show_all') }}

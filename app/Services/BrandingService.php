@@ -40,6 +40,34 @@ class BrandingService
             : ($this->settings()->tagline_en ?: config('branding.defaults.tagline_en', ''));
     }
 
+    public function heroTitle(): string
+    {
+        return $this->homeCopy('hero_title', 'web.brand_collection_title');
+    }
+
+    public function heroLead(): string
+    {
+        return $this->homeCopy('hero_lead', 'web.brand_collection_desc');
+    }
+
+    public function collectionTitle(): string
+    {
+        return $this->homeCopy('collection_title', 'web.new_collection');
+    }
+
+    public function collectionLead(): string
+    {
+        return $this->homeCopy('collection_lead', 'web.new_collection_desc');
+    }
+
+    protected function homeCopy(string $field, string $fallbackKey): string
+    {
+        $column = $field.'_'.(app()->getLocale() === 'ar' ? 'ar' : 'en');
+        $value = trim((string) ($this->settings()->{$column} ?? ''));
+
+        return $value !== '' ? $value : __($fallbackKey);
+    }
+
     public function logoAlt(): string
     {
         $locale = app()->getLocale();
