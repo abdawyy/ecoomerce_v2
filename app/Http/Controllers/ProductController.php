@@ -336,7 +336,7 @@ class ProductController extends Controller
         ];
 
         // Build the query with filters
-        $query = products::with('category', 'type', 'productItems');
+        $query = products::with('category', 'type', 'productItems', 'productImages');
         
         // Apply search
         if ($search) {
@@ -404,9 +404,13 @@ class ProductController extends Controller
 
         // Prepare the rows by mapping through the types collection
         $rows = $data->map(function ($data) {
+            $image = $data->productImages->first();
+
             return [
                 'ID' => $data->id,
                 'Name' => $data->name,
+                'preview' => $image ? asset('storage/'.$image->images) : null,
+                'preview_name' => $data->name,
                 'Price' => $data->price,
                 'Sale' => $data->sale,
                 'Type' => $data->type->name ?? '—',

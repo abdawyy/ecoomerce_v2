@@ -6,6 +6,7 @@
     }
 @endphp
 
+@php $hasIdPreview = false; @endphp
 <div class="container-fluid px-0 {{ $isArabic ? 'text-end' : '' }}" dir="{{ $isArabic ? 'rtl' : 'ltr' }}">
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
         {{-- Language Switch --}}
@@ -103,8 +104,15 @@
                                             @endif
                                         </div>
                                     @elseif ($header === 'ID')
+                                        @php $preview = $row['preview'] ?? null; @endphp
+                                        @if ($preview)
+                                            @php $hasIdPreview = true; @endphp
+                                        @endif
                                         @if ($rowHref)
-                                            <a href="{{ $rowHref }}" class="text-decoration-none">#{{ $row['ID'] }}</a>
+                                            <a href="{{ $rowHref }}" class="text-decoration-none {{ $preview ? 'admin-id-preview' : '' }}"
+                                               @if ($preview) data-preview="{{ $preview }}" data-preview-name="{{ $row['preview_name'] ?? '' }}" @endif>#{{ $row['ID'] }}</a>
+                                        @elseif ($preview)
+                                            <span class="admin-id-preview" data-preview="{{ $preview }}" data-preview-name="{{ $row['preview_name'] ?? '' }}">#{{ $row['ID'] }}</span>
                                         @else
                                             #{{ $row['ID'] }}
                                         @endif
@@ -146,3 +154,53 @@
         </table>
     </div>
 </div>
+
+@if ($hasIdPreview)
+    <div id="admin-id-preview-card" class="admin-id-preview-card" hidden>
+        <img alt="" width="140" height="140">
+        <p></p>
+    </div>
+    <script>
+        (function () {
+            const card = document.getElementById('admin-id-preview-card');
+            if (!card || card.dataset.bound === '1') return;
+            card.dataset.bound = '1';
+            const image = card.querySelector('img');
+            const caption = card.querySelector('p');
+
+            const place = function (event) {
+                const pad = 16;
+                card.hidden = false;
+                const width = card.offsetWidth;
+                const height = card.offsetHeight;
+                let x = event.clientX + pad;
+                let y = event.clientY + pad;
+                if (x + width > window.innerWidth - 8) x = event.clientX - width - pad;
+                if (y + height > window.innerHeight - 8) y = event.clientY - height - pad;
+                card.style.left = Math.max(8, x) + 'px';
+                card.style.top = Math.max(8, y) + 'px';
+            };
+
+            document.addEventListener('mouseover', function (event) {
+                const trigger = event.target.closest('.admin-id-preview');
+                if (!trigger || !trigger.dataset.preview) return;
+                image.src = trigger.dataset.preview;
+                image.alt = trigger.dataset.previewName || '';
+                caption.textContent = trigger.dataset.previewName || '';
+                place(event);
+            });
+
+            document.addEventListener('mousemove', function (event) {
+                if (card.hidden || !event.target.closest('.admin-id-preview')) return;
+                place(event);
+            });
+
+            document.addEventListener('mouseout', function (event) {
+                const trigger = event.target.closest('.admin-id-preview');
+                if (!trigger) return;
+                if (event.relatedTarget && trigger.contains(event.relatedTarget)) return;
+                card.hidden = true;
+            });
+        })();
+    </script>
+@endif

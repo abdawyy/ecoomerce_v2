@@ -1245,6 +1245,35 @@ body.admin-body.modal-open {
     padding-left: 1.5rem;
 }
 
+.admin-id-preview-card {
+    position: fixed;
+    z-index: 1080;
+    width: 156px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #e6e0d8;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+    pointer-events: none;
+}
+
+.admin-id-preview-card img {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f4f1ec;
+}
+
+.admin-id-preview-card p {
+    margin: 8px 0 0;
+    color: #193049;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
 .admin-table-wrap,
 .table-responsive.admin-table-wrap,
 .table-responsive.shadow-sm.rounded-4 {
