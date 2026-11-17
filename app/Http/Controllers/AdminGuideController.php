@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guide;
+use App\Models\SiteSetting;
+use App\Services\BrandingService;
 use App\Services\PdfService;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
@@ -13,33 +15,36 @@ class AdminGuideController extends Controller
 {
     use Apptraits;
 
-    public function list(Request $request)
+    public function list(BrandingService $branding)
     {
-        if (! Schema::hasTable('guides')) {
-            return redirect()->route('admin.dashboard')->with('error', 'Run migrations first.');
-        }
-
         $this->rememberAdminListUrl('guides');
 
-        $search = $request->input('search');
-        $data = Guide::query()
-            ->when($search, fn ($q) => $q->where('title_en', 'like', "%{$search}%")->orWhere('slug', 'like', "%{$search}%"))
-            ->orderBy('sort_order')
-            ->paginate(10);
+        return view('admin.guides.list', [
+            'chartUrl' => $branding->sizeChartUrl(),
+        ]);
+    }
 
-        $headers = ['ID', 'Title', 'Type', 'Downloads', 'Action'];
-        $rows = $data->map(fn ($g) => [
-            'ID' => $g->id,
-            'Title' => $g->title_en,
-            'Type' => $g->content_type,
-            'Downloads' => $g->download_count,
-            'href' => route('guides.admin.edit', $g->id),
-            'is_active' => $g->is_active,
+    public function updateSizeChart(Request $request, BrandingService $branding)
+    {
+        if (! Schema::hasColumn('site_settings', 'size_chart_path')) {
+            return redirect()->route('guides.admin.list')->with('error', __('guides.chart_missing_column'));
+        }
+
+        $request->validate([
+            'size_chart' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        $url = '/admin/guides';
+        $settings = SiteSetting::current();
+        $previous = $settings->size_chart_path;
+        $settings->size_chart_path = $branding->uploadFile($request->file('size_chart'), 'size_chart');
+        $settings->save();
+        $branding->clearCache();
 
-        return view('admin.guides.list', compact('headers', 'rows', 'data', 'search', 'url'));
+        if ($previous && $previous !== $settings->size_chart_path) {
+            $branding->deleteStoredFile($previous);
+        }
+
+        return redirect()->route('guides.admin.list')->with('success', __('guides.chart_saved'));
     }
 
     public function edit(Request $request, PdfService $pdfService, $id = null)

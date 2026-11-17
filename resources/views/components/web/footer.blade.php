@@ -12,7 +12,6 @@
             <div class="col-6 col-md-3">
                 <h6 class="footer-heading">{{ __('web.footer_help') }}</h6>
                 <a href="{{ route('contact.show') }}" class="footer-link">{{ __('web.title_contact') }}</a>
-                <a href="{{ route('guides.index') }}" class="footer-link">{{ __('web.footer_guides') }}</a>
                 <a href="{{ route('cart.index') }}" class="footer-link">{{ __('web.footer_cart') }}</a>
                 @auth
                     <a href="{{ route('account.orders') }}" class="footer-link">{{ __('account.orders') }}</a>
@@ -33,7 +32,13 @@
                 @if ($branding->tagline())
                     <p class="small text-white-50 mb-3">{{ $branding->tagline() }}</p>
                 @endif
-                <p class="mb-0 small text-white-50">{!! __('web.footer_rights') !!}</p>
+                @if ($branding->supportEmail())
+                    <a href="mailto:{{ $branding->supportEmail() }}" class="footer-link d-block">{{ $branding->supportEmail() }}</a>
+                @endif
+                @if ($branding->supportPhone())
+                    <a href="tel:{{ preg_replace('/\s+/', '', $branding->supportPhone()) }}" class="footer-link d-block">{{ $branding->supportPhone() }}</a>
+                @endif
+                <p class="mb-0 small text-white-50 mt-3">{!! __('web.footer_rights') !!}</p>
             </div>
         </div>
         @if (count($branding->socialLinks()) > 0)

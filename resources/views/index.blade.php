@@ -155,13 +155,13 @@
 <section id="category" class="py-5 home-categories">
     <div class="container">
         <div class="row g-4 justify-content-center">
-            @foreach ($departments as $department)
+            @foreach ($branding->homeCategoryTiles() as $tile)
                 <div class="col-12 col-md-6">
-                    <a href="{{ $department['url'] }}" class="category-box text-decoration-none d-block">
-                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $department['image'] }}')"></span>
-                        <img src="{{ $department['image'] }}" class="category-img" alt="{{ $department['shop_label'] }}">
+                    <a href="{{ $tile['url'] }}" class="category-box text-decoration-none d-block">
+                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $tile['image'] }}')"></span>
+                        <img src="{{ $tile['image'] }}" class="category-img" alt="{{ $tile['name'] }}">
                         <div class="category-overlay">
-                            <h3 class="fw-bold text-white mb-3">{{ $department['shop_label'] }}</h3>
+                            <h3 class="fw-bold text-white mb-3">{{ $tile['name'] }}</h3>
                             <span class="btn btn-light px-4 py-2 rounded-pill fw-bold">
                                 {{ __('web.see_details') }}
                             </span>

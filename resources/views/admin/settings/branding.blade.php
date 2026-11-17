@@ -24,6 +24,16 @@
                                        value="{{ old('site_name', $settings->site_name ?? $branding->siteName()) }}">
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.tagline_en') }}</label>
+                                <input type="text" name="tagline_en" class="form-control"
+                                       value="{{ old('tagline_en', $settings->tagline_en) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.tagline_ar') }}</label>
+                                <input type="text" name="tagline_ar" class="form-control" dir="rtl"
+                                       value="{{ old('tagline_ar', $settings->tagline_ar) }}">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.support_email') }}</label>
                                 <input type="email" name="support_email" class="form-control"
                                        value="{{ old('support_email', $settings->support_email) }}">
@@ -91,6 +101,21 @@
                                 @endif
                                 <input type="file" name="logo" class="form-control" accept="image/*">
                                 <div class="form-text">{{ __('branding.logo_main_hint') }}</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ __('branding.favicon') }}</label>
+                                @php
+                                    $faviconPath = $settings->favicon_path ?? null;
+                                    $faviconPreview = $faviconPath
+                                        ? $branding->assetUrl($faviconPath)
+                                        : $branding->faviconUrl();
+                                @endphp
+                                @if ($faviconPreview)
+                                    <div class="mb-2">
+                                        <img src="{{ $faviconPreview }}" alt="" class="img-thumbnail" style="max-height:48px; object-fit: contain;">
+                                    </div>
+                                @endif
+                                <input type="file" name="favicon" class="form-control" accept="image/png,image/jpeg,image/webp,image/x-icon,image/vnd.microsoft.icon">
                             </div>
                         </div>
 

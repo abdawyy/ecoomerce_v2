@@ -51,7 +51,9 @@ class BrandingService
 
     public function primaryColor(): string
     {
-        return $this->settings()->primary_color ?: config('branding.defaults.primary_color', '#0d6efd');
+        return $this->settings()->primary_color
+            ?: $this->settings()->accent_color
+            ?: config('branding.defaults.primary_color', '#0d6efd');
     }
 
     public function supportEmail(): ?string
@@ -62,6 +64,19 @@ class BrandingService
     public function supportPhone(): ?string
     {
         return $this->settings()->support_phone ?: config('branding.defaults.support_phone');
+    }
+
+    public function sizeChartUrl(): ?string
+    {
+        $path = $this->settings()->size_chart_path ?? null;
+
+        if (! is_string($path) || trim($path) === '') {
+            return null;
+        }
+
+        $url = $this->assetUrl($path);
+
+        return $url !== '' ? $url : null;
     }
 
     public function cartPolicyTitle(): string

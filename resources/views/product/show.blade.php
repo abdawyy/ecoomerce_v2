@@ -83,6 +83,51 @@
         border-color: var(--brand-black);
     }
     .btn-check:disabled + .selector-label { opacity: 0.3; text-decoration: line-through; }
+    .size-guide-link {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--brand-muted);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        cursor: pointer;
+    }
+    .size-guide-link:hover { color: var(--brand-burgundy); }
+    .size-chart-sheet {
+        background: var(--brand-white);
+        color: var(--brand-black);
+        border: 1px solid var(--brand-border);
+        border-radius: 18px;
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+    }
+    .size-chart-sheet .modal-header { padding: 18px 20px 0; }
+    .size-chart-sheet .modal-title {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+    }
+    .size-chart-sheet .modal-body { padding: 14px 20px 20px; }
+    .size-chart-image {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        object-fit: contain;
+        background: var(--brand-soft);
+        border-radius: 12px;
+    }
+    @media (max-width: 767.98px) {
+        .size-chart-modal .modal-dialog { margin: 0.75rem; }
+    }
+    body.modal-open .pdp-sticky-bar {
+        visibility: hidden;
+    }
 
     .qty-group .btn { width: 42px; }
     .qty-group .form-control { border-left: 0; border-right: 0; }
@@ -121,6 +166,7 @@
 </style>
 @endpush
 
+@php $sizeChartUrl = $branding->sizeChartUrl(); @endphp
 <section id="oneProduct" class="page-wrap">
     <div class="container">
         <x-web.breadcrumb :items="[
@@ -194,7 +240,14 @@
                     </div>
 
                     <div class="mb-4">
-                        <p class="section-title mb-2">{{ __('web.size') }}</p>
+                        <div class="d-flex align-items-center justify-content-between gap-3 mb-2">
+                            <p class="section-title mb-0">{{ __('web.size') }}</p>
+                            @if ($sizeChartUrl && $product->productItems->isNotEmpty())
+                                <button type="button" class="size-guide-link" data-bs-toggle="modal" data-bs-target="#sizeChartModal">
+                                    {{ __('guides.size_guide') }}
+                                </button>
+                            @endif
+                        </div>
                         <div class="d-flex flex-wrap gap-2">
                             @foreach ($product->productItems as $productItem)
                                 <input type="radio" class="btn-check" name="productItem_id" id="size_{{ $productItem->id }}"
@@ -225,12 +278,6 @@
                         <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
                     </button>
                     <x-web.return-policy variant="compact" class="mt-3" />
-
-                    @if ($product->guide)
-                        <a href="{{ route('guides.download', $product->guide->slug) }}" class="btn btn-outline-dark w-100 mt-2 py-2">
-                            <i class="fa-solid fa-download me-1"></i> {{ __('guides.product_link') }}: {{ $product->guide->title() }}
-                        </a>
-                    @endif
 
                     <hr class="my-5">
 
@@ -300,6 +347,22 @@
         @endif
     </div>
 </section>
+
+@if ($sizeChartUrl && $product->productItems->isNotEmpty())
+    <div class="modal fade size-chart-modal" id="sizeChartModal" tabindex="-1" aria-labelledby="sizeChartTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content size-chart-sheet">
+                <div class="modal-header border-0">
+                    <h2 class="modal-title fs-5 fw-bold mb-0" id="sizeChartTitle">{{ __('guides.size_guide') }}</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('guides.close') }}"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="{{ $sizeChartUrl }}" alt="{{ __('guides.size_guide') }}" class="size-chart-image">
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 <div class="pdp-sticky-bar d-lg-none">
     <div class="container d-flex align-items-center justify-content-between gap-3">
