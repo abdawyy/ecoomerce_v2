@@ -49,7 +49,7 @@
     min-width: 230px;
     max-height: 280px;
     overflow: auto;
-    padding: 12px 14px;
+    padding: 8px 0;
     border: 1px solid var(--brand-border, #e4d5c3);
     border-radius: 14px;
     box-shadow: var(--shadow-soft, 0 12px 40px rgba(25, 48, 73, 0.08));
@@ -58,6 +58,51 @@
 .plp-filter-menu .form-check {
     padding-top: 6px;
     padding-bottom: 6px;
+}
+
+.plp-filter-option {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 8px 14px;
+    color: var(--brand-navy, #193049);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 0;
+}
+
+.plp-filter-option-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.plp-filter-btn-label,
+.filter-chosen-label {
+    display: inline-block;
+    max-width: 9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+}
+
+.plp-filter-option:hover {
+    background: #193049;
+    color: #fcf4e9;
+}
+
+.plp-filter-option:has(.plp-filter-option-input:focus-visible) {
+    outline: 2px solid #193049;
+    outline-offset: -2px;
 }
 
 .plp-filter-actions {
@@ -347,8 +392,14 @@
 [data-bs-theme="dark"] .filter-title,
 [data-bs-theme="dark"] .filter-section-title,
 [data-bs-theme="dark"] .filter-section-toggle,
-[data-bs-theme="dark"] .filter-section .form-check-label {
+[data-bs-theme="dark"] .filter-section .form-check-label,
+[data-bs-theme="dark"] .plp-filter-option {
     color: #e6edf3;
+}
+
+[data-bs-theme="dark"] .plp-filter-option:hover {
+    background: #fcf4e9;
+    color: #193049;
 }
 
 [data-bs-theme="dark"] .nav-pills .nav-link {

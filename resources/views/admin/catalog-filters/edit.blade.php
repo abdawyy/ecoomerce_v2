@@ -63,9 +63,10 @@
                                     </div>
                                 @elseif ($group['key'] === 'price')
                                     <p class="text-muted small">{{ __('catalog_filters.price_intro') }}</p>
+                                    <div id="price-band-deletes"></div>
                                     <div class="d-flex flex-column gap-2" id="price-bands">
                                         @foreach ($group['bands'] as $band)
-                                            <div class="row g-2 align-items-end">
+                                            <div class="row g-2 align-items-end" data-price-band>
                                                 <div class="col-md-3">
                                                     <label class="form-label small">{{ __('catalog_filters.price_en') }}</label>
                                                     <input type="text" class="form-control" name="bands[{{ $band->id }}][label_en]" value="{{ $band->label_en }}">
@@ -83,16 +84,15 @@
                                                     <input type="number" min="0" step="0.01" class="form-control" name="bands[{{ $band->id }}][max_price]" value="{{ $band->max_price }}">
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input" type="checkbox" name="bands_delete[]" value="{{ $band->id }}" id="del-band-{{ $band->id }}">
-                                                        <label class="form-check-label" for="del-band-{{ $band->id }}">{{ __('catalog_filters.price_delete') }}</label>
-                                                    </div>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm w-100 price-band-remove" data-band-id="{{ $band->id }}">
+                                                        {{ __('catalog_filters.price_delete') }}
+                                                    </button>
                                                 </div>
                                             </div>
                                         @endforeach
                                     </div>
                                     <template id="price-band-template">
-                                        <div class="row g-2 align-items-end mt-1">
+                                        <div class="row g-2 align-items-end mt-1" data-price-band>
                                             <div class="col-md-3">
                                                 <label class="form-label small">{{ __('catalog_filters.price_en') }}</label>
                                                 <input type="text" class="form-control" data-name="label_en">
@@ -108,6 +108,11 @@
                                             <div class="col-md-2">
                                                 <label class="form-label small">{{ __('catalog_filters.price_max') }}</label>
                                                 <input type="number" min="0" step="0.01" class="form-control" data-name="max_price">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-outline-danger btn-sm w-100 price-band-remove">
+                                                    {{ __('catalog_filters.price_delete') }}
+                                                </button>
                                             </div>
                                         </div>
                                     </template>
@@ -125,18 +130,37 @@
 </main>
 
 <script>
-    document.getElementById('add-price-band')?.addEventListener('click', function () {
-        const template = document.getElementById('price-band-template');
+    (function () {
         const host = document.getElementById('price-bands');
-        if (!template || !host) return;
-        const index = host.querySelectorAll('[data-new-band]').length;
-        const row = template.content.firstElementChild.cloneNode(true);
-        row.setAttribute('data-new-band', '1');
-        row.querySelectorAll('[data-name]').forEach(function (input) {
-            input.name = 'bands_new[' + index + '][' + input.getAttribute('data-name') + ']';
+        const deletes = document.getElementById('price-band-deletes');
+        let newBandIndex = 0;
+
+        document.getElementById('add-price-band')?.addEventListener('click', function () {
+            const template = document.getElementById('price-band-template');
+            if (!template || !host) return;
+            const index = newBandIndex++;
+            const row = template.content.firstElementChild.cloneNode(true);
+            row.setAttribute('data-new-band', '1');
+            row.querySelectorAll('[data-name]').forEach(function (input) {
+                input.name = 'bands_new[' + index + '][' + input.getAttribute('data-name') + ']';
+            });
+            host.appendChild(row);
         });
-        host.appendChild(row);
-    });
+
+        host?.addEventListener('click', function (event) {
+            const button = event.target.closest('.price-band-remove');
+            if (!button) return;
+            const id = button.getAttribute('data-band-id');
+            if (id && deletes) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'bands_delete[]';
+                input.value = id;
+                deletes.appendChild(input);
+            }
+            button.closest('[data-price-band]')?.remove();
+        });
+    })();
 </script>
 
 <x-admin.footer />

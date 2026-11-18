@@ -452,24 +452,25 @@ class ProductController extends Controller
     }
     public function productWebList(Request $request, CatalogFilterService $catalogFilters, $id = null)
     {
-        // Get filter parameters from the request
         $search = $request->input('search');
-        $type_id = $request->input('type_id');
-        $color = $request->input('color');
-        $size = $request->input('size');
+        $typeIds = array_slice($this->filterValues($request, 'type_id'), 0, 1);
+        $colors = array_slice($this->filterValues($request, 'color'), 0, 1);
+        $sizes = array_slice($this->filterValues($request, 'size'), 0, 1);
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
-        $stock_status = $request->input('stock_status');
+        $stockStatuses = array_slice(array_values(array_intersect(
+            $this->filterValues($request, 'stock_status'),
+            ['in_stock', 'out_of_stock']
+        )), 0, 1);
         $onSale = $request->boolean('on_sale');
         $sort = $request->input('sort', 'newest');
-        $priceBand = $catalogFilters->priceBand($request->input('price_band'));
-        if ($priceBand) {
-            $minPrice = $priceBand['min'];
-            $maxPrice = $priceBand['max'];
-        }
-        $categoryId = $request->filled('category_id') ? $request->input('category_id') : $id;
+        $priceBands = $catalogFilters->priceBands(array_slice($this->filterValues($request, 'price_band'), 0, 1));
+        $priceBand = $priceBands[0] ?? null;
 
-        // Base query for products
+        $queryCategoryIds = array_slice($this->filterValues($request, 'category_id'), 0, 1);
+        $fromPath = $queryCategoryIds === [] && $id;
+        $categoryIds = $fromPath ? [(string) $id] : $queryCategoryIds;
+
         $query = products::with([
             'category',
             'type',
@@ -477,23 +478,27 @@ class ProductController extends Controller
             'productImages',
         ])->sellable();
 
-        // Apply category filter
         $categoryName = null;
-        if ($categoryId) {
-            $categoryName = Category::where('id', $categoryId)->where('is_active', 1)->first();
-            if (! $categoryName && $id && ! $request->filled('category_id')) {
+        $categories = collect();
+        if ($categoryIds !== []) {
+            $categories = Category::query()
+                ->whereIn('id', $categoryIds)
+                ->where('is_active', 1)
+                ->get();
+            if ($categories->isEmpty() && $fromPath) {
                 abort(404);
             }
-            if ($categoryName) {
-                $query->where('category_id', $categoryName->id);
-                $id = $categoryName->id;
-            } else {
-                $categoryId = null;
+            if ($categories->isNotEmpty()) {
+                $query->whereIn('category_id', $categories->pluck('id'));
+                $categoryName = $categories->count() === 1 ? $categories->first() : null;
+                if ($fromPath) {
+                    $id = $categories->first()->id;
+                }
+            } elseif ($fromPath) {
                 $id = null;
             }
         }
 
-        // Apply search filter
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -502,45 +507,62 @@ class ProductController extends Controller
             app(AnalyticsService::class)->recordSearch($request, $search);
         }
 
-        // Apply type filter
-        if ($type_id) {
-            $query->where('type_id', $type_id);
+        if ($typeIds !== []) {
+            $query->whereIn('type_id', $typeIds);
         }
 
-        // Apply color filter
-        if ($color) {
-            $query->where('color', $color);
+        if ($colors !== []) {
+            $query->whereIn('color', $colors);
         }
 
-        // Apply price range filter
-        if ($minPrice !== null && $minPrice !== '') {
-            $query->where('price', '>=', $minPrice);
-        }
-        if ($maxPrice !== null && $maxPrice !== '') {
-            $query->where('price', '<=', $maxPrice);
+        $boundedBands = array_values(array_filter($priceBands, function ($band) {
+            return ($band['min'] !== null && $band['min'] !== '')
+                || ($band['max'] !== null && $band['max'] !== '');
+        }));
+        if ($priceBands !== []) {
+            $minPrice = null;
+            $maxPrice = null;
+            if ($boundedBands !== []) {
+                $query->where(function ($q) use ($boundedBands) {
+                    foreach ($boundedBands as $band) {
+                        $q->orWhere(function ($inner) use ($band) {
+                            if ($band['min'] !== null && $band['min'] !== '') {
+                                $inner->where('price', '>=', $band['min']);
+                            }
+                            if ($band['max'] !== null && $band['max'] !== '') {
+                                $inner->where('price', '<=', $band['max']);
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            if ($minPrice !== null && $minPrice !== '') {
+                $query->where('price', '>=', $minPrice);
+            }
+            if ($maxPrice !== null && $maxPrice !== '') {
+                $query->where('price', '<=', $maxPrice);
+            }
         }
 
-        // Apply size filter
-        if ($size) {
-            $query->whereHas('productItems', function ($q) use ($size) {
-                $q->where('size', $size);
+        if ($sizes !== []) {
+            $query->whereHas('productItems', function ($q) use ($sizes) {
+                $q->whereIn('size', $sizes);
             });
         }
 
-        // Apply stock status filter
-        if ($stock_status) {
-            if ($stock_status === 'in_stock') {
-                $query->whereHas('productItems', function ($q) {
-                    $q->where('quantity', '>', 0);
-                });
-            } elseif ($stock_status === 'out_of_stock') {
-                $query->where(function ($q) {
-                    $q->whereDoesntHave('productItems')
-                      ->orWhereHas('productItems', function ($q2) {
-                          $q2->where('quantity', '<=', 0);
-                      });
-                });
-            }
+        $stock_status = count($stockStatuses) === 1 ? $stockStatuses[0] : null;
+        if ($stock_status === 'in_stock') {
+            $query->whereHas('productItems', function ($q) {
+                $q->where('quantity', '>', 0);
+            });
+        } elseif ($stock_status === 'out_of_stock') {
+            $query->where(function ($q) {
+                $q->whereDoesntHave('productItems')
+                  ->orWhereHas('productItems', function ($q2) {
+                      $q2->where('quantity', '<=', 0);
+                  });
+            });
         }
 
         if ($onSale) {
@@ -553,29 +575,59 @@ class ProductController extends Controller
             default => $query->orderByDesc('is_highest')->orderByDesc('created_at'),
         };
 
-        // Build query string for pagination links
         $queryParams = [
             'search' => $search,
-            'category_id' => $request->filled('category_id') ? ($categoryName->id ?? null) : null,
-            'type_id' => $type_id,
-            'color' => $color,
-            'size' => $size,
-            'min_price' => $priceBand ? null : $minPrice,
-            'max_price' => $priceBand ? null : $maxPrice,
-            'price_band' => $priceBand['id'] ?? null,
-            'stock_status' => $stock_status,
+            'category_id' => $request->has('category_id') ? $categories->pluck('id')->all() : null,
+            'type_id' => $typeIds ?: null,
+            'color' => $colors ?: null,
+            'size' => $sizes ?: null,
+            'min_price' => $priceBands !== [] ? null : $minPrice,
+            'max_price' => $priceBands !== [] ? null : $maxPrice,
+            'price_band' => array_column($priceBands, 'id') ?: null,
+            'stock_status' => $stockStatuses ?: null,
             'on_sale' => $onSale ? '1' : null,
             'sort' => $sort !== 'newest' ? $sort : null,
         ];
 
-        $data = $query->paginate(40)
-            ->appends(array_filter($queryParams, fn ($v) => $v !== null && $v !== ''));
+        $data = $query->paginate(40)->appends(array_filter($queryParams, function ($value) {
+            if (is_array($value)) {
+                return $value !== [];
+            }
+
+            return $value !== null && $value !== '';
+        }));
 
         $types = Type::where('is_active', 1)->get();
         $maxProductPrice = products::sellable()->max('price');
         $filterBar = $catalogFilters->forStorefront();
+        $type_id = count($typeIds) === 1 ? $typeIds[0] : null;
+        $color = count($colors) === 1 ? $colors[0] : null;
+        $size = count($sizes) === 1 ? $sizes[0] : null;
+        $selectedCategories = $categories;
 
-        return view('product.list', compact('data', 'types', 'maxProductPrice', 'filterBar', 'priceBand', 'id', 'categoryName', 'search', 'type_id', 'color', 'size', 'minPrice', 'maxPrice', 'stock_status', 'onSale', 'sort'));
+        return view('product.list', compact(
+            'data', 'types', 'maxProductPrice', 'filterBar', 'priceBand', 'priceBands',
+            'id', 'categoryName', 'selectedCategories', 'search', 'type_id', 'typeIds', 'color', 'colors',
+            'size', 'sizes', 'minPrice', 'maxPrice', 'stock_status', 'stockStatuses', 'onSale', 'sort'
+        ));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function filterValues(Request $request, string $key): array
+    {
+        $value = $request->input($key);
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        return collect(is_array($value) ? $value : [$value])
+            ->map(fn ($item) => is_scalar($item) ? trim((string) $item) : '')
+            ->filter(fn ($item) => $item !== '')
+            ->unique()
+            ->values()
+            ->all();
     }
 
     protected function relatedProducts(products $product, int $limit = 4)

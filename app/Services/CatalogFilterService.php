@@ -22,25 +22,42 @@ class CatalogFilterService
 
     public function priceBand(mixed $id): ?array
     {
-        if (! $this->ready() || ! is_numeric($id)) {
-            return null;
+        return $this->priceBands([$id])[0] ?? null;
+    }
+
+    /**
+     * @param  array<int, mixed>  $ids
+     * @return array<int, array{id: int, label: string, min: mixed, max: mixed}>
+     */
+    public function priceBands(array $ids): array
+    {
+        if (! $this->ready()) {
+            return [];
         }
 
-        $band = CatalogFilterOption::query()
+        $ids = collect($ids)
+            ->filter(fn ($id) => is_numeric($id))
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($ids === []) {
+            return [];
+        }
+
+        return CatalogFilterOption::query()
             ->where('group_key', 'price')
-            ->whereKey((int) $id)
-            ->first();
-
-        if (! $band) {
-            return null;
-        }
-
-        return [
-            'id' => $band->id,
-            'label' => $this->optionLabel($band),
-            'min' => $band->min_price,
-            'max' => $band->max_price,
-        ];
+            ->whereIn('id', $ids)
+            ->get()
+            ->map(fn ($band) => [
+                'id' => $band->id,
+                'label' => $this->optionLabel($band),
+                'min' => $band->min_price,
+                'max' => $band->max_price,
+            ])
+            ->values()
+            ->all();
     }
 
     /**
