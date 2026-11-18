@@ -39,18 +39,23 @@ class ContactController extends Controller
     // Handle the contact form submission
     protected function sendToAdmin(array $data): void
     {
-        Mail::send([], [], function ($message) use ($data) {
-            $body = "Someone wants to contact you:\n\n" .
-                "Name: {$data['name']}\n" .
-                "Email: {$data['email']}\n" .
-                "Phone: {$data['phone']}\n\n" .
-                "Message:\n{$data['message']}";
+        $locale = app()->getLocale();
+        app()->setLocale('en');
 
-            $message->to(config('hayah.admin_email'))
-                ->subject('New Contact Message from ' . $data['name'])
-                ->text($body)
-                ->replyTo($data['email']);
-        });
+        try {
+            Mail::send('email.contact-admin', [
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'],
+                'body' => $data['message'],
+            ], function ($message) use ($data) {
+                $message->to(config('hayah.admin_email'))
+                    ->subject(__('email.contact_admin_subject', ['name' => $data['name']], 'en'))
+                    ->replyTo($data['email']);
+            });
+        } finally {
+            app()->setLocale($locale);
+        }
     }
 
     protected function sendAutoReply(array $data): void
@@ -59,14 +64,12 @@ class ContactController extends Controller
         $siteName = $brand->siteName();
         $from = $brand->supportEmail() ?: config('mail.from.address');
 
-        Mail::send([], [], function ($message) use ($data, $siteName, $from) {
-            $body = "Dear {$data['name']},\n\n" .
-                "Thank you for reaching out to us. We have received your message and will contact you shortly.\n\n" .
-                "— {$siteName}";
-
+        Mail::send('email.contact-reply', [
+            'name' => $data['name'],
+            'siteName' => $siteName,
+        ], function ($message) use ($data, $siteName, $from) {
             $message->to($data['email'])
-                ->subject('Thank you for contacting '.$siteName)
-                ->text($body)
+                ->subject(__('email.contact_reply_subject', ['site' => $siteName]))
                 ->from($from, $siteName);
         });
     }

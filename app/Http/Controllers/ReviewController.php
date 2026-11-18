@@ -46,19 +46,24 @@ public function store(ReviewRequest $request)
     $product = products::find($request->product_id);
     $user = auth()->user();
 
-    // Prepare email content
-    $body = "A new review has been submitted:\n\n" .
-            "Product: {$product->name}\n" .
-            "User: {$user->name} ({$user->email})\n" .
-            "Rating: {$request->rating}\n\n" .
-            "Comment:\n{$request->comment}";
+    $locale = app()->getLocale();
+    app()->setLocale('en');
 
-    // Send email
-    Mail::raw($body, function ($message) use ($user) {
-        $message->to(config('hayah.admin_email'))
-                ->subject('New Product Review Submitted')
+    try {
+        Mail::send('email.review-notice', [
+            'productName' => $product->name,
+            'userName' => $user->name,
+            'userEmail' => $user->email,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ], function ($message) use ($user, $product) {
+            $message->to(config('hayah.admin_email'))
+                ->subject(__('email.review_subject', ['product' => $product->name], 'en'))
                 ->replyTo($user->email);
-    });
+        });
+    } finally {
+        app()->setLocale($locale);
+    }
 
     return response()->json(['message' => __('web.review_submitted')]);
 }

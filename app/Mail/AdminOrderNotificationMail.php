@@ -21,7 +21,8 @@ class AdminOrderNotificationMail extends Mailable
 
     public function build()
     {
-        return $this->subject('New order #'.$this->order->id)
+        return $this->locale('en')
+            ->subject(__('email.admin_order_subject', ['id' => $this->order->id], 'en'))
             ->view('email.admin-order-notification');
     }
 }

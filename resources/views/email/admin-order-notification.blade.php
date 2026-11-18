@@ -1,162 +1,61 @@
-<!DOCTYPE html>
-<html>
+@extends('email.layout')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details</title>
-    <style>
-        /* Basic styling for the email */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
+@section('title', __('email.admin_order_subject', ['id' => $order->id], 'en'))
+@section('preheader', __('email.admin_order_preheader', ['id' => $order->id, 'name' => $order->user->name ?? $order->guestUser->name ?? 'Guest'], 'en'))
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
-        }
+@section('content')
+@php
+    $name = $order->user->name ?? $order->guestUser->name ?? 'Guest';
+    $email = $order->user->email ?? $order->guestUser->email ?? null;
+    $address = $order->address;
+    $city = $order->cities->name ?? null;
+    $lines = array_filter([
+        $address?->address_line1,
+        $address?->address_line2,
+        $city,
+        $address?->country,
+    ]);
+    $money = fn ($amount) => number_format((float) $amount, 2).' LE';
+@endphp
+<p style="margin:0 0 6px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#8a8176;">{{ __('email.admin_order_title', [], 'en') }}</p>
+<p style="margin:0 0 18px;font-size:20px;color:#1b2740;"><strong>{{ __('email.order_number', ['id' => $order->id], 'en') }}</strong></p>
 
-        h1, h2 {
-            color: #333333;
-        }
+<p style="margin:0 0 4px;font-size:14px;line-height:1.6;color:#1b2740;"><strong>{{ $name }}</strong></p>
+@if ($email)
+    <p style="margin:0 0 4px;font-size:14px;color:#4a453f;">{{ $email }}</p>
+@endif
+@if ($address?->phone_number)
+    <p style="margin:0 0 4px;font-size:14px;color:#4a453f;">{{ $address->phone_number }}</p>
+@endif
+@if ($lines)
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#4a453f;">{{ implode(', ', $lines) }}</p>
+@endif
 
-        p {
-            color: #555555;
-            line-height: 1.6;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            border: 1px solid #dddddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Order Details</h1>
-
-        <div>
-            <h2>Order #{{ $order->id }}</h2>
-            <p><strong>User:</strong> {{ $order->user->name ?? 'N/A' }}</p>
-            <p><strong>City:</strong> {{ $order->cities->name ?? 'N/A' }}</p>
-            <p><strong>Delivery Fees:</strong> {{ number_format($order->resolvedDeliveryFee(), 2) }} LE</p>
-            <p><strong>Total Amount:</strong> {{ $order->total_amount ?? 'N/A' }} LE</p>
-            <p><strong>Discount Code:</strong> {{ $order->discountCodes->code ?? 'N/A' }}</p>
-            <p><strong>Order Date:</strong>
-                {{ $order->created_at ? $order->created_at->format('Y-m-d H:i') : 'N/A' }}</p>
-            <p><strong>Status:</strong> {{ $order->status ?? 'Pending' }}</p>
-        </div>
-
-        <h2>Address</h2>
-        <div>
-            @if ($order->user && $order->user->address->isNotEmpty())
-                @foreach ($order->user->address as $address)
-                    <div class="address-section">
-                        <p><strong>Address Line 1:</strong> {{ $address->address_line1 ?? 'N/A' }}</p>
-                        <p><strong>Address Line 2:</strong> {{ $address->address_line2 ?? 'N/A' }}</p>
-                        <p><strong>City:</strong> {{ $address->city ?? 'N/A' }}</p>
-                        <p><strong>State:</strong> {{ $address->state ?? 'N/A' }}</p>
-                        <p><strong>Postal Code:</strong> {{ $address->postal_code ?? 'N/A' }}</p>
-                                                <p><strong>Mobile:</strong> {{ $address->phone_number ?? 'N/A' }}</p>
-
-                        <p><strong>Country:</strong> {{ $address->country ?? 'N/A' }}</p>
-                        <hr>
-                    </div>
-                @endforeach
-            @else
-                <p><strong>Address:</strong> N/A</p>
-            @endif
-        </div>
-
-        <h2>Order Items</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th>Size</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-         @forelse($order->orderItems as $item)
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;">
+    @foreach ($order->orderItems as $item)
+        <tr>
+            <td align="left" style="padding:10px 0;border-bottom:1px solid #efe8dc;font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#1b2740;">
+                <strong>{{ $item->product->name ?? '—' }}</strong><br>
+                <span style="color:#6b645b;">{{ $item->size ?: '—' }} · {{ $item->quantity ?? 0 }}</span>
+            </td>
+            <td align="right" valign="top" style="padding:10px 0;border-bottom:1px solid #efe8dc;font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#1b2740;white-space:nowrap;">
+                {{ $money($item->price) }}
+            </td>
+        </tr>
+    @endforeach
     <tr>
-        <td>{{ $item->products_id}}</td>
-        <td>{{ $item->product->name ?? 'N/A' }}</td>
-        <td>{{ $item->size ?? 'N/A' }}</td>
-        <td>{{ $item->quantity ?? 0 }}</td>
-        <td>
-            @if ($item->product->sale)
-
-                {{ $item->product->price - ($item->product->price * $item->product->sale / 100) }} LE
-            @else
-                {{ $item->product->price ?? 0 }} LE
-            @endif
-        </td>
+        <td align="left" style="padding:14px 0 0;font-family:Tahoma,Arial,sans-serif;font-size:16px;color:#1b2740;"><strong>Total</strong></td>
+        <td align="right" style="padding:14px 0 0;font-family:Tahoma,Arial,sans-serif;font-size:16px;color:#1b2740;"><strong>{{ $money($order->total_amount) }}</strong></td>
     </tr>
-@empty
-    <tr>
-        <td colspan="5">No items found</td>
-    </tr>
-@endforelse
+</table>
 
-    </tbody>
-        </table>
-
-        <h2>Payments</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($order->payments as $payment)
-                    <tr>
-                        <td>{{ $payment->id }}</td>
-                        <td>{{ $payment->amount ?? 0 }} LE</td>
-                        <td>{{ $payment->created_at ? $payment->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3">No payments found for this order.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        <p><strong>Thank you for managing the orders!</strong></p>
-    </div>
-</body>
-
-</html>
+@if (!empty($invoiceUrl))
+    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 12px;">
+        <tr>
+            <td align="center" bgcolor="#1b2740" style="background:#1b2740;">
+                <a href="{{ $invoiceUrl }}" style="display:inline-block;padding:12px 22px;font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#ffffff;text-decoration:none;">Download invoice</a>
+            </td>
+        </tr>
+    </table>
+@endif
+@endsection
