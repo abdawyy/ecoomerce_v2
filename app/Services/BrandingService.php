@@ -279,6 +279,13 @@ class BrandingService
         );
     }
 
+    public function heroImageMobileUrl(): ?string
+    {
+        $path = $this->settings()->hero_image_mobile_path;
+
+        return $path ? $this->assetUrl($path) : null;
+    }
+
     public function categoryImage1Url(): string
     {
         return $this->assetUrl(

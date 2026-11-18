@@ -28,6 +28,21 @@ class AdminListReturnTest extends TestCase
         $this->assertSame($list, AdminListReturn::fieldValue('products'));
     }
 
+    public function test_it_appends_row_hash_and_keeps_filters(): void
+    {
+        $list = url('/admin/products/list?search=shirt&category_id=2&page=3#old');
+        session(['admin.list_url.products' => $list]);
+
+        $this->assertSame(
+            url('/admin/products/list?search=shirt&category_id=2&page=3').'#admin-row-22',
+            AdminListReturn::href('products', 'products.list', 22)
+        );
+        $this->assertSame(
+            url('/admin/products/list?search=shirt&category_id=2&page=3').'#old',
+            AdminListReturn::href('products', 'products.list')
+        );
+    }
+
     public function test_it_strips_page_and_keeps_filters(): void
     {
         $url = url('/admin/products/list?search=shirt&page=4&category_id=2#old');

@@ -9,7 +9,7 @@
         <div class="row pt-4">
             <div class="pagetitle mb-3">
                 <h1 class="mb-1">{{ __('cities.title') }}</h1>
-                <x-admin.return-button :href="\App\Support\AdminListReturn::href('cities', 'cities.list')" />
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('cities', 'cities.list', optional($model)->id)" />
             </div>
 
             <div class="card">

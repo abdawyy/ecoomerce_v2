@@ -100,10 +100,15 @@
 		@endif
 	});
 </script>
-@if (session('highlight_id'))
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var row = document.getElementById('admin-row-{{ session('highlight_id') }}');
+        var id = @json(session('highlight_id'));
+        if (!id) {
+            var match = String(window.location.hash || '').match(/^#admin-row-(\d+)$/);
+            id = match ? match[1] : null;
+        }
+        if (!id) return;
+        var row = document.getElementById('admin-row-' + id);
         if (!row) return;
         row.classList.add('is-highlighted');
         row.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -112,4 +117,3 @@
         }, 4000);
     });
 </script>
-@endif

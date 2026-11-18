@@ -40,11 +40,18 @@ class AdminListReturn
         return self::remembered($listKey) ?? '';
     }
 
-    public static function href(string $listKey, string $defaultRoute): string
+    public static function href(string $listKey, string $defaultRoute, mixed $id = null): string
     {
         $value = self::fieldValue($listKey);
+        $url = $value !== '' ? $value : route($defaultRoute);
 
-        return $value !== '' ? $value : route($defaultRoute);
+        if ($id === null || $id === '') {
+            return $url;
+        }
+
+        $url = preg_replace('/#.*$/', '', $url) ?: $url;
+
+        return $url.'#admin-row-'.$id;
     }
 
     public static function addUrl(string $route, string $listKey, array $query = []): string

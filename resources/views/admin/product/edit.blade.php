@@ -12,7 +12,7 @@
             <div class="pagetitle d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
                 <div>
                     <h1 class="mb-1">{{ __('products.title') }}</h1>
-                    <x-admin.return-button :href="\App\Support\AdminListReturn::href('products', 'products.list')" />
+                    <x-admin.return-button :href="\App\Support\AdminListReturn::href('products', 'products.list', optional($model)->id)" />
                 </div>
                 @if (optional($model)->id)
                     <a href="{{ url('admin/reviews/' . $model->id) }}" class="btn btn-warning btn-sm">

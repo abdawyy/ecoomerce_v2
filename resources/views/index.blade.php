@@ -102,7 +102,11 @@
 
 <section id="home" class="home-hero-section">
     <div class="hero">
-        <img src="{{ $branding->heroImageUrl() }}" class="hero-img" alt="{{ $branding->siteName() }}">
+        @php $heroMobileUrl = $branding->heroImageMobileUrl(); @endphp
+        <img src="{{ $branding->heroImageUrl() }}" class="hero-img {{ $heroMobileUrl ? 'd-none d-md-block' : '' }}" alt="{{ $branding->siteName() }}">
+        @if ($heroMobileUrl)
+            <img src="{{ $heroMobileUrl }}" class="hero-img d-md-none" alt="{{ $branding->siteName() }}">
+        @endif
         <div class="hero-content">
             <span class="hero-kicker text-uppercase fw-bold mb-2 d-block">
                 {{ $branding->tagline() ?: __('web.hero_tagline') }}
