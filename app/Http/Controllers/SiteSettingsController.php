@@ -27,6 +27,7 @@ class SiteSettingsController extends Controller
             'support_phone' => 'nullable|string|max:50',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
             'hero_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'hero_image_mobile' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'category_image_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'accent_color' => 'nullable|string|max:20',
@@ -103,6 +104,7 @@ class SiteSettingsController extends Controller
         $fileMap = [
             'logo' => 'logo_path',
             'hero_image' => 'hero_image_path',
+            'hero_image_mobile' => 'hero_image_mobile_path',
             'category_image_1' => 'category_image_1_path',
             'category_image_2' => 'category_image_2_path',
         ];

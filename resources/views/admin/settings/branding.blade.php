@@ -143,14 +143,19 @@
                         <div class="row g-4">
                             @foreach ([
                                 'hero_image' => __('branding.hero_image'),
+                                'hero_image_mobile' => __('branding.hero_image_mobile'),
                                 'category_image_1' => __('branding.category_image_1'),
                                 'category_image_2' => __('branding.category_image_2'),
                             ] as $field => $label)
-                                <div class="col-md-4">
+                                <div class="col-md-6 col-xl-3">
                                     <label class="form-label">{{ $label }}</label>
+                                    @if ($field === 'hero_image_mobile')
+                                        <div class="form-text text-muted mb-2">{{ __('branding.hero_image_mobile_hint') }}</div>
+                                    @endif
                                     @php
                                         $pathColumn = match($field) {
                                             'hero_image' => 'hero_image_path',
+                                            'hero_image_mobile' => 'hero_image_mobile_path',
                                             'category_image_1' => 'category_image_1_path',
                                             'category_image_2' => 'category_image_2_path',
                                             default => $field.'_path',
@@ -160,6 +165,7 @@
                                             ? $branding->assetUrl($currentPath)
                                             : match($field) {
                                                 'hero_image' => $branding->heroImageUrl(),
+                                                'hero_image_mobile' => $branding->heroImageMobileUrl(),
                                                 'category_image_1' => $branding->categoryImage1Url(),
                                                 'category_image_2' => $branding->categoryImage2Url(),
                                                 default => '',

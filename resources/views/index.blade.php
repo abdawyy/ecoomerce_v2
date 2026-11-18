@@ -98,7 +98,11 @@
 <section id="home" class="pt-4 pb-5">
     <div class="container">
         <div class="hero">
-            <img src="{{ $branding->heroImageUrl() }}" class="hero-img" alt="{{ $branding->siteName() }}">
+            @php $heroMobileUrl = $branding->heroImageMobileUrl(); @endphp
+            <img src="{{ $branding->heroImageUrl() }}" class="hero-img {{ $heroMobileUrl ? 'd-none d-md-block' : '' }}" alt="{{ $branding->siteName() }}">
+            @if ($heroMobileUrl)
+                <img src="{{ $heroMobileUrl }}" class="hero-img d-md-none" alt="{{ $branding->siteName() }}">
+            @endif
             <div class="hero-content">
                 <span class="text-uppercase fw-bold mb-2 d-block" style="letter-spacing: 3px; font-size: 0.8rem;">
                     {{ $branding->tagline() ?: __('web.hero_tagline') }}

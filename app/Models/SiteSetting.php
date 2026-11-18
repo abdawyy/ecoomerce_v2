@@ -18,6 +18,7 @@ class SiteSetting extends Model
         'footer_logo_path',
         'placeholder_product_path',
         'hero_image_path',
+        'hero_image_mobile_path',
         'category_image_1_path',
         'category_image_2_path',
         'size_chart_path',

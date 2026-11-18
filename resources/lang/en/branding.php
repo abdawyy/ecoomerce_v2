@@ -24,6 +24,8 @@ return [
     'home_images' => 'Homepage images',
     'home_images_hint' => 'Recommended wide images (e.g. 1600×900). They auto-fit with cover cropping.',
     'hero_image' => 'Hero banner',
+    'hero_image_mobile' => 'Hero banner (mobile)',
+    'hero_image_mobile_hint' => 'Shown under 768px. Leave empty to keep using the desktop banner on phones.',
     'category_image_1' => 'Category banner (left)',
     'category_image_2' => 'Category banner (right)',
     'home_tiles' => 'Homepage banners (Top & Long Sleeve)',
