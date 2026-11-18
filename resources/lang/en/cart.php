@@ -21,6 +21,7 @@ return [
     'apply_promo' => 'Apply',
     'promo_applied' => 'Promo code applied (:percent% off).',
     'promo_removed' => 'Promo code removed.',
+    'promo_required' => 'Enter a promo code first.',
     'guest_cart_hint' => 'Guest checkout — log in to save your cart across devices.',
     'login_to_save' => 'Log in',
     'trust_line' => 'Secure checkout. Delivery fees calculated at checkout based on your city.',

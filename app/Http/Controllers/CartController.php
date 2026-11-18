@@ -219,6 +219,10 @@ class CartController extends Controller
         $code = trim((string) $request->input('promo_code', ''));
 
         if ($code === '') {
+            if (! session('promo_code')) {
+                return redirect()->route('cart.index')->with('error', __('cart.promo_required'));
+            }
+
             session()->forget('promo_code');
 
             return redirect()->route('cart.index')->with('success', __('cart.promo_removed'));
