@@ -16,7 +16,7 @@ class AdminAccountsSeeder extends Seeder
         }
 
         Schema::disableForeignKeyConstraints();
-        Admin::query()->delete();
+        Admin::query()->truncate();
         Schema::enableForeignKeyConstraints();
 
         Admin::query()->create([
