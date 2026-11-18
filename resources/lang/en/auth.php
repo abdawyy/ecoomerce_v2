@@ -1,5 +1,7 @@
 <?php
 return [
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'login_title' => 'Login to your account',
     'login_description' => 'Access your account to view and manage orders.',
     'email' => 'Email',

@@ -31,4 +31,13 @@ return [
     'policy_body_default' => "We want you to be sure about your piece before it is yours.\n1. When your order arrives, you may measure and try on the item in the presence of our delivery representative.\n2. If the item does not suit you, you can return it to the representative on the spot. In this case, you pay the delivery fee only.\n3. Once you have received the item and accepted the delivery, it cannot be returned.\nPlease check the size, colour and condition of your piece before accepting the delivery.",
     'free_shipping_unlocked' => 'Free shipping unlocked at checkout',
     'free_shipping_remaining' => 'Add :amount LE more for free shipping',
+    'login_required' => 'Please log in to manage your cart.',
+    'delete_failed' => 'Failed to delete your item.',
+    'item_deleted' => 'Item removed from cart.',
+    'item_not_found' => 'Item not found in cart.',
+    'unavailable' => 'This product is not available.',
+    'size_not_found' => 'Product size not found.',
+    'add_error' => 'An error occurred while adding the product to the cart.',
+    'added' => 'Product added to cart successfully.',
+    'quantity_updated_item' => 'Product quantity updated successfully.',
 ];

@@ -52,6 +52,6 @@ class userController extends Controller
 
         self::toggleStatus($user);
 
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 }

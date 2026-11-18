@@ -33,9 +33,9 @@ class CitiesController extends Controller
             $model = self::updateOrCreate($this->model, $attributes, $values);
 
             if ($model) {
-                return $this->redirectToAdminList($request, 'cities.list', 'cities', $model->id, 'your cities price has been successful saved.');
+                return $this->redirectToAdminList($request, 'cities.list', 'cities', $model->id, __('admin.saved'));
             } else {
-                return $this->redirectToAdminList($request, 'cities.list', 'cities', $id, null, 'cannot be saved saved.');
+                return $this->redirectToAdminList($request, 'cities.list', 'cities', $id, null, __('admin.save_failed'));
             }
             // Optionally return a view with the model data for editing
         }
@@ -108,10 +108,10 @@ class CitiesController extends Controller
         // Handle the flash message based on the result
         if ($isDeleted) {
             // Success flash message
-            return redirect()->back()->with('success', 'Record deleted successfully.');
+            return redirect()->back()->with('success', __('admin.record_deleted'));
         } else {
             // Failure flash message
-            return redirect()->back()->with('error', 'Failed to delete the record. Record may not exist.');
+            return redirect()->back()->with('error', __('admin.record_delete_failed'));
         }
     }
        public function toggleUserStatus($id)
@@ -119,6 +119,6 @@ class CitiesController extends Controller
         $city = Cities::findOrFail($id);
 
         self::toggleStatus($city); // now using self
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 }

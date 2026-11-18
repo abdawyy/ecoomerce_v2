@@ -34,6 +34,7 @@ return [
     'select_saved_address' => 'اختر عنواناً محفوظاً',
     'create_account_after' => 'إنشاء حساب بعد الطلب لمتابعة الطلب',
     'invalid_promo' => 'كود خصم غير صالح أو منتهي.',
+    'place_failed' => 'تعذر إتمام الطلب. يرجى المحاولة مرة أخرى.',
     'free_shipping' => 'شحن مجاني',
     'free_shipping_unlocked' => 'الشحن مجاني على هذا الطلب',
     'free_shipping_remaining' => 'أضف :amount جنيه للشحن المجاني',

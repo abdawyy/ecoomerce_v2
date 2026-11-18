@@ -151,7 +151,7 @@ class ProductController extends Controller
                 }
 
                 if ($e instanceof \RuntimeException && $e->getMessage() === 'missing-product') {
-                    return redirect()->route('products.edit')->with('error', 'Your product could not be saved.');
+                    return redirect()->route('products.edit')->with('error', __('products.save_failed'));
                 }
 
                 report($e);
@@ -163,7 +163,7 @@ class ProductController extends Controller
                 ]);
             }
 
-            return $this->redirectToAdminList($request, 'products.list', 'products', $savedId, 'Your product has been successfully saved.');
+            return $this->redirectToAdminList($request, 'products.list', 'products', $savedId, __('products.saved'));
         }
         $categories = Category::all();
         $types = Type::all();
@@ -447,10 +447,10 @@ class ProductController extends Controller
         // Handle the flash message based on the result
         if ($isDeleted) {
             // Success flash message
-            return redirect()->back()->with('success', 'Record deleted successfully.');
+            return redirect()->back()->with('success', __('admin.record_deleted'));
         } else {
             // Failure flash message
-            return redirect()->back()->with('error', 'Failed to delete the record. Record may not exist.');
+            return redirect()->back()->with('error', __('admin.record_delete_failed'));
         }
     }
     public function productWebList(Request $request, CatalogFilterService $catalogFilters, $id = null)
@@ -738,10 +738,10 @@ class ProductController extends Controller
         // Handle the flash message based on the result
         if ($isDeleted) {
             // Success flash message
-            return redirect()->back()->with('success', 'Image deleted successfully.');
+            return redirect()->back()->with('success', __('products.image_deleted'));
         } else {
             // Failure flash message
-            return redirect()->back()->with('error', 'Failed to delete the image. Image may not exist.');
+            return redirect()->back()->with('error', __('products.image_delete_failed'));
         }
 
     }
@@ -750,7 +750,7 @@ class ProductController extends Controller
         $product = products::findOrFail($id);
 
         self::toggleStatus($product);
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 
     public function toggleHighestStatus($id)
@@ -758,7 +758,7 @@ class ProductController extends Controller
         $product = products::findOrFail($id);
 
         self::toggleStatus($product, "is_highest");
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 
     public function clearHighest()

@@ -114,6 +114,7 @@ return [
   'added_to_cart' => 'Added to cart.',
   'select_rating' => 'Please select a star rating',
   'review_requires_purchase' => 'You can review a product only after a completed purchase.',
+  'review_submitted' => 'Review submitted.',
   'add_to_favorites' => 'Add to favorites',
   'remove_from_favorites' => 'Remove from favorites',
 ];

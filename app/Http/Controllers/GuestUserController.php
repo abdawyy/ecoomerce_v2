@@ -45,7 +45,7 @@ class GuestUserController extends Controller
         $guest = GuestUser::find($id);
 
         if (! $guest) {
-            return redirect()->back()->with('error', 'guest not found');
+            return redirect()->back()->with('error', __('admin.guest_not_found'));
         }
 
         $profile = $profiles->fromGuest($guest);

@@ -47,7 +47,7 @@ class CartController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while adding the product to the cart.',
+                'message' => __('cart.add_error'),
             ], 500);
         }
     }
@@ -71,7 +71,7 @@ class CartController extends Controller
         if (! $productItem) {
             abort(response()->json([
                 'success' => false,
-                'message' => 'Product size not found.',
+                'message' => __('cart.size_not_found'),
             ], 404));
         }
 
@@ -79,7 +79,7 @@ class CartController extends Controller
         if (! $product || ! $product->isSellable()) {
             abort(response()->json([
                 'success' => false,
-                'message' => 'This product is not available.',
+                'message' => __('cart.unavailable'),
             ], 422));
         }
 
@@ -105,7 +105,7 @@ class CartController extends Controller
         if ($existingCartItem) {
             $existingCartItem->quantity = $newTotalQuantity;
             $existingCartItem->save();
-            $message = 'Product quantity updated successfully.';
+            $message = __('cart.quantity_updated_item');
         } else {
             shoppingCart::create([
                 'user_id' => $userId,
@@ -113,7 +113,7 @@ class CartController extends Controller
                 'size_id' => $request->size_id,
                 'quantity' => $requestedQuantity,
             ]);
-            $message = 'Product added to cart successfully.';
+            $message = __('cart.added');
         }
 
         $cartCount = shoppingCart::where('user_id', $userId)->count();
@@ -162,7 +162,7 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Product added to cart successfully.',
+            'message' => __('cart.added'),
             'cartCount' => count($cart),
             'meta' => $meta,
         ]);
@@ -197,11 +197,9 @@ class CartController extends Controller
 
     private function stockLimitResponse($productItem, $availableStock)
     {
-        $productName = optional($productItem->products)->name ?? 'Product';
-
         return response()->json([
             'success' => false,
-            'message' => "Cannot add more than available stock for: {$productName}. Only {$availableStock} left.",
+            'message' => __('cart.stock_limit', ['count' => $availableStock]),
         ]);
     }
 
@@ -361,7 +359,7 @@ class CartController extends Controller
     public function delete($id)
     {
         if (! auth()->check()) {
-            return redirect()->route('login')->with('error', 'Please log in to manage your cart.');
+            return redirect()->route('login')->with('error', __('cart.login_required'));
         }
 
         $cartItem = shoppingCart::where('id', $id)
@@ -369,12 +367,12 @@ class CartController extends Controller
             ->first();
 
         if (! $cartItem) {
-            return redirect()->back()->with('error', 'Failed to delete your item');
+            return redirect()->back()->with('error', __('cart.delete_failed'));
         }
 
         $cartItem->delete();
 
-        return redirect()->back()->with('success', 'your item deleted successfully.');
+        return redirect()->back()->with('success', __('cart.item_deleted'));
     }
 
     public function deleteGuest(Request $request, $key)
@@ -385,10 +383,10 @@ class CartController extends Controller
             unset($guestCart[$key]);
             Session::put('cart', $guestCart);
 
-            return redirect()->back()->with('success', 'Item removed from cart.');
+            return redirect()->back()->with('success', __('cart.item_deleted'));
         }
 
-        return redirect()->back()->with('error', 'Item not found in cart.');
+        return redirect()->back()->with('error', __('cart.item_not_found'));
     }
 
     public function updateQuantity(Request $request, $id)
@@ -406,7 +404,7 @@ class CartController extends Controller
 
         $product = $productItem->products;
         if (! $product || ! $product->isSellable()) {
-            return redirect()->back()->with('error', 'This product is not available.');
+            return redirect()->back()->with('error', __('cart.unavailable'));
         }
 
         if ((int) $request->quantity > (int) $productItem->quantity) {
@@ -426,7 +424,7 @@ class CartController extends Controller
         $guestCart = Session::get('cart', []);
 
         if (! isset($guestCart[$key])) {
-            return redirect()->back()->with('error', 'Item not found in cart.');
+            return redirect()->back()->with('error', __('cart.item_not_found'));
         }
 
         $item = $guestCart[$key];

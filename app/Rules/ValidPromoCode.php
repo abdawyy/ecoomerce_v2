@@ -39,6 +39,6 @@ class ValidPromoCode implements Rule
 
     public function message()
     {
-        return 'The provided promo code is either invalid, expired, inactive, or not valid for your order.';
+        return __('checkout.invalid_promo');
     }
 }

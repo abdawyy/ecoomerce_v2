@@ -60,7 +60,7 @@ public function store(ReviewRequest $request)
                 ->replyTo($user->email);
     });
 
-    return response()->json(['message' => 'Review submitted']);
+    return response()->json(['message' => __('web.review_submitted')]);
 }
 
     public function list(Request $request, $productId)
@@ -108,7 +108,7 @@ public function store(ReviewRequest $request)
         $review = Review::findOrFail($id);
 
         self::toggleStatus($review);
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 
 

@@ -48,11 +48,11 @@ class AdminController extends Controller
             'is_active' => 1,
         ])) {
             // Redirect to admin dashboard on successful login
-            return redirect()->route("admin.dashboard")->with('success', 'Login successful');
+            return redirect()->route("admin.dashboard")->with('success', __('admin.login_success'));
         }
 
         // Return with error if login failed
-        return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
+        return back()->withErrors(['email' => __('admin.invalid_credentials')])->withInput();
     }
     public function logout(Request $request)
     {
@@ -64,7 +64,7 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect to the login page with a success message
-        return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
+        return redirect()->route('admin.login')->with('success', __('admin.logged_out'));
     }
 
 
@@ -99,7 +99,7 @@ class AdminController extends Controller
         ]);
 
         // Redirect to the admin login page after registration
-        return redirect()->route('admin.login')->with('success', 'Registration successful. Please log in.');
+        return redirect()->route('admin.login')->with('success', __('admin.registered'));
     }
 
     /**
@@ -339,10 +339,10 @@ class AdminController extends Controller
         // Handle the flash message based on the result
         if ($isDeleted) {
             // Success flash message
-            return redirect()->back()->with('success', 'Record deleted successfully.');
+            return redirect()->back()->with('success', __('admin.record_deleted'));
         } else {
             // Failure flash message
-            return redirect()->back()->with('error', 'Failed to delete the record. Record may not exist.');
+            return redirect()->back()->with('error', __('admin.record_delete_failed'));
         }
     }
     public function orderList(Request $request)
@@ -436,7 +436,7 @@ class AdminController extends Controller
         // Check if the order exists
         if (!$order) {
             // Redirect back with an error message if the order is not found
-            return redirect()->back()->with('error', 'Order not found');
+            return redirect()->back()->with('error', __('admin.order_not_found'));
         }
 
         // Pass the order data to the view
@@ -458,7 +458,7 @@ class AdminController extends Controller
         $order = orders::find($id);
 
         if (!$order) {
-            return redirect()->back()->with('error', 'Order not found');
+            return redirect()->back()->with('error', __('admin.order_not_found'));
         }
 
         // Validate and update the status
@@ -472,14 +472,14 @@ class AdminController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        return redirect()->back()->with('success', 'Order status updated successfully');
+        return redirect()->back()->with('success', __('admin.order_status_updated'));
     }
     public function userShow($id, AdminCustomerProfileService $profiles)
     {
         $user = User::find($id);
 
         if (! $user) {
-            return redirect()->back()->with('error', 'user not found');
+            return redirect()->back()->with('error', __('admin.user_not_found'));
         }
 
         $profile = $profiles->fromUser($user);
@@ -497,6 +497,6 @@ class AdminController extends Controller
         $admin->stampCurrentAdmin();
         $admin->save();
 
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 }

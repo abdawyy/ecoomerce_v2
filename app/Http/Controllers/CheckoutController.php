@@ -165,7 +165,7 @@ class CheckoutController extends Controller
 
                 $result = $order->addOrderItems($userId);
                 if (! $result['success']) {
-                    throw new RuntimeException($result['message'] ?? 'Failed to add items to order.');
+                    throw new RuntimeException('place_failed');
                 }
 
                 payments::createCashPayment($order->id, $total);
@@ -175,12 +175,12 @@ class CheckoutController extends Controller
         } catch (RuntimeException $e) {
             session(['checkout_token' => Str::uuid()->toString()]);
 
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', __('checkout.place_failed'));
         } catch (\Throwable $e) {
             report($e);
             session(['checkout_token' => Str::uuid()->toString()]);
 
-            return redirect()->back()->withInput()->with('error', 'Failed to place order. Please try again.');
+            return redirect()->back()->withInput()->with('error', __('checkout.place_failed'));
         }
 
         return $this->completeOrder($order['order']->id, $order['total'], $order['deliveryFee']);
@@ -241,7 +241,7 @@ class CheckoutController extends Controller
 
                 $result = $order->addOrderItems(null, true);
                 if (! $result['success']) {
-                    throw new RuntimeException($result['message'] ?? 'Failed to add items to order.');
+                    throw new RuntimeException('place_failed');
                 }
 
                 payments::createCashPayment($order->id, $total);
@@ -251,12 +251,12 @@ class CheckoutController extends Controller
         } catch (RuntimeException $e) {
             session(['checkout_token' => Str::uuid()->toString()]);
 
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', __('checkout.place_failed'));
         } catch (\Throwable $e) {
             report($e);
             session(['checkout_token' => Str::uuid()->toString()]);
 
-            return redirect()->back()->withInput()->with('error', 'Failed to place order. Please try again.');
+            return redirect()->back()->withInput()->with('error', __('checkout.place_failed'));
         }
 
         return $this->completeOrder($order['order']->id, $order['total'], $order['deliveryFee']);

@@ -20,7 +20,7 @@ class EnsureUserIsActive
             Auth::guard('web')->logout(); // Correct way
 
             return redirect()->route('login')
-                ->with('error', 'Your account is inactive.');
+                ->with('error', __('admin.account_inactive'));
         }
 
         return $next($request);

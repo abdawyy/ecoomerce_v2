@@ -19,14 +19,14 @@ public function handle(Request $request, Closure $next)
 {
     // Check if the user is authenticated as an admin
     if (!Auth::guard('admin')->check()) {
-        return redirect()->route('admin.login')->with('error', 'Please login as admin.');
+        return redirect()->route('admin.login')->with('error', __('admin.login_required'));
     }
 
     // Check if the admin user is active
     $admin = Auth::guard('admin')->user();
     if (!$admin->is_active) {
         Auth::guard('admin')->logout(); // Log out the inactive user
-        return redirect()->route('admin.login')->with('error', 'Your account is inactive.');
+        return redirect()->route('admin.login')->with('error', __('admin.account_inactive'));
     }
 
     // If authenticated and active, allow the request to proceed

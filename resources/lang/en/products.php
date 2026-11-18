@@ -43,4 +43,8 @@ return [
     'clear_highest' => 'Unhighest all',
     'confirm_clear_highest' => 'Remove Highest from every product?',
     'cleared_highest' => 'Highest was removed from all products.',
+    'saved' => 'Your product has been successfully saved.',
+    'save_failed' => 'Your product could not be saved.',
+    'image_deleted' => 'Image deleted successfully.',
+    'image_delete_failed' => 'Failed to delete the image. Image may not exist.',
 ];

@@ -35,10 +35,10 @@ class TypeController extends Controller
             $model = self::updateOrCreate($this->model, $attributes, $values);
 
             if ($model) {
-                return $this->redirectToAdminList($request, 'type.list', 'types', $model->id, 'your type has been successful saved.');
+                return $this->redirectToAdminList($request, 'type.list', 'types', $model->id, __('admin.saved'));
 
             } else {
-                return $this->redirectToAdminList($request, 'type.list', 'types', $id, null, 'cannot be saved saved.');
+                return $this->redirectToAdminList($request, 'type.list', 'types', $id, null, __('admin.save_failed'));
 
             }
             // Optionally return a view with the model data for editing
@@ -93,10 +93,10 @@ class TypeController extends Controller
         // Handle the flash message based on the result
         if ($isDeleted) {
             // Success flash message
-            return redirect()->back()->with('success', 'Record deleted successfully.');
+            return redirect()->back()->with('success', __('admin.record_deleted'));
         } else {
             // Failure flash message
-            return redirect()->back()->with('error', 'Failed to delete the record. Record may not exist.');
+            return redirect()->back()->with('error', __('admin.record_delete_failed'));
         }
     }
     public function toggleUserStatus($id)
@@ -104,6 +104,6 @@ class TypeController extends Controller
         $type = Type::findOrFail($id);
 
         self::toggleStatus($type);
-        return back()->with('success', 'Status toggled');
+        return back()->with('success', __('admin.status_toggled'));
     }
 }
