@@ -9,6 +9,7 @@ return [
         'modified at' => 'Modified At',
         'action' => 'Action',
         'id' => 'ID',
+        'qty' => 'Qty',
         'type' => 'Type',
         'price' => 'Price',
         'code' => 'Code',

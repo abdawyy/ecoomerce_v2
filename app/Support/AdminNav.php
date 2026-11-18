@@ -25,7 +25,7 @@ class AdminNav
             [
                 'heading' => 'admin_sidebar.section_operations',
                 'items' => [
-                    self::link('order.list', 'admin_sidebar.order_list', 'bi-cart3', Route::is('order.*'), 'pending_orders', $notify, route('order.list').'?status=Pending'),
+                    self::link('order.list', 'admin_sidebar.order_list', 'bi-cart3', Route::is('order.*'), 'pending_orders', $notify),
                     self::link('admin.contact.list', 'admin_sidebar.messages_list', 'bi-envelope', Route::is('admin.contact.*'), 'unread_messages', $notify, null, 'danger'),
                     self::collapse('customers-nav', 'admin_sidebar.customers', 'bi-people', Route::is('users.*') || Route::is('admin.guest.*'), [
                         self::child('users.list', 'admin_sidebar.user_list', Route::is('users.*'), 'new_users', $notify, 'info', route('users.list').'?new=1'),

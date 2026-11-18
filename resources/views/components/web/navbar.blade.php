@@ -48,9 +48,18 @@
                 </a>
             @endauth
 
-            <div class="d-none d-md-flex gap-2 ms-2 small fw-bold">
-                <a href="{{ url('/lang/en') }}" class="text-decoration-none {{ app()->getLocale() == 'en' ? 'text-dark' : 'text-muted' }}">EN</a>
-                <a href="{{ url('/lang/ar') }}" class="text-decoration-none {{ app()->getLocale() == 'ar' ? 'text-dark' : 'text-muted' }}">AR</a>
+            <div class="dropdown">
+                <a href="#" class="storefront-icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('web.language') }}">
+                    <i class="fa-solid fa-globe"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li>
+                        <a class="dropdown-item {{ app()->getLocale() == 'en' ? 'active' : '' }}" href="{{ url('/lang/en') }}" @if (app()->getLocale() == 'en') aria-current="true" @endif>EN</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item {{ app()->getLocale() == 'ar' ? 'active' : '' }}" href="{{ url('/lang/ar') }}" @if (app()->getLocale() == 'ar') aria-current="true" @endif>AR</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

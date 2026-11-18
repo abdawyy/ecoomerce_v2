@@ -8,7 +8,7 @@
             @php $isRtl = app()->getLocale() === 'ar'; @endphp
             <div class="pagetitle mb-3">
                 <h1 class="mb-1">{{ __('orders.title') }}</h1>
-                <x-admin.return-button :href="\App\Support\AdminListReturn::href('orders', 'order.list')" />
+                <x-admin.return-button :href="\App\Support\AdminListReturn::href('orders', 'order.list', $order->id)" />
             </div>
         </div>
 

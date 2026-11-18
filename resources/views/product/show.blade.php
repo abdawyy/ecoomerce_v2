@@ -131,11 +131,31 @@
 
     .qty-group .btn { width: 42px; }
     .qty-group .form-control { border-left: 0; border-right: 0; }
+    .qty-group .btn:focus,
+    .qty-group .btn:focus-visible {
+        box-shadow: none;
+        background: transparent;
+        color: var(--brand-navy);
+        border-color: var(--brand-navy);
+        outline: none;
+    }
+    .qty-group .btn:hover,
+    .qty-group .btn:active {
+        background: var(--brand-burgundy);
+        border-color: var(--brand-burgundy);
+        color: #fff;
+    }
 
     .cta-btn {
         letter-spacing: 0.04em;
         text-transform: uppercase;
         font-size: 0.9rem;
+    }
+
+    .js-add-to-cart:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        box-shadow: none;
     }
 
     .review-card {
@@ -275,7 +295,7 @@
                     </div>
 
                     <div class="d-flex gap-2 align-items-stretch">
-                        <button class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn" onclick="addToCart({{ $product->id }})">
+                        <button type="button" class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
                             <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
                         </button>
                         @php $isFavorite = collect($favoriteProductIds ?? [])->contains($product->id); @endphp
@@ -394,7 +414,7 @@
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>
             @endif
         </div>
-        <button class="btn btn-dark flex-grow-1 py-2 fw-bold" onclick="addToCart({{ $product->id }})">
+        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
             <i class="bi bi-bag-plus-fill me-1"></i> {{ __('web.add_to_cart') }}
         </button>
     </div>
@@ -444,15 +464,25 @@
         if (qty <= 0) {
             badge.textContent = badge.getAttribute('data-out-of-stock') || '';
             badge.classList.add('is-out');
+            syncAddToCartButtons(true);
             return;
         }
         if (qty <= threshold) {
             const template = badge.getAttribute('data-only') || 'Only :count in stock!!';
             badge.textContent = template.replace(':count', String(qty));
             badge.classList.add('is-low');
+            syncAddToCartButtons(false);
             return;
         }
         badge.textContent = badge.getAttribute('data-in-stock') || '';
+        syncAddToCartButtons(false);
+    }
+
+    function syncAddToCartButtons(outOfStock) {
+        document.querySelectorAll('.js-add-to-cart').forEach(function (btn) {
+            btn.disabled = !!outOfStock;
+            btn.setAttribute('aria-disabled', outOfStock ? 'true' : 'false');
+        });
     }
 
     /* Quantity Logic */
@@ -461,6 +491,9 @@
         const max = Math.max(1, Math.min(10, selectedStock() || 10));
         const next = qty + val;
         if (next >= 1 && next <= max) $('#quantity').val(next);
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
     }
 
     document.querySelectorAll('input[name="productItem_id"]').forEach(function (input) {
@@ -487,6 +520,10 @@
 
     /* Add to Cart AJAX */
     function addToCart(productId) {
+        if (selectedStock() <= 0) {
+            return;
+        }
+
         let selectedSize = $('input[name="productItem_id"]:checked').val();
         if (!selectedSize) {
             if (window.toastr) {

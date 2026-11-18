@@ -562,7 +562,8 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
 }
 
 .table-modern .admin-col-price,
-.table-modern .admin-col-sale {
+.table-modern .admin-col-sale,
+.table-modern .admin-col-qty {
     width: 4.1rem;
 }
 

@@ -113,6 +113,11 @@
     color: #fff;
 }
 
+[data-bs-theme="dark"] .dropdown-item.active {
+    background: #193049;
+    color: #FCF4E9;
+}
+
 [data-bs-theme="dark"] .offcanvas {
     background: #14263A;
     color: #FCF4E9;
