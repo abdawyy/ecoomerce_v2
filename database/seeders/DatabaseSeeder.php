@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DumpCatalogSeeder::class);
         $this->call(SeoPagesSeeder::class);
         $this->call(AdminWebsiteGuideSeeder::class);
+        $this->call(AdminAccountsSeeder::class);
 
         // \App\Models\User::factory(10)->create();
 

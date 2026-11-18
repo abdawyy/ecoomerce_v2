@@ -18,11 +18,27 @@ class admin extends Authenticatable
         'password',
         'email',
         'is_active',
+        'is_hidden',
         'created_by',
         'updated_by',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_hidden' => 'boolean',
+    ];
+
     protected $table = 'admins';
+
+    public function scopeVisible($query)
+    {
+        return $query->where('is_hidden', false);
+    }
+
+    public function isHidden(): bool
+    {
+        return (bool) $this->is_hidden;
+    }
 
     public function creator(): BelongsTo
     {

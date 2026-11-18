@@ -233,7 +233,8 @@ class AdminController extends Controller
         ];
 
         // Use the search scope defined in the AppTrait
-        $admins = Admin::with(['creator', 'updater'])
+        $admins = Admin::visible()
+            ->with(['creator', 'updater'])
             ->search($search, $headerMap)
             ->paginate(10)
             ->appends(['search' => $search]);
@@ -294,8 +295,8 @@ class AdminController extends Controller
     public function edit(Request $request, $id)
     {
         $model = Admin::with(['creator', 'updater'])->find($id);
-        if (! $model) {
-            return redirect()->route('admin.list')->with('error', __('admin_list.missing'));
+        if (! $model || $model->isHidden()) {
+            abort(404);
         }
 
         if ($request->isMethod('post')) {
@@ -327,6 +328,11 @@ class AdminController extends Controller
 
     public function delete($id)
     {
+        $admin = Admin::find($id);
+        if (! $admin || $admin->isHidden()) {
+            abort(404);
+        }
+
         // Call the deleteRecord function from the trait
         $isDeleted = self::deleteRecord($this->model, $id);
 
@@ -483,6 +489,9 @@ class AdminController extends Controller
     public function toggleUserStatus($id)
     {
         $admin = Admin::findOrFail($id);
+        if ($admin->isHidden()) {
+            abort(404);
+        }
 
         self::toggleStatus($admin);
         $admin->stampCurrentAdmin();

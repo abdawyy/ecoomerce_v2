@@ -18,7 +18,6 @@ class DumpCatalogSeeder extends Seeder
             'product_images',
             'product_items',
             'site_settings',
-            'admins',
             'discount_codes',
         ];
 
