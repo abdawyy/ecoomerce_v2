@@ -70,24 +70,26 @@
                             <p class="mb-3 small">{{ $address->country }}</p>
                             <p class="mb-3 small"><i class="fa-solid fa-phone me-1"></i>{{ $address->phone_number }}</p>
 
-                            <div class="d-flex gap-2 flex-wrap">
+                            <div class="account-address-actions">
                                 @unless ($address->is_default)
                                     <form action="{{ route('account.addresses.default', $address->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="btn btn-sm btn-dark">{{ __('account.set_default') }}</button>
+                                        <button type="submit" class="account-address-btn is-primary">{{ __('account.set_default') }}</button>
                                     </form>
                                 @endunless
-                                <button class="btn btn-sm btn-outline-dark" type="button"
+                                <button class="account-address-btn" type="button"
                                     data-bs-toggle="collapse" data-bs-target="#edit-address-{{ $address->id }}">
                                     {{ __('account.edit_address') }}
                                 </button>
-                                <form action="{{ route('account.addresses.destroy', $address->id) }}" method="POST"
-                                    data-storefront-confirm="{{ __('account.delete_address') }}" data-storefront-confirm-danger>
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('account.delete_address') }}</button>
-                                </form>
+                                @unless ($address->is_default)
+                                    <form action="{{ route('account.addresses.destroy', $address->id) }}" method="POST"
+                                        data-storefront-confirm="{{ __('account.delete_address') }}" data-storefront-confirm-danger>
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="account-address-btn is-danger">{{ __('account.delete_address') }}</button>
+                                    </form>
+                                @endunless
                             </div>
 
                             <div class="collapse mt-3" id="edit-address-{{ $address->id }}">

@@ -244,6 +244,39 @@
     background: #193049;
 }
 
+[data-bs-theme="dark"] .account-address-btn {
+    border-color: #C9BBA8;
+    background: transparent;
+    color: #FCF4E9;
+}
+
+[data-bs-theme="dark"] .account-address-btn:hover {
+    background: #193049;
+    color: #FCF4E9;
+}
+
+[data-bs-theme="dark"] .account-address-btn.is-primary {
+    background: #FCF4E9;
+    border-color: #FCF4E9;
+    color: #193049;
+}
+
+[data-bs-theme="dark"] .account-address-btn.is-primary:hover {
+    background: #fff;
+    color: #193049;
+}
+
+[data-bs-theme="dark"] .account-address-btn.is-danger {
+    border-color: #8a3a3a;
+    background: transparent;
+    color: #f0c4c4;
+}
+
+[data-bs-theme="dark"] .account-address-btn.is-danger:hover {
+    background: #2a1a1a;
+    color: #f0c4c4;
+}
+
 [data-bs-theme="dark"] .account-default-badge {
     background: #238636;
     color: #fff;

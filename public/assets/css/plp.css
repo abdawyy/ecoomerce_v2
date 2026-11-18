@@ -1,3 +1,12 @@
+.plp-sort-form {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.plp-sort-label {
+    white-space: nowrap;
+}
+
 .plp-filter-bar {
     align-items: center;
     gap: 8px;

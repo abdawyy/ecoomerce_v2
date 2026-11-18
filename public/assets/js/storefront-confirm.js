@@ -107,6 +107,10 @@
                 return;
             }
             form.dataset.storefrontConfirmOk = '1';
+            delete form.dataset.storefrontSubmitting;
+            form.querySelectorAll('button[type="submit"], button:not([type]), input[type="submit"]').forEach(function (btn) {
+                btn.disabled = false;
+            });
             if (typeof form.requestSubmit === 'function') {
                 form.requestSubmit();
             } else {

@@ -23,7 +23,7 @@
     border-radius: var(--account-radius);
     padding: 1.25rem;
     position: sticky;
-    top: 100px;
+    top: 148px;
 }
 
 .account-sidebar-user {
@@ -191,6 +191,58 @@
     font-size: 2.5rem;
     color: #d1d5db;
     margin-bottom: 1rem;
+}
+
+.account-address-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.account-address-actions form {
+    margin: 0;
+}
+
+.account-address-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 0.45rem 0.95rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    border: 1px solid #193049;
+    background: transparent;
+    color: #193049;
+    cursor: pointer;
+}
+
+.account-address-btn:hover {
+    background: rgba(25, 48, 73, 0.06);
+    color: #193049;
+}
+
+.account-address-btn.is-primary {
+    background: #193049;
+    color: #fcf4e9;
+}
+
+.account-address-btn.is-primary:hover {
+    background: #12243a;
+    color: #fcf4e9;
+}
+
+.account-address-btn.is-danger {
+    border-color: #e4c8c8;
+    background: #fff;
+    color: #8a3a3a;
+}
+
+.account-address-btn.is-danger:hover {
+    background: #fdf6f6;
+    color: #8a3a3a;
 }
 
 .account-default-badge {

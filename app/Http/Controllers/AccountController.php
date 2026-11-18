@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Models\addresses;
 use App\Models\Cities;
+use App\Models\Favorite;
 use App\Models\orders;
 use App\Models\Review;
 use App\Services\GuestAccountMergeService;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class AccountController extends Controller
 {
@@ -124,13 +126,13 @@ class AccountController extends Controller
     public function destroyAddress(int $id)
     {
         $address = addresses::where('user_id', Auth::id())->findOrFail($id);
-        $wasDefault = $address->is_default;
-        $address->delete();
 
-        if ($wasDefault) {
-            $next = addresses::where('user_id', Auth::id())->orderByDesc('updated_at')->first();
-            $next?->update(['is_default' => true]);
+        if ($address->is_default) {
+            return redirect()->route('account.addresses')->with('error', __('account.default_address_locked'));
         }
+
+        orders::where('address_id', $address->id)->update(['address_id' => null]);
+        $address->delete();
 
         return redirect()->route('account.addresses')->with('success', __('account.address_deleted'));
     }
@@ -174,6 +176,23 @@ class AccountController extends Controller
             ->paginate(10);
 
         return view('account.reviews', compact('reviews'));
+    }
+
+    public function favorites()
+    {
+        $favorites = collect();
+
+        if (Schema::hasTable('favorites')) {
+            $favorites = Favorite::query()
+                ->with(['product.productImages', 'product.category', 'product.type'])
+                ->where('user_id', Auth::id())
+                ->latest()
+                ->get()
+                ->map(fn (Favorite $favorite) => $favorite->product)
+                ->filter();
+        }
+
+        return view('account.favorites', compact('favorites'));
     }
 
     protected function findUserOrder(int $id): orders

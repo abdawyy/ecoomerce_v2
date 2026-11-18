@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Favorite;
 use App\Models\GuestUser;
 use App\Models\Message;
 use App\Models\orders;
@@ -19,6 +20,7 @@ use App\Models\shoppingCart;
 use App\Models\Type;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -46,11 +48,15 @@ class AppServiceProvider extends ServiceProvider
 
             if (Auth::check()) {
                 $cartCount = shoppingCart::where('user_id', Auth::id())->count();
+                $favoriteProductIds = Schema::hasTable('favorites')
+                    ? Favorite::query()->where('user_id', Auth::id())->pluck('product_id')->all()
+                    : [];
             } else {
                 $cartCount = count(Session::get('cart', []));
+                $favoriteProductIds = [];
             }
 
-            $view->with(compact('categories', 'types', 'cartCount', 'cities'));
+            $view->with(compact('categories', 'types', 'cartCount', 'cities', 'favoriteProductIds'));
             Lang::addNamespace('web', resource_path('lang/'.app()->getLocale().'/web'));
         };
 

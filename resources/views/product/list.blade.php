@@ -47,7 +47,7 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <form method="GET" action="{{ route('product.List', ($id && ! request()->has('category_id')) ? ['id' => $id] : []) }}" class="d-none d-md-flex align-items-center gap-2">
+                <form method="GET" action="{{ route('product.List', ($id && ! request()->has('category_id')) ? ['id' => $id] : []) }}" class="plp-sort-form d-none d-md-flex align-items-center gap-2">
                     @foreach (request()->except('sort', 'page') as $key => $value)
                         @foreach ((array) $value as $item)
                             @if (is_scalar($item) && $item !== '')
@@ -55,7 +55,7 @@
                             @endif
                         @endforeach
                     @endforeach
-                    <label for="sort" class="small text-muted mb-0">{{ __('web.sort_by') }}</label>
+                    <label for="sort" class="plp-sort-label small text-muted mb-0">{{ __('web.sort_by') }}</label>
                     <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="newest" @selected(($sort ?? 'newest') === 'newest')>{{ __('web.sort_newest') }}</option>
                         <option value="price_asc" @selected(($sort ?? '') === 'price_asc')>{{ __('web.sort_price_asc') }}</option>

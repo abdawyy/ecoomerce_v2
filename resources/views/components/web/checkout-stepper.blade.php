@@ -21,10 +21,13 @@
             $isCurrent = $index === $currentIndex;
         @endphp
         <div class="checkout-step {{ $isDone ? 'is-done' : '' }} {{ $isCurrent ? 'is-current' : '' }}">
-            <span class="checkout-step-dot" aria-hidden="true">{{ $index + 1 }}</span>
             @if ($isDone && $step['route'])
-                <a href="{{ $step['route'] }}" class="checkout-step-link">{{ $step['label'] }}</a>
+                <a href="{{ $step['route'] }}" class="checkout-step-link">
+                    <span class="checkout-step-dot">{{ $index + 1 }}</span>
+                    <span class="checkout-step-label">{{ $step['label'] }}</span>
+                </a>
             @else
+                <span class="checkout-step-dot" aria-hidden="true">{{ $index + 1 }}</span>
                 <span class="checkout-step-label">{{ $step['label'] }}</span>
             @endif
         </div>

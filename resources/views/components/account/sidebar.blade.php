@@ -5,6 +5,7 @@
         ['route' => 'account.orders', 'label' => 'account.orders', 'icon' => 'fa-box', 'active' => request()->routeIs('account.orders*')],
         ['route' => 'account.addresses', 'label' => 'account.addresses', 'icon' => 'fa-location-dot', 'active' => request()->routeIs('account.addresses*')],
         ['route' => 'account.profile', 'label' => 'account.profile', 'icon' => 'fa-user', 'active' => request()->routeIs('account.profile*')],
+        ['route' => 'account.favorites', 'label' => 'account.favorites', 'icon' => 'fa-heart', 'active' => request()->routeIs('account.favorites')],
         ['route' => 'account.reviews', 'label' => 'account.reviews', 'icon' => 'fa-star', 'active' => request()->routeIs('account.reviews')],
     ];
 @endphp

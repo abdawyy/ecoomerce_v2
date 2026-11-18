@@ -26,6 +26,17 @@
             : ($item->quantity ?? 1);
     }
 
+    function getCartStock($item) {
+        if ($item instanceof \App\Models\shoppingCart) {
+            return max(0, (int) ($item->productItems->quantity ?? 0));
+        }
+
+        $sizeId = is_array($item) ? ($item['size_id'] ?? null) : ($item->size_id ?? null);
+        $productItem = \App\Models\productItems::find($sizeId);
+
+        return max(0, (int) ($productItem->quantity ?? 0));
+    }
+
     function getCartItemPrice($product, $quantity) {
         $price = $product->price ?? 0;
         $sale = $product->sale ?? 0;
@@ -66,6 +77,7 @@
                         $isGuestItem = !($item instanceof \App\Models\shoppingCart);
                         $product = getProductFromCartItem($item);
                         $quantity = getCartQuantity($item);
+                        $stock = getCartStock($item);
                         $priceTotal = getCartItemPrice($product, $quantity);
                         $size = getProductItemSize($item);
                     @endphp
@@ -98,17 +110,17 @@
                                                 <form action="{{ route('cart.update', $item->id) }}" method="POST" class="d-flex align-items-center gap-1 qty-update-form">
                                                     @csrf
                                                     <button type="button" class="btn btn-outline-secondary cart-qty-btn qty-minus" data-target="qty-{{ $item->id }}">−</button>
-                                                    <input type="number" name="quantity" id="qty-{{ $item->id }}" value="{{ $quantity }}" min="1" class="form-control form-control-sm text-center" style="width:52px">
+                                                    <input type="number" name="quantity" id="qty-{{ $item->id }}" value="{{ $quantity }}" min="1" max="{{ $stock }}" data-stock-message="{{ __('cart.stock_limit', ['count' => $stock]) }}" class="form-control form-control-sm text-center" style="width:52px">
                                                     <button type="button" class="btn btn-outline-secondary cart-qty-btn qty-plus" data-target="qty-{{ $item->id }}">+</button>
-                                                    <button type="submit" class="btn btn-sm btn-outline-dark ms-1">{{ __('cart.update') }}</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-dark ms-1" formnovalidate>{{ __('cart.update') }}</button>
                                                 </form>
                                             @else
                                                 <form action="{{ route('cart.guest.update', $item->key) }}" method="POST" class="d-flex align-items-center gap-1 qty-update-form">
                                                     @csrf
                                                     <button type="button" class="btn btn-outline-secondary cart-qty-btn qty-minus" data-target="qty-g-{{ $loop->index }}">−</button>
-                                                    <input type="number" name="quantity" id="qty-g-{{ $loop->index }}" value="{{ $quantity }}" min="1" class="form-control form-control-sm text-center" style="width:52px">
+                                                    <input type="number" name="quantity" id="qty-g-{{ $loop->index }}" value="{{ $quantity }}" min="1" max="{{ $stock }}" data-stock-message="{{ __('cart.stock_limit', ['count' => $stock]) }}" class="form-control form-control-sm text-center" style="width:52px">
                                                     <button type="button" class="btn btn-outline-secondary cart-qty-btn qty-plus" data-target="qty-g-{{ $loop->index }}">+</button>
-                                                    <button type="submit" class="btn btn-sm btn-outline-dark ms-1">{{ __('cart.update') }}</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-dark ms-1" formnovalidate>{{ __('cart.update') }}</button>
                                                 </form>
                                             @endif
                                         </div>
@@ -210,12 +222,47 @@
 
 @push('scripts')
 <script>
-    document.querySelectorAll('.qty-minus, .qty-plus').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = document.getElementById(btn.dataset.target);
-            if (!input) return;
-            const val = parseInt(input.value, 10) || 1;
-            input.value = Math.max(1, val + (btn.classList.contains('qty-plus') ? 1 : -1));
+    document.querySelectorAll('.qty-update-form').forEach(function (form) {
+        const input = form.querySelector('input[name="quantity"]');
+        if (!input) return;
+        const max = parseInt(input.getAttribute('max'), 10);
+        const message = input.getAttribute('data-stock-message') || '';
+
+        function warnStock() {
+            if (window.toastr && message) toastr.error(message);
+        }
+
+        function clamp(showWarning) {
+            let value = parseInt(input.value, 10) || 1;
+            if (value < 1) value = 1;
+            if (Number.isFinite(max) && value > max) {
+                value = Math.max(1, max);
+                if (showWarning) warnStock();
+            }
+            input.value = value;
+        }
+
+        form.querySelectorAll('.qty-minus, .qty-plus').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const value = parseInt(input.value, 10) || 1;
+                if (btn.classList.contains('qty-plus')) {
+                    if (Number.isFinite(max) && value >= max) {
+                        input.value = Math.max(1, max);
+                        warnStock();
+                        return;
+                    }
+                    input.value = value + 1;
+                    return;
+                }
+                input.value = Math.max(1, value - 1);
+            });
+        });
+
+        input.addEventListener('change', function () {
+            clamp(true);
+        });
+        form.addEventListener('submit', function () {
+            clamp(parseInt(input.value, 10) > max);
         });
     });
 </script>

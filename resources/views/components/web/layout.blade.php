@@ -81,6 +81,13 @@
     @stack('scripts')
     <script src="{{ asset('assets/js/storefront-forms.js') }}?v={{ filemtime(public_path('assets/js/storefront-forms.js')) }}"></script>
     <script>
+        window.StorefrontFavorites = {
+            addLabel: @json(__('web.add_to_favorites')),
+            removeLabel: @json(__('web.remove_from_favorites')),
+        };
+    </script>
+    <script src="{{ asset('assets/js/favorites.js') }}?v={{ filemtime(public_path('assets/js/favorites.js')) }}"></script>
+    <script>
         window.StorefrontPresence = {
             pingUrl: @json(route('analytics.presence')),
             leaveUrl: @json(route('analytics.presence.leave')),

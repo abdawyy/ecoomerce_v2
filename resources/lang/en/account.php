@@ -84,4 +84,9 @@ return [
     'theme_toggle' => 'Dark mode',
     'theme_light' => 'Switch to light mode',
     'theme_dark' => 'Switch to dark mode',
+    'favorites' => 'Favorites',
+    'no_favorites' => 'You have not saved any favorites yet.',
+    'favorite_added' => 'Saved to your favorites.',
+    'favorite_removed' => 'Removed from your favorites.',
+    'default_address_locked' => 'The default address cannot be deleted. Set another address as default first.',
 ];

@@ -36,6 +36,20 @@
                 <i class="bi bi-bag-plus-fill"></i>
             </a>
         @endif
+
+        @php $isFavorite = collect($favoriteProductIds ?? [])->contains($product->id); @endphp
+        @auth
+            <form action="{{ route('favorites.toggle', $product) }}" method="POST" class="product-fav-form" data-no-debounce="1">
+                @csrf
+                <button type="submit" class="product-fav-btn {{ $isFavorite ? 'is-active' : '' }}" data-product-id="{{ $product->id }}" aria-label="{{ $isFavorite ? __('web.remove_from_favorites') : __('web.add_to_favorites') }}">
+                    <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="product-fav-btn" aria-label="{{ __('web.add_to_favorites') }}">
+                <i class="bi bi-heart"></i>
+            </a>
+        @endauth
     </div>
 
     <div class="pt-3 product-card-meta">

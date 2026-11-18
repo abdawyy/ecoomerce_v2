@@ -274,9 +274,24 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-dark w-100 py-3 fw-bold rounded-3 cta-btn" onclick="addToCart({{ $product->id }})">
-                        <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
-                    </button>
+                    <div class="d-flex gap-2 align-items-stretch">
+                        <button class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn" onclick="addToCart({{ $product->id }})">
+                            <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
+                        </button>
+                        @php $isFavorite = collect($favoriteProductIds ?? [])->contains($product->id); @endphp
+                        @auth
+                            <form action="{{ route('favorites.toggle', $product) }}" method="POST" class="product-fav-form" data-no-debounce="1">
+                                @csrf
+                                <button type="submit" class="btn btn-outline-dark product-page-fav {{ $isFavorite ? 'is-active' : '' }}" data-product-id="{{ $product->id }}" aria-label="{{ $isFavorite ? __('web.remove_from_favorites') : __('web.add_to_favorites') }}">
+                                    <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-outline-dark product-page-fav" aria-label="{{ __('web.add_to_favorites') }}">
+                                <i class="bi bi-heart"></i>
+                            </a>
+                        @endauth
+                    </div>
                     <x-web.return-policy variant="compact" class="mt-3" />
 
                     <hr class="my-5">
@@ -295,6 +310,7 @@
                         </div>
                     
                     @auth
+                        @if ($canReview ?? false)
                         <div class="review-form-box shadow-sm">
                             <label class="fw-bold small mb-2">{{ __('web.rate_this_product') }}</label>
                             <div id="submitStars" class="text-muted fs-4 mb-3">
@@ -306,6 +322,11 @@
                             <textarea id="commentInput" class="form-control mb-3" rows="3" placeholder="{{ __('web.write_review_placeholder') }}"></textarea>
                             <button class="btn btn-dark px-4" id="ajaxSubmitReview">{{ __('web.submit_review') }}</button>
                         </div>
+                        @else
+                        <div class="alert alert-secondary border mb-4 text-center">
+                            <p class="mb-0 small text-muted">{{ __('web.review_requires_purchase') }}</p>
+                        </div>
+                        @endif
                     @else
                         <div class="alert alert-secondary border mb-4 text-center">
                             <p class="mb-0 small text-muted">{!! __('web.login_to_leave_review', ['login' => '<a href="'.route('login').'" class="fw-bold">'.e(__('account.login')).'</a>']) !!}</p>
@@ -531,7 +552,13 @@
                 rating: rating,
                 comment: $('#commentInput').val()
             },
-            success: function() { location.reload(); }
+            success: function() { location.reload(); },
+            error: function(xhr) {
+                const message = xhr.responseJSON?.message || @json(__('web.review_requires_purchase'));
+                if (window.toastr) {
+                    toastr.error(message);
+                }
+            }
         });
     });
 </script>

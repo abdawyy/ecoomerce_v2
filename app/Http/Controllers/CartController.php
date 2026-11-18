@@ -405,7 +405,7 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'This product is not available.');
         }
 
-        if ($request->quantity > $productItem->quantity) {
+        if ((int) $request->quantity > (int) $productItem->quantity) {
             return redirect()->back()->with('error', __('cart.stock_limit', ['count' => $productItem->quantity]));
         }
 
@@ -432,7 +432,7 @@ class CartController extends Controller
             ->first();
 
         $product = $productItem?->products;
-        if (! $productItem || ! $product || ! $product->isSellable() || $request->quantity > $productItem->quantity) {
+        if (! $productItem || ! $product || ! $product->isSellable() || (int) $request->quantity > (int) $productItem->quantity) {
             return redirect()->back()->with('error', __('cart.stock_limit', ['count' => $productItem->quantity ?? 0]));
         }
 

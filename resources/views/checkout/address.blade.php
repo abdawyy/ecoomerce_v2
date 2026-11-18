@@ -304,6 +304,48 @@
 
         citySelect?.addEventListener('change', recalc);
 
+        const draftKey = 'checkout-address-draft';
+        const skipDraftRestore = @json(session()->hasOldInput());
+        const draftFields = ['email', 'full_name', 'address_line_1', 'address_line_2', 'city', 'country', 'phone_number', 'promo_code', 'saved_address_id'];
+
+        function collectDraft() {
+            const data = {};
+            draftFields.forEach(function (id) {
+                const field = document.getElementById(id);
+                if (field) data[id] = field.value;
+            });
+            const account = document.getElementById('create_account');
+            if (account) data.create_account = account.checked;
+            const savedAddress = document.getElementById('saved_address');
+            if (savedAddress) data.saved_address = savedAddress.value;
+            return data;
+        }
+
+        function saveDraft() {
+            sessionStorage.setItem(draftKey, JSON.stringify(collectDraft()));
+        }
+
+        if (!skipDraftRestore) {
+            try {
+                const saved = JSON.parse(sessionStorage.getItem(draftKey) || 'null');
+                if (saved) {
+                    draftFields.forEach(function (id) {
+                        const field = document.getElementById(id);
+                        if (!field || saved[id] == null || saved[id] === '') return;
+                        field.value = saved[id];
+                    });
+                    const savedAddress = document.getElementById('saved_address');
+                    if (savedAddress && saved.saved_address) savedAddress.value = saved.saved_address;
+                    const account = document.getElementById('create_account');
+                    if (account && saved.create_account) account.checked = true;
+                    recalc();
+                }
+            } catch (error) {}
+        }
+
+        form?.addEventListener('input', saveDraft);
+        form?.addEventListener('change', saveDraft);
+
         const savedSelect = document.getElementById('saved_address');
         const savedIdInput = document.getElementById('saved_address_id');
         savedSelect?.addEventListener('change', () => {

@@ -10,9 +10,11 @@ use App\Models\Type;
 use App\Models\productImages;
 
 use App\Models\Guide;
+use App\Models\orders;
 use App\Services\AnalyticsService;
 use App\Services\CatalogFilterService;
 use App\Services\MetaPixelService;
+use App\Support\OrderStatus;
 use App\Traits\Apptraits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -662,8 +664,9 @@ class ProductController extends Controller
         $relatedProducts = $this->relatedProducts($product);
         $avgRating = round($product->reviews->avg('rating') ?? 0, 1);
         $reviewCount = $product->reviews->count();
+        $canReview = $this->userCanReviewProduct($product);
 
-        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent'));
+        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent', 'canReview'));
     }
 
     public function productBySlug(string $slug, Request $request, AnalyticsService $analytics)
@@ -683,8 +686,22 @@ class ProductController extends Controller
         $relatedProducts = $this->relatedProducts($product);
         $avgRating = round($product->reviews->avg('rating') ?? 0, 1);
         $reviewCount = $product->reviews->count();
+        $canReview = $this->userCanReviewProduct($product);
 
-        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent'));
+        return view('product.show', compact('product', 'relatedProducts', 'avgRating', 'reviewCount', 'metaViewContent', 'canReview'));
+    }
+
+    protected function userCanReviewProduct(products $product): bool
+    {
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return orders::query()
+            ->where('user_id', auth()->id())
+            ->whereIn('status', OrderStatus::completedValues())
+            ->whereHas('orderItems', fn ($query) => $query->where('products_id', $product->id))
+            ->exists();
     }
 
     protected function trackStorefrontProductView(products $product, Request $request, AnalyticsService $analytics): array

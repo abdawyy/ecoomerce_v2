@@ -53,6 +53,10 @@
     </div>
 </section>
 
+<script>
+    sessionStorage.removeItem('checkout-address-draft');
+</script>
+
 @if (!empty($metaPurchase))
 <script>
     if (typeof window.trackMeta === 'function') {

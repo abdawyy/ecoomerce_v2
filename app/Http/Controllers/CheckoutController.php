@@ -9,6 +9,7 @@ use App\Models\discountCodes;
 use App\Models\GuestUser;
 use App\Models\orders;
 use App\Models\payments;
+use App\Models\productItems;
 use App\Models\products;
 use App\Models\shoppingCart;
 use App\Rules\ValidPromoCode;
@@ -66,11 +67,43 @@ class CheckoutController extends Controller
             return redirect()->route('checkout')->with('error', __('checkout.invalid_submission'));
         }
 
+        if ($redirect = $this->redirectIfCartExceedsStock()) {
+            return $redirect;
+        }
+
         if (Auth::check()) {
             return $this->processAuthOrder($request);
         }
 
         return $this->processGuestOrder($request);
+    }
+
+    protected function redirectIfCartExceedsStock()
+    {
+        if (Auth::check()) {
+            $lines = shoppingCart::with('productItems')->where('user_id', Auth::id())->get();
+            foreach ($lines as $line) {
+                $available = (int) ($line->productItems->quantity ?? 0);
+                if ((int) $line->quantity > $available) {
+                    return redirect()->route('cart.index')->with('error', __('cart.stock_limit', ['count' => $available]));
+                }
+            }
+
+            return null;
+        }
+
+        foreach (session('cart', []) as $line) {
+            $item = productItems::query()
+                ->where('id', $line['size_id'] ?? 0)
+                ->where('products_id', $line['product_id'] ?? 0)
+                ->first();
+            $available = (int) ($item->quantity ?? 0);
+            if ((int) ($line['quantity'] ?? 0) > $available) {
+                return redirect()->route('cart.index')->with('error', __('cart.stock_limit', ['count' => $available]));
+            }
+        }
+
+        return null;
     }
 
     protected function processAuthOrder(Request $request)

@@ -119,4 +119,6 @@ return [
     'added_to_cart' => 'تمت الإضافة إلى السلة.',
     'select_rating' => 'يرجى اختيار تقييم بالنجوم',
     'review_requires_purchase' => 'يمكنك تقييم المنتج بعد إتمام عملية شراء مكتملة فقط.',
+    'add_to_favorites' => 'أضف إلى المفضلة',
+    'remove_from_favorites' => 'إزالة من المفضلة',
 ];

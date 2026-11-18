@@ -17,6 +17,7 @@ use App\Http\Controllers\SiteSettingsController;
 use App\Http\Controllers\SiteSeoController;
 use App\Http\Controllers\SeoPublicController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\AdminGuideController;
 use App\Http\Controllers\AdminCatalogFilterController;
@@ -244,6 +245,10 @@ Route::middleware(['auth', 'active.user'])->group(function () {
     Route::redirect('/user/profile', '/account/profile');
 });
 
+Route::post('/favorites/{product}', [FavoriteController::class, 'toggle'])
+    ->middleware(['auth', 'active.user'])
+    ->name('favorites.toggle');
+
 Route::middleware(['auth', 'active.user'])->prefix('account')->name('account.')->group(function () {
     Route::get('/', [AccountController::class, 'dashboard'])->name('dashboard');
     Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
@@ -258,6 +263,7 @@ Route::middleware(['auth', 'active.user'])->prefix('account')->name('account.')-
     Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [AccountController::class, 'updatePassword'])->name('profile.password');
     Route::get('/reviews', [AccountController::class, 'reviews'])->name('reviews');
+    Route::get('/favorites', [AccountController::class, 'favorites'])->name('favorites');
 });
 
 
