@@ -145,6 +145,17 @@
         border-color: var(--brand-burgundy);
         color: #fff;
     }
+    .qty-group .btn:disabled,
+    .qty-group .btn:disabled:hover,
+    .qty-group .btn:disabled:active,
+    .qty-group .btn:disabled:focus {
+        background: transparent;
+        color: var(--brand-muted);
+        border-color: var(--brand-border);
+        opacity: 0.4;
+        pointer-events: none;
+        box-shadow: none;
+    }
 
     .cta-btn {
         letter-spacing: 0.04em;
@@ -288,9 +299,9 @@
                     <div class="mb-4">
                         <p class="section-title mb-2">{{ __('web.quantity') }}</p>
                         <div class="input-group qty-group" style="width: 160px;">
-                            <button class="btn btn-outline-dark" type="button" onclick="changeQuantity(-1)">-</button>
+                            <button id="qty-minus" class="btn btn-outline-dark" type="button" onclick="changeQuantity(-1)" aria-label="-">-</button>
                             <input type="text" id="quantity" class="form-control text-center fw-bold" value="1" readonly>
-                            <button class="btn btn-outline-dark" type="button" onclick="changeQuantity(1)">+</button>
+                            <button id="qty-plus" class="btn btn-outline-dark" type="button" onclick="changeQuantity(1)" aria-label="+">+</button>
                         </div>
                     </div>
 
@@ -465,6 +476,7 @@
             badge.textContent = badge.getAttribute('data-out-of-stock') || '';
             badge.classList.add('is-out');
             syncAddToCartButtons(true);
+            syncQtyButtons();
             return;
         }
         if (qty <= threshold) {
@@ -472,10 +484,12 @@
             badge.textContent = template.replace(':count', String(qty));
             badge.classList.add('is-low');
             syncAddToCartButtons(false);
+            syncQtyButtons();
             return;
         }
         badge.textContent = badge.getAttribute('data-in-stock') || '';
         syncAddToCartButtons(false);
+        syncQtyButtons();
     }
 
     function syncAddToCartButtons(outOfStock) {
@@ -485,12 +499,46 @@
         });
     }
 
+    function maxQuantity() {
+        const stock = selectedStock();
+        if (stock <= 0) {
+            return 0;
+        }
+
+        return Math.min(10, stock);
+    }
+
+    function syncQtyButtons() {
+        const stock = selectedStock();
+        const qty = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+        const minus = document.getElementById('qty-minus');
+        const plus = document.getElementById('qty-plus');
+        const outOfStock = stock <= 0;
+        if (minus) {
+            minus.disabled = outOfStock || qty <= 1;
+        }
+        if (plus) {
+            plus.disabled = outOfStock || qty >= stock;
+        }
+    }
+
     /* Quantity Logic */
     function changeQuantity(val) {
+        const stock = selectedStock();
+        if (stock <= 0) {
+            $('#quantity').val(1);
+            syncQtyButtons();
+            if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                document.activeElement.blur();
+            }
+            return;
+        }
+
         let qty = parseInt($('#quantity').val(), 10) || 1;
-        const max = Math.max(1, Math.min(10, selectedStock() || 10));
+        const max = maxQuantity();
         const next = qty + val;
         if (next >= 1 && next <= max) $('#quantity').val(next);
+        syncQtyButtons();
         if (document.activeElement && typeof document.activeElement.blur === 'function') {
             document.activeElement.blur();
         }
@@ -498,9 +546,13 @@
 
     document.querySelectorAll('input[name="productItem_id"]').forEach(function (input) {
         input.addEventListener('change', function () {
-            const max = Math.max(1, selectedStock());
+            const max = maxQuantity();
             const current = parseInt($('#quantity').val(), 10) || 1;
-            if (current > max) $('#quantity').val(max);
+            if (max <= 0) {
+                $('#quantity').val(1);
+            } else if (current > max) {
+                $('#quantity').val(max);
+            }
             updateStockBadge();
         });
     });
