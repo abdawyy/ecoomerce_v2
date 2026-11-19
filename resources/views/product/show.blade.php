@@ -73,24 +73,20 @@
     .btn-check:disabled + .selector-label { opacity: 0.3; text-decoration: line-through; }
     .size-guide-link {
         appearance: none;
-        border: 1px solid var(--brand-black);
-        background: var(--brand-black);
-        color: var(--brand-white);
-        border-radius: 999px;
-        padding: 0.35rem 0.85rem;
+        border: 0;
+        background: transparent;
+        padding: 0;
         margin: 0;
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
         font-weight: 700;
-        text-decoration: none;
+        color: var(--brand-muted);
+        text-decoration: underline;
+        text-underline-offset: 4px;
         cursor: pointer;
-        white-space: nowrap;
     }
-    .size-guide-link:hover { background: var(--brand-burgundy); border-color: var(--brand-burgundy); color: var(--brand-white); }
-    .product-trust { margin: -0.5rem 0 1.5rem; }
-    .product-trust-line { margin: 0 0 0.35rem; font-size: 0.92rem; color: var(--brand-black); }
-    .product-trust-line a { color: inherit; font-weight: 700; text-underline-offset: 3px; }
+    .size-guide-link:hover { color: var(--brand-burgundy); }
     .size-chart-sheet {
         background: var(--brand-white);
         color: var(--brand-black);
@@ -216,8 +212,6 @@
                             <div class="product-save-amount product-save-amount-lg mt-1">{{ __('web.save_amount', ['amount' => $discountLabel]) }}</div>
                         @endif
                     </div>
-
-                    <x-web.trust-notes variant="stack" />
 
                     <div class="mb-4">
                         <p class="section-title mb-1">{{ __('web.product_description') }}</p>
