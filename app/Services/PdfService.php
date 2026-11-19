@@ -33,8 +33,8 @@ class PdfService
             'supportEmail' => $this->branding->supportEmail(),
             'supportPhone' => $this->branding->supportPhone(),
             'websiteUrl' => url('/'),
-            'logoPath' => $logoPath,
-            'logoSrc' => $logoPath ? $this->imageDataUri($logoPath) : null,
+            'logoPath' => $logoPath && is_file($logoPath) ? $logoPath : null,
+            'logoSrc' => ($logoPath && is_file($logoPath)) ? $this->imageDataUri($logoPath) : null,
             'primaryColor' => $this->branding->primaryColor(),
             'accentColor' => $settings->accent_color ?? $this->branding->primaryColor(),
             'footerText' => $locale === 'ar'
@@ -85,10 +85,15 @@ class PdfService
     {
         $locale = app()->getLocale();
 
-        return $this->pdfResponse(
-            $this->renderPdf('pdf.invoice', $this->invoiceViewData($order, $locale)),
-            'invoice_'.$order->id.'.pdf'
-        );
+        try {
+            return $this->pdfResponse(
+                $this->renderPdf('pdf.invoice', $this->invoiceViewData($order, $locale)),
+                'invoice_'.$order->id.'.pdf'
+            );
+        } catch (\Throwable $e) {
+            report($e);
+            abort(500, 'Invoice could not be generated.');
+        }
     }
 
     public function streamGuide(Guide $guide, ?string $locale = null): BaseResponse
@@ -280,7 +285,16 @@ class PdfService
             default => 'image/jpeg',
         };
 
-        return 'data:'.$mime.';base64,'.base64_encode(file_get_contents($path));
+        if (! is_file($path) || ! is_readable($path)) {
+            return '';
+        }
+
+        $bytes = file_get_contents($path);
+        if ($bytes === false) {
+            return '';
+        }
+
+        return 'data:'.$mime.';base64,'.base64_encode($bytes);
     }
 
     protected function sampleOrder(?string $locale = null): orders

@@ -17,12 +17,12 @@ use App\Services\PdfService;
 use App\Services\AnalyticsService;
 use App\Services\MetaPixelService;
 use App\Services\ShippingService;
+use App\Support\InvoiceDownload;
 use Illuminate\Support\Facades\Schema;
 use App\Traits\Apptraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use RuntimeException;
@@ -368,7 +368,7 @@ class CheckoutController extends Controller
             'isGuestCheckout' => $orderModel->user_id === null,
             'guestEmail' => $orderModel->guestUser?->email,
             'guestName' => $orderModel->guestUser?->name,
-            'invoiceUrl' => URL::temporarySignedRoute('checkout.receipt.invoice', now()->addHours(48), ['order' => $orderModel->id]),
+            'invoiceUrl' => InvoiceDownload::url($orderModel),
             'notifyUrl' => route('checkout.receipt.notify', $orderModel->id),
             'emailSent' => false,
             'emailPending' => true,
@@ -410,9 +410,12 @@ class CheckoutController extends Controller
         abort(403);
     }
 
-    public function receiptInvoice(Request $request, int $order, PdfService $pdf)
+    public function receiptInvoice(Request $request, int $order, PdfService $pdf, ?string $expires = null, ?string $hmac = null)
     {
-        if (! $request->hasValidSignature()) {
+        $pathOk = $expires !== null && $hmac !== null && InvoiceDownload::isValid($order, $expires, $hmac);
+        $queryOk = $request->hasValidSignature();
+
+        if (! $pathOk && ! $queryOk) {
             abort(403);
         }
 

@@ -5,8 +5,8 @@ namespace App\Jobs;
 use App\Mail\AdminOrderNotificationMail;
 use App\Mail\OrderConfirmationMail;
 use App\Models\orders;
+use App\Support\InvoiceDownload;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 
 class SendOrderConfirmation
 {
@@ -28,11 +28,7 @@ class SendOrderConfirmation
             return;
         }
 
-        $invoiceUrl = URL::temporarySignedRoute(
-            'checkout.receipt.invoice',
-            now()->addHours(48),
-            ['order' => $order->id]
-        );
+        $invoiceUrl = InvoiceDownload::url($order);
 
         $customerEmail = $order->user->email ?? $order->guestUser->email ?? null;
 
