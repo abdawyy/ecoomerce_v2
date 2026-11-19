@@ -151,6 +151,40 @@ class BrandingService
     }
 
     /**
+     * @return array<int, string>
+     */
+    public function legalParagraphs(string $section): array
+    {
+        $fallbacks = [
+            'terms' => 'web.msg_terms',
+            'privacy' => 'web.msg_privacy',
+            'cookies' => 'web.msg_cookies',
+        ];
+
+        if (! isset($fallbacks[$section])) {
+            return [];
+        }
+
+        $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';
+        $column = 'legal_'.$section.'_'.$locale;
+        $other = 'legal_'.$section.'_'.($locale === 'ar' ? 'en' : 'ar');
+        $settings = $this->settings();
+
+        $body = trim(strip_tags((string) ($settings->{$column} ?? '')));
+        if ($body === '') {
+            $body = trim(strip_tags((string) ($settings->{$other} ?? '')));
+        }
+        if ($body === '') {
+            $body = __($fallbacks[$section]);
+        }
+
+        return array_values(array_filter(
+            array_map('trim', preg_split("/\r\n|\n|\r/", $body) ?: []),
+            fn ($line) => $line !== ''
+        ));
+    }
+
+    /**
      * @return array<int, array{platform: string, url: string, label: string, icon: string}>
      */
     public function socialLinks(): array

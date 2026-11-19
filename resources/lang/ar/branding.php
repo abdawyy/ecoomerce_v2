@@ -94,4 +94,12 @@ return [
     'cart_policy_body_ar' => 'نص السياسة (عربي)',
     'cart_policy_placeholder' => 'فقرة واحدة في كل سطر…',
     'load_cart_policy_sample' => 'تحميل السياسة النموذجية',
+    'legal_pages' => 'الصفحات القانونية',
+    'legal_pages_hint' => 'تظهر في صفحة الشروط. فقرة واحدة في كل سطر. اترك الخانة فارغة للإبقاء على النص الحالي.',
+    'legal_terms_en' => 'الشروط والأحكام (إنجليزي)',
+    'legal_terms_ar' => 'الشروط والأحكام (عربي)',
+    'legal_privacy_en' => 'سياسة الخصوصية (إنجليزي)',
+    'legal_privacy_ar' => 'سياسة الخصوصية (عربي)',
+    'legal_cookies_en' => 'الكوكيز (إنجليزي)',
+    'legal_cookies_ar' => 'الكوكيز (عربي)',
 ];

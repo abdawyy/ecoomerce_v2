@@ -94,4 +94,12 @@ return [
     'cart_policy_body_ar' => 'Policy text (AR)',
     'cart_policy_placeholder' => 'One paragraph per line…',
     'load_cart_policy_sample' => 'Load sample policy',
+    'legal_pages' => 'Legal pages',
+    'legal_pages_hint' => 'Shown on the Terms page. One paragraph per line. Leave a field empty to keep the current wording.',
+    'legal_terms_en' => 'Terms and Conditions (EN)',
+    'legal_terms_ar' => 'Terms and Conditions (AR)',
+    'legal_privacy_en' => 'Privacy Policy (EN)',
+    'legal_privacy_ar' => 'Privacy Policy (AR)',
+    'legal_cookies_en' => 'Cookies (EN)',
+    'legal_cookies_ar' => 'Cookies (AR)',
 ];

@@ -339,6 +339,42 @@
                             </div>
                         </div>
 
+                        <hr class="my-4">
+                        <h5>{{ __('branding.legal_pages') }}</h5>
+                        <p class="text-muted small">{{ __('branding.legal_pages_hint') }}</p>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_terms_en') }}</label>
+                                <textarea name="legal_terms_en" class="form-control" rows="4"
+                                          placeholder="{{ __('web.msg_terms', [], 'en') }}">{{ old('legal_terms_en', $settings->legal_terms_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_terms_ar') }}</label>
+                                <textarea name="legal_terms_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('web.msg_terms', [], 'ar') }}">{{ old('legal_terms_ar', $settings->legal_terms_ar) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_privacy_en') }}</label>
+                                <textarea name="legal_privacy_en" class="form-control" rows="4"
+                                          placeholder="{{ __('web.msg_privacy', [], 'en') }}">{{ old('legal_privacy_en', $settings->legal_privacy_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_privacy_ar') }}</label>
+                                <textarea name="legal_privacy_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('web.msg_privacy', [], 'ar') }}">{{ old('legal_privacy_ar', $settings->legal_privacy_ar) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_cookies_en') }}</label>
+                                <textarea name="legal_cookies_en" class="form-control" rows="4"
+                                          placeholder="{{ __('web.msg_cookies', [], 'en') }}">{{ old('legal_cookies_en', $settings->legal_cookies_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_cookies_ar') }}</label>
+                                <textarea name="legal_cookies_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('web.msg_cookies', [], 'ar') }}">{{ old('legal_cookies_ar', $settings->legal_cookies_ar) }}</textarea>
+                            </div>
+                        </div>
+
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary">{{ __('branding.save') }}</button>
                         </div>

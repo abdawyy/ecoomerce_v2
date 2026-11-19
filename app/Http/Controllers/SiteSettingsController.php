@@ -52,6 +52,12 @@ class SiteSettingsController extends Controller
             'cart_policy_title_ar' => 'nullable|string|max:255',
             'cart_policy_body_en' => 'nullable|string',
             'cart_policy_body_ar' => 'nullable|string',
+            'legal_terms_en' => 'nullable|string',
+            'legal_terms_ar' => 'nullable|string',
+            'legal_privacy_en' => 'nullable|string',
+            'legal_privacy_ar' => 'nullable|string',
+            'legal_cookies_en' => 'nullable|string',
+            'legal_cookies_ar' => 'nullable|string',
             'home_category_1_id' => 'nullable|integer|exists:categories,id',
             'home_category_2_id' => 'nullable|integer|exists:categories,id',
             'home_tile_1_title_en' => 'nullable|string|max:80',
@@ -72,7 +78,7 @@ class SiteSettingsController extends Controller
             $validated[$idField] = $request->filled($idField) ? (int) $request->input($idField) : null;
         }
 
-        foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar'] as $notesField) {
+        foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar', 'legal_terms_en', 'legal_terms_ar', 'legal_privacy_en', 'legal_privacy_ar', 'legal_cookies_en', 'legal_cookies_ar'] as $notesField) {
             if (array_key_exists($notesField, $validated)) {
                 $validated[$notesField] = trim(strip_tags($validated[$notesField] ?? '')) ?: null;
             }
@@ -103,6 +109,9 @@ class SiteSettingsController extends Controller
             'invoice_notes_en', 'invoice_notes_ar',
             'cart_policy_title_en', 'cart_policy_title_ar',
             'cart_policy_body_en', 'cart_policy_body_ar',
+            'legal_terms_en', 'legal_terms_ar',
+            'legal_privacy_en', 'legal_privacy_ar',
+            'legal_cookies_en', 'legal_cookies_ar',
             'home_category_1_id', 'home_category_2_id',
             'home_tile_1_title_en', 'home_tile_1_title_ar',
             'home_tile_2_title_en', 'home_tile_2_title_ar',

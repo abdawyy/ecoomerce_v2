@@ -13,15 +13,21 @@
 
         <div class="legal-prose">
             <h1 class="h2 fw-bold mb-4" id="terms">{{ __('web.terms_title') }}</h1>
-            <p class="mb-5">{{ __('web.msg_terms') }}</p>
+            @foreach ($branding->legalParagraphs('terms') as $paragraph)
+                <p @class(['mb-5' => $loop->last])>{{ $paragraph }}</p>
+            @endforeach
 
             <x-web.return-policy class="mb-5" anchor />
 
             <h2 class="h2 fw-bold mb-4" id="privacy">{{ __('web.privacy_title') }}</h2>
-            <p class="mb-5">{{ __('web.msg_privacy') }}</p>
+            @foreach ($branding->legalParagraphs('privacy') as $paragraph)
+                <p @class(['mb-5' => $loop->last])>{{ $paragraph }}</p>
+            @endforeach
 
             <h2 class="h2 fw-bold mb-4" id="cookies">{{ __('web.cookies_title') }}</h2>
-            <p>{{ __('web.msg_cookies') }}</p>
+            @foreach ($branding->legalParagraphs('cookies') as $paragraph)
+                <p @class(['mb-5' => $loop->last])>{{ $paragraph }}</p>
+            @endforeach
         </div>
     </div>
 </div>
