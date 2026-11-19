@@ -42,6 +42,40 @@
                         </div>
 
                         <hr class="my-4">
+                        <h5 class="mb-1">{{ __('branding.hero_copy') }}</h5>
+                        <p class="text-muted small">{{ __('branding.hero_copy_hint') }}</p>
+                        <div class="row g-3" dir="ltr">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.tagline_en') }}</label>
+                                <input type="text" name="tagline_en" class="form-control"
+                                       value="{{ old('tagline_en', $settings->tagline_en ?: config('branding.defaults.tagline_en')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.tagline_ar') }}</label>
+                                <input type="text" name="tagline_ar" class="form-control" dir="rtl"
+                                       value="{{ old('tagline_ar', $settings->tagline_ar ?: config('branding.defaults.tagline_ar')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_title_en') }}</label>
+                                <input type="text" name="hero_title_en" class="form-control"
+                                       value="{{ old('hero_title_en', $settings->hero_title_en ?: __('web.brand_collection_title', [], 'en')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_title_ar') }}</label>
+                                <input type="text" name="hero_title_ar" class="form-control" dir="rtl"
+                                       value="{{ old('hero_title_ar', $settings->hero_title_ar ?: __('web.brand_collection_title', [], 'ar')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_lead_en') }}</label>
+                                <textarea name="hero_lead_en" class="form-control" rows="3">{{ old('hero_lead_en', $settings->hero_lead_en ?: __('web.brand_collection_desc', [], 'en')) }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ __('branding.hero_lead_ar') }}</label>
+                                <textarea name="hero_lead_ar" class="form-control" rows="3" dir="rtl">{{ old('hero_lead_ar', $settings->hero_lead_ar ?: __('web.brand_collection_desc', [], 'ar')) }}</textarea>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
                         <h5>{{ __('branding.social_links') }}</h5>
                         <p class="text-muted small">{{ __('branding.social_links_hint') }}</p>
                         <div class="row g-3">
@@ -227,20 +261,20 @@
                         </div>
 
                         <hr class="my-4">
-                        <h5>{{ __('branding.cart_policy') }}</h5>
-                        <p class="text-muted small">{{ __('branding.cart_policy_hint') }}</p>
+                        <h5>{{ __('branding.legal_pages') }}</h5>
+                        <p class="text-muted small">{{ __('branding.legal_pages_hint') }}</p>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.cart_policy_title_en') }}</label>
                                 <input type="text" name="cart_policy_title_en" class="form-control"
                                        value="{{ old('cart_policy_title_en', $settings->cart_policy_title_en) }}"
-                                       placeholder="{{ __('cart.policy_title_default', [], 'en') }}">
+                                       placeholder="{{ __('branding.legal_empty_placeholder') }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.cart_policy_title_ar') }}</label>
                                 <input type="text" name="cart_policy_title_ar" class="form-control" dir="rtl"
                                        value="{{ old('cart_policy_title_ar', $settings->cart_policy_title_ar) }}"
-                                       placeholder="{{ __('cart.policy_title_default', [], 'ar') }}">
+                                       placeholder="{{ __('branding.legal_empty_placeholder') }}">
                             </div>
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -248,7 +282,7 @@
                                     <button type="button" class="btn btn-link btn-sm p-0" id="load-cart-policy-en">{{ __('branding.load_cart_policy_sample') }} (EN)</button>
                                 </div>
                                 <textarea name="cart_policy_body_en" id="cart_policy_body_en" class="form-control" rows="5"
-                                          placeholder="{{ __('branding.cart_policy_placeholder') }}">{{ old('cart_policy_body_en', $settings->cart_policy_body_en) }}</textarea>
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('cart_policy_body_en', $settings->cart_policy_body_en) }}</textarea>
                             </div>
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -256,7 +290,37 @@
                                     <button type="button" class="btn btn-link btn-sm p-0" id="load-cart-policy-ar">{{ __('branding.load_cart_policy_sample') }} (AR)</button>
                                 </div>
                                 <textarea name="cart_policy_body_ar" id="cart_policy_body_ar" class="form-control" rows="5" dir="rtl"
-                                          placeholder="{{ __('branding.cart_policy_placeholder') }}">{{ old('cart_policy_body_ar', $settings->cart_policy_body_ar) }}</textarea>
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('cart_policy_body_ar', $settings->cart_policy_body_ar) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_terms_en') }}</label>
+                                <textarea name="legal_terms_en" class="form-control" rows="4"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_terms_en', $settings->legal_terms_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_terms_ar') }}</label>
+                                <textarea name="legal_terms_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_terms_ar', $settings->legal_terms_ar) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_privacy_en') }}</label>
+                                <textarea name="legal_privacy_en" class="form-control" rows="4"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_privacy_en', $settings->legal_privacy_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_privacy_ar') }}</label>
+                                <textarea name="legal_privacy_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_privacy_ar', $settings->legal_privacy_ar) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_cookies_en') }}</label>
+                                <textarea name="legal_cookies_en" class="form-control" rows="4"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_cookies_en', $settings->legal_cookies_en) }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ __('branding.legal_cookies_ar') }}</label>
+                                <textarea name="legal_cookies_ar" class="form-control" rows="4" dir="rtl"
+                                          placeholder="{{ __('branding.legal_empty_placeholder') }}">{{ old('legal_cookies_ar', $settings->legal_cookies_ar) }}</textarea>
                             </div>
                         </div>
 

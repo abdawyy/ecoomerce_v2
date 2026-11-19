@@ -23,6 +23,12 @@ class SiteSettingsController extends Controller
     {
         $rules = [
             'site_name' => 'nullable|string|max:255',
+            'tagline_en' => 'nullable|string|max:255',
+            'tagline_ar' => 'nullable|string|max:255',
+            'hero_title_en' => 'nullable|string|max:255',
+            'hero_title_ar' => 'nullable|string|max:255',
+            'hero_lead_en' => 'nullable|string|max:500',
+            'hero_lead_ar' => 'nullable|string|max:500',
             'support_email' => 'nullable|email|max:255',
             'support_phone' => 'nullable|string|max:50',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:4096',
@@ -41,6 +47,12 @@ class SiteSettingsController extends Controller
             'cart_policy_title_ar' => 'nullable|string|max:255',
             'cart_policy_body_en' => 'nullable|string',
             'cart_policy_body_ar' => 'nullable|string',
+            'legal_terms_en' => 'nullable|string',
+            'legal_terms_ar' => 'nullable|string',
+            'legal_privacy_en' => 'nullable|string',
+            'legal_privacy_ar' => 'nullable|string',
+            'legal_cookies_en' => 'nullable|string',
+            'legal_cookies_ar' => 'nullable|string',
             'home_category_1_id' => 'nullable|integer|exists:categories,id',
             'home_category_2_id' => 'nullable|integer|exists:categories,id',
             'home_tile_1_title_en' => 'nullable|string|max:80',
@@ -60,13 +72,13 @@ class SiteSettingsController extends Controller
             $validated[$idField] = $request->filled($idField) ? (int) $request->input($idField) : null;
         }
 
-        foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar'] as $notesField) {
+        foreach (['invoice_notes_en', 'invoice_notes_ar', 'cart_policy_body_en', 'cart_policy_body_ar', 'legal_terms_en', 'legal_terms_ar', 'legal_privacy_en', 'legal_privacy_ar', 'legal_cookies_en', 'legal_cookies_ar'] as $notesField) {
             if (array_key_exists($notesField, $validated)) {
                 $validated[$notesField] = trim(strip_tags($validated[$notesField] ?? '')) ?: null;
             }
         }
 
-        foreach (['cart_policy_title_en', 'cart_policy_title_ar', 'home_tile_1_title_en', 'home_tile_1_title_ar', 'home_tile_2_title_en', 'home_tile_2_title_ar'] as $titleField) {
+        foreach (['cart_policy_title_en', 'cart_policy_title_ar', 'home_tile_1_title_en', 'home_tile_1_title_ar', 'home_tile_2_title_en', 'home_tile_2_title_ar', 'tagline_en', 'tagline_ar', 'hero_title_en', 'hero_title_ar', 'hero_lead_en', 'hero_lead_ar'] as $titleField) {
             if (array_key_exists($titleField, $validated)) {
                 $validated[$titleField] = trim(strip_tags($validated[$titleField] ?? '')) ?: null;
             }
@@ -82,11 +94,16 @@ class SiteSettingsController extends Controller
         }
 
         $scalarFields = [
-            'site_name', 'accent_color', 'support_email', 'support_phone',
+            'site_name', 'tagline_en', 'tagline_ar',
+            'hero_title_en', 'hero_title_ar', 'hero_lead_en', 'hero_lead_ar',
+            'accent_color', 'support_email', 'support_phone',
             'pdf_footer_en', 'pdf_footer_ar', 'pdf_thank_you_en', 'pdf_thank_you_ar',
             'invoice_notes_en', 'invoice_notes_ar',
             'cart_policy_title_en', 'cart_policy_title_ar',
             'cart_policy_body_en', 'cart_policy_body_ar',
+            'legal_terms_en', 'legal_terms_ar',
+            'legal_privacy_en', 'legal_privacy_ar',
+            'legal_cookies_en', 'legal_cookies_ar',
             'home_category_1_id', 'home_category_2_id',
             'home_tile_1_title_en', 'home_tile_1_title_ar',
             'home_tile_2_title_en', 'home_tile_2_title_ar',

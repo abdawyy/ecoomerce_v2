@@ -100,5 +100,6 @@ return [
   'returns_title' => 'Exchange and returns',
   'returns_body' => 'You may exchange or return a piece within 7 days of delivery if it is in its original condition, unused, and has no manufacturing defect.',
   'returns_inspect' => 'You can also inspect the piece on delivery and check the material, details, and size before you accept it.',
+  'returns_details' => 'Return policy',
 ];
 

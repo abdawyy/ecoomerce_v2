@@ -41,6 +41,24 @@ class BrandingService
             : ($this->settings()->tagline_en ?: config('branding.defaults.tagline_en', ''));
     }
 
+    public function heroTitle(): string
+    {
+        return $this->homeCopy('hero_title', 'web.brand_collection_title');
+    }
+
+    public function heroLead(): string
+    {
+        return $this->homeCopy('hero_lead', 'web.brand_collection_desc');
+    }
+
+    protected function homeCopy(string $field, string $fallbackKey): string
+    {
+        $column = $field.'_'.(app()->getLocale() === 'ar' ? 'ar' : 'en');
+        $value = trim((string) ($this->settings()->{$column} ?? ''));
+
+        return $value !== '' ? $value : __($fallbackKey);
+    }
+
     public function logoAlt(): string
     {
         $locale = app()->getLocale();
@@ -87,9 +105,7 @@ class BrandingService
             ? ($settings->cart_policy_title_ar ?: $settings->cart_policy_title_en)
             : ($settings->cart_policy_title_en ?: $settings->cart_policy_title_ar);
 
-        return trim((string) $title) !== ''
-            ? trim((string) $title)
-            : __('cart.policy_title_default');
+        return trim((string) $title);
     }
 
     /**
@@ -107,7 +123,7 @@ class BrandingService
         $body = trim(strip_tags((string) $body));
 
         if ($body === '') {
-            $body = __('cart.policy_body_default');
+            return [];
         }
 
         return array_values(array_filter(
@@ -119,6 +135,34 @@ class BrandingService
     public function hasCartPolicy(): bool
     {
         return count($this->cartPolicyParagraphs()) > 0;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function legalParagraphs(string $section): array
+    {
+        if (! in_array($section, ['terms', 'privacy', 'cookies'], true)) {
+            return [];
+        }
+
+        $locale = app()->getLocale() === 'ar' ? 'ar' : 'en';
+        $column = 'legal_'.$section.'_'.$locale;
+        $other = 'legal_'.$section.'_'.($locale === 'ar' ? 'en' : 'ar');
+        $settings = $this->settings();
+
+        $body = trim(strip_tags((string) ($settings->{$column} ?? '')));
+        if ($body === '') {
+            $body = trim(strip_tags((string) ($settings->{$other} ?? '')));
+        }
+        if ($body === '') {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map('trim', preg_split("/\r\n|\n|\r/", $body) ?: []),
+            fn ($line) => $line !== ''
+        ));
     }
 
     /**
