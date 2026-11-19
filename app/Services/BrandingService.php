@@ -116,9 +116,7 @@ class BrandingService
             ? ($settings->cart_policy_title_ar ?: $settings->cart_policy_title_en)
             : ($settings->cart_policy_title_en ?: $settings->cart_policy_title_ar);
 
-        return trim((string) $title) !== ''
-            ? trim((string) $title)
-            : __('cart.policy_title_default');
+        return trim((string) $title);
     }
 
     /**
@@ -136,7 +134,7 @@ class BrandingService
         $body = trim(strip_tags((string) $body));
 
         if ($body === '') {
-            $body = __('cart.policy_body_default');
+            return [];
         }
 
         return array_values(array_filter(
@@ -155,13 +153,7 @@ class BrandingService
      */
     public function legalParagraphs(string $section): array
     {
-        $fallbacks = [
-            'terms' => 'web.msg_terms',
-            'privacy' => 'web.msg_privacy',
-            'cookies' => 'web.msg_cookies',
-        ];
-
-        if (! isset($fallbacks[$section])) {
+        if (! in_array($section, ['terms', 'privacy', 'cookies'], true)) {
             return [];
         }
 
@@ -175,7 +167,7 @@ class BrandingService
             $body = trim(strip_tags((string) ($settings->{$other} ?? '')));
         }
         if ($body === '') {
-            $body = __($fallbacks[$section]);
+            return [];
         }
 
         return array_values(array_filter(

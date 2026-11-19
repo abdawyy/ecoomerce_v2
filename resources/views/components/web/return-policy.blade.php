@@ -21,12 +21,12 @@
     }
 @endphp
 
-@if ($variant === 'compact')
+@if ($paragraphs !== [] && $variant === 'compact')
     <p {{ $attributes->merge(['class' => 'return-policy-compact mb-0']) }}>
         {{ $intro ?: $policyTitle }}
         <a href="{{ route('legal') }}#returns">{{ __('web.returns_details') }}</a>
     </p>
-@else
+@elseif ($paragraphs !== [])
     <section {{ $attributes->merge(['class' => 'return-policy' . ($tone === 'inverse' ? ' is-inverse' : '')]) }} @if($anchor) id="returns" @endif>
         <h2 class="return-policy-title">{{ $policyTitle }}</h2>
         @if ($intro)
