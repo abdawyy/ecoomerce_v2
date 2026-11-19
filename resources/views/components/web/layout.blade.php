@@ -68,7 +68,6 @@
 <body class="storefront-body">
     <a class="skip-to-content" href="#storefront-main">{{ __('web.skip_to_content') }}</a>
     <x-web.navbar />
-    <x-web.trust-notes />
 
     <div class="storefront-main" id="storefront-main">
         {{ $slot }}
