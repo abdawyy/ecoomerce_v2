@@ -95,5 +95,10 @@ return [
   'first_to_review' => 'No reviews yet. Be the first to rate!',
   'review_requires_purchase' => 'You can only review products you have purchased.',
   'please_login_to_review' => 'Please <a href=":url" class="fw-bold">Login</a> to leave a review.',
+  'free_delivery_above' => 'Free delivery on orders above :amount LE',
+  'returns_7_days' => 'Exchange or return within 7 days if the item is unused and has no defect',
+  'returns_title' => 'Exchange and returns',
+  'returns_body' => 'You may exchange or return a piece within 7 days of delivery if it is in its original condition, unused, and has no manufacturing defect.',
+  'returns_inspect' => 'You can also inspect the piece on delivery and check the material, details, and size before you accept it.',
 ];
 
