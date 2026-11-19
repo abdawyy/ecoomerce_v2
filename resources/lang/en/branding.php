@@ -8,7 +8,7 @@ return [
     'store_contact' => 'Store name and contact',
     'store_contact_hint' => 'The name is used across the store. Email and phone appear in the footer.',
     'hero_copy' => 'Homepage banner',
-    'hero_copy_hint' => 'The text on the large homepage image. Leave a field empty to keep the current wording.',
+    'hero_copy_hint' => 'These three lines appear on the large homepage image. Edit and save to change them.',
     'collection_copy' => 'New Collection',
     'collection_copy_hint' => 'The heading above the product row under the banner. Leave a field empty to keep the current wording.',
     'tagline_en' => 'Tagline (English)',

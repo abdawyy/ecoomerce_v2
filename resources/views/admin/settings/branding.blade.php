@@ -44,30 +44,30 @@
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.tagline_en') }}</label>
                                 <input type="text" name="tagline_en" class="form-control"
-                                       value="{{ old('tagline_en', $settings->tagline_en) }}">
+                                       value="{{ old('tagline_en', $settings->tagline_en ?: config('branding.defaults.tagline_en')) }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.tagline_ar') }}</label>
                                 <input type="text" name="tagline_ar" class="form-control" dir="rtl"
-                                       value="{{ old('tagline_ar', $settings->tagline_ar) }}">
+                                       value="{{ old('tagline_ar', $settings->tagline_ar ?: config('branding.defaults.tagline_ar')) }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.hero_title_en') }}</label>
                                 <input type="text" name="hero_title_en" class="form-control"
-                                       value="{{ old('hero_title_en', $settings->hero_title_en) }}">
+                                       value="{{ old('hero_title_en', $settings->hero_title_en ?: __('web.brand_collection_title', [], 'en')) }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.hero_title_ar') }}</label>
                                 <input type="text" name="hero_title_ar" class="form-control" dir="rtl"
-                                       value="{{ old('hero_title_ar', $settings->hero_title_ar) }}">
+                                       value="{{ old('hero_title_ar', $settings->hero_title_ar ?: __('web.brand_collection_title', [], 'ar')) }}">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.hero_lead_en') }}</label>
-                                <textarea name="hero_lead_en" class="form-control" rows="3">{{ old('hero_lead_en', $settings->hero_lead_en) }}</textarea>
+                                <textarea name="hero_lead_en" class="form-control" rows="3">{{ old('hero_lead_en', $settings->hero_lead_en ?: __('web.brand_collection_desc', [], 'en')) }}</textarea>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">{{ __('branding.hero_lead_ar') }}</label>
-                                <textarea name="hero_lead_ar" class="form-control" rows="3" dir="rtl">{{ old('hero_lead_ar', $settings->hero_lead_ar) }}</textarea>
+                                <textarea name="hero_lead_ar" class="form-control" rows="3" dir="rtl">{{ old('hero_lead_ar', $settings->hero_lead_ar ?: __('web.brand_collection_desc', [], 'ar')) }}</textarea>
                             </div>
                         </div>
 
