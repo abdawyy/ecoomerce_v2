@@ -552,3 +552,24 @@
 [data-bs-theme="dark"] .storefront-auth-password .btn:hover {
     background: #21262d !important;
 }
+
+.storefront-trust-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem 1.25rem;
+    padding: 0.55rem 1rem;
+    background: #1b2740;
+    color: #f6f1e8;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.storefront-trust-bar a {
+    color: #f6f1e8;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
