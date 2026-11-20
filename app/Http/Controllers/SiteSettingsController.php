@@ -7,6 +7,7 @@ use App\Models\SiteSetting;
 use App\Services\BrandingService;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class SiteSettingsController extends Controller
 {
@@ -113,7 +114,7 @@ class SiteSettingsController extends Controller
         }
 
         foreach ($scalarFields as $field) {
-            if (array_key_exists($field, $validated)) {
+            if (array_key_exists($field, $validated) && Schema::hasColumn('site_settings', $field)) {
                 $settings->{$field} = $validated[$field];
             }
         }
@@ -127,7 +128,7 @@ class SiteSettingsController extends Controller
         ];
 
         foreach ($fileMap as $input => $column) {
-            if ($request->hasFile($input)) {
+            if ($request->hasFile($input) && Schema::hasColumn('site_settings', $column)) {
                 $branding->deleteStoredFile($settings->{$column});
                 $settings->{$column} = $branding->uploadFile($request->file($input), $input);
             }
