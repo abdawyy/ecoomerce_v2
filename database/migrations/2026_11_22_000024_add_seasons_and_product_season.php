@@ -37,7 +37,7 @@ return new class extends Migration
         }
 
         if (Schema::hasTable('categories') && Schema::hasColumn('categories', 'type_id') && Schema::getConnection()->getDriverName() === 'mysql') {
-            $column = collect(DB::select('SHOW COLUMNS FROM `categories` LIKE ?', ['type_id']))->first();
+            $column = collect(DB::select("SHOW COLUMNS FROM `categories` LIKE 'type_id'"))->first();
             if ($column && strtoupper((string) ($column->Null ?? 'NO')) !== 'YES') {
                 $type = $column->Type ?: 'int';
                 DB::statement("ALTER TABLE `categories` MODIFY `type_id` {$type} NULL");
