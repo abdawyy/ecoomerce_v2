@@ -212,6 +212,28 @@
 
 @push('scripts')
 <script>
+    function plpFilterOptionInput(event) {
+        return event.target.closest?.('.plp-filter-option')?.querySelector('.plp-filter-option-input') || null;
+    }
+
+    document.addEventListener('pointerdown', function (event) {
+        const input = plpFilterOptionInput(event);
+        if (!input || input.type !== 'radio') {
+            return;
+        }
+        input.dataset.wasChecked = input.checked ? '1' : '0';
+    });
+
+    document.addEventListener('click', function (event) {
+        const input = plpFilterOptionInput(event);
+        if (!input || input.type !== 'radio' || input.dataset.wasChecked !== '1') {
+            return;
+        }
+        event.preventDefault();
+        input.checked = false;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
     document.addEventListener('change', function (event) {
         const input = event.target;
         if (!input.classList || !input.classList.contains('plp-filter-option-input')) {
@@ -219,17 +241,31 @@
         }
         const text = input.closest('.plp-filter-option')?.querySelector('span')?.textContent?.trim();
         const toggle = input.closest('.dropdown')?.querySelector('[data-bs-toggle="dropdown"]');
+        const sectionToggle = input.closest('.filter-section')?.querySelector('.filter-section-toggle');
+        const emptyLabel = toggle?.dataset.emptyLabel || sectionToggle?.dataset.emptyLabel || '';
         const buttonLabel = toggle?.querySelector('.plp-filter-btn-label');
-        if (buttonLabel && text) {
-            buttonLabel.textContent = text;
+        const sectionLabel = input.closest('.filter-section')?.querySelector('.filter-chosen-label');
+        if (input.checked) {
+            if (buttonLabel && text) {
+                buttonLabel.textContent = text;
+            }
+            toggle?.classList.add('is-active');
+            if (sectionLabel && text) {
+                sectionLabel.textContent = text;
+            }
+        } else {
+            if (buttonLabel && emptyLabel) {
+                buttonLabel.textContent = emptyLabel;
+            }
+            toggle?.classList.remove('is-active');
+            if (sectionLabel && emptyLabel) {
+                sectionLabel.textContent = emptyLabel;
+            }
         }
         if (toggle && window.bootstrap?.Dropdown) {
             window.bootstrap.Dropdown.getOrCreateInstance(toggle).hide();
         }
-        const sectionLabel = input.closest('.filter-section')?.querySelector('.filter-chosen-label');
-        if (sectionLabel && text) {
-            sectionLabel.textContent = text;
-        }
+        input.closest('form')?.requestSubmit();
     });
 
     window.addEventListener('scroll', function (event) {

@@ -92,7 +92,8 @@
     @if ($mode === 'bar')
         <div class="dropdown">
             <button class="plp-filter-btn dropdown-toggle {{ $active ? 'is-active' : '' }}" type="button"
-                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+                    data-empty-label="{{ __('catalog_filters.groups.'.$group['key']) }}">
                 <span class="plp-filter-btn-label">{{ $buttonLabel }}</span>
             </button>
             <div class="dropdown-menu plp-filter-menu">
@@ -108,7 +109,8 @@
                 </div>
             @else
                 <button class="filter-section-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $menuId }}"
-                        aria-expanded="{{ $active ? 'true' : 'false' }}">
+                        aria-expanded="{{ $active ? 'true' : 'false' }}"
+                        data-empty-label="{{ __('catalog_filters.groups.'.$group['key']) }}">
                     <span class="filter-chosen-label">{{ $buttonLabel }}</span>
                     <i class="bi bi-chevron-down" aria-hidden="true"></i>
                 </button>
