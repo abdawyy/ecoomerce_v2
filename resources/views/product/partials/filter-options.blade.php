@@ -2,7 +2,7 @@
     <div class="price-inputs">
         <input type="number" name="min_price" placeholder="{{ __('web.min_price') }}" value="{{ request('min_price') }}" min="0">
         <span class="price-separator">-</span>
-        <input type="number" name="max_price" placeholder="{{ __('web.max_price') }}" value="{{ request('max_price') }}" min="0" max="{{ $maxProductPrice }}">
+        <input type="number" name="max_price" placeholder="{{ __('web.max_price') }}" value="{{ request('max_price') }}" min="0">
     </div>
 @else
     @php

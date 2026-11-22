@@ -252,9 +252,35 @@
     font-size: 0.85rem;
 }
 
+.plp-filter-menu .price-inputs {
+    padding: 10px 14px;
+    gap: 8px;
+    width: 100%;
+    min-width: 240px;
+    box-sizing: border-box;
+}
+
+.plp-filter-menu .price-inputs input {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    box-sizing: border-box;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.plp-filter-menu .price-inputs input::-webkit-outer-spin-button,
+.plp-filter-menu .price-inputs input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .price-separator {
     color: #999;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .filter-buttons {
