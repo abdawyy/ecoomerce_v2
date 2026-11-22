@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CatalogFilterService
 {
-    public const KEYS = ['category', 'price', 'type', 'season', 'color', 'size', 'stock', 'on_sale'];
+    public const KEYS = ['category', 'type', 'season', 'color', 'size', 'price', 'on_sale'];
 
     public function ready(): bool
     {
