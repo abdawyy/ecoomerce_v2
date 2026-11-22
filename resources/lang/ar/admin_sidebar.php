@@ -18,9 +18,12 @@ return [
     'view_cities' => 'عرض كل المدن',
     'add_city' => 'إضافة مدينة',
 
-    'types' => 'الأنواع',
-    'view_types' => 'عرض كل الأنواع',
-    'add_type' => 'إضافة نوع',
+    'types' => 'الماركات',
+    'view_types' => 'عرض كل الماركات',
+    'add_type' => 'إضافة ماركة',
+    'seasons' => 'المواسم',
+    'view_seasons' => 'عرض كل المواسم',
+    'add_season' => 'إضافة موسم',
 
     'discounts' => 'أكواد الخصم',
     'view_discounts' => 'عرض كل الأكواد',

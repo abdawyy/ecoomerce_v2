@@ -18,6 +18,8 @@ return [
     'mega_more' => 'المزيد',
     'guides' => 'المساعدة والأدلة',
     'category' => 'الفئات',
+    'brand' => 'الماركة',
+    'season' => 'الموسم',
     'all_products' => 'كل المنتجات',
     'search' => 'بحث',
     'search_placeholder' => 'اكتب مصطلح البحث...',

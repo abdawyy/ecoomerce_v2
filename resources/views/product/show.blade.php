@@ -242,6 +242,13 @@
                     </div>
 
                     <h1 class="fw-bold fs-3 mb-1">{{ $product->name }}</h1>
+                    <p class="product-catalog-meta text-secondary small mb-3">
+                        {{ collect([
+                            $product->category->name ?? null,
+                            $product->type->name ?? null,
+                            $product->season->name ?? null,
+                        ])->filter()->implode(' · ') }}
+                    </p>
                     @php
                         $salePrice = $product->sale
                             ? $product->price - ($product->price * $product->sale / 100)

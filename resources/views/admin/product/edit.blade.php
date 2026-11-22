@@ -119,12 +119,12 @@
                                         <div class="col-12 mb-3">
                                             <label class="form-label">{{ __('products.category') }} <x-admin.required /></label>
                                             <select name="category_id"
-                                                class="form-select @error('category_id') is-invalid @enderror">
-                                                <option disabled {{ !$model || !$model->category ? 'selected' : '' }}>
+                                                class="form-select @error('category_id') is-invalid @enderror" required>
+                                                <option value="" @selected(old('category_id', $model->category_id ?? '') === '')>
                                                     {{ __('products.choose') }}
                                                 </option>
                                                 @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ $model && $model->category_id === $category->id ? 'selected' : '' }}>
+                                                    <option value="{{ $category->id }}" @selected(old('category_id', $model->category_id ?? '') == $category->id)>
                                                         {{ $category->name }}
                                                     </option>
                                                 @endforeach
@@ -137,15 +137,31 @@
                                         <div class="col-12 mb-3">
                                             <label class="form-label">{{ __('products.type') }} <x-admin.required /></label>
                                             <select name="type_id"
-                                                class="form-select @error('type_id') is-invalid @enderror">
-                                                <option disabled {{ !$model || !$model->type ? 'selected' : '' }}>
+                                                class="form-select @error('type_id') is-invalid @enderror" required>
+                                                <option value="" @selected(old('type_id', $model->type_id ?? '') === '')>
                                                     {{ __('products.choose') }}
                                                 </option>
                                                 @foreach($types as $type)
-                                                    <option value="{{ $type->id }}" {{ $model && $model->type_id === $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                                    <option value="{{ $type->id }}" @selected(old('type_id', $model->type_id ?? '') == $type->id)>{{ $type->name }}</option>
                                                 @endforeach
                                             </select>
                                             @error('type_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">{{ __('products.season') }} <x-admin.required /></label>
+                                            <select name="season_id"
+                                                class="form-select @error('season_id') is-invalid @enderror" required>
+                                                <option value="" @selected(old('season_id', $model->season_id ?? '') === '')>
+                                                    {{ __('products.choose') }}
+                                                </option>
+                                                @foreach($seasons as $season)
+                                                    <option value="{{ $season->id }}" @selected(old('season_id', $model->season_id ?? '') == $season->id)>{{ $season->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('season_id')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>

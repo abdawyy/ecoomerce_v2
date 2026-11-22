@@ -1,6 +1,6 @@
 @php
     $departmentTitle = count($typeIds ?? []) === 1
-        ? $branding->departmentLabel(optional($types->firstWhere('id', (int) $typeIds[0]))->name ?? null)
+        ? optional($types->firstWhere('id', (int) $typeIds[0]))->name
         : null;
     $listTitle = ($categoryName?->name) ?: ($departmentTitle ?: __('web.all_products'));
     app(\App\Services\SeoService::class)->setContext([
@@ -118,8 +118,14 @@
             }
             foreach ($typeIds ?? [] as $selectedTypeId) {
                 $activeFilters->push([
-                    'label' => $branding->departmentLabel(optional($types->firstWhere('id', (int) $selectedTypeId))->name ?? null),
+                    'label' => optional($types->firstWhere('id', (int) $selectedTypeId))->name,
                     'url' => $filterUrlWithout('type_id', (string) $selectedTypeId),
+                ]);
+            }
+            foreach ($seasonIds ?? [] as $selectedSeasonId) {
+                $activeFilters->push([
+                    'label' => optional($seasons->firstWhere('id', (int) $selectedSeasonId))->name,
+                    'url' => $filterUrlWithout('season_id', (string) $selectedSeasonId),
                 ]);
             }
             foreach ($colors ?? [] as $selectedColor) {

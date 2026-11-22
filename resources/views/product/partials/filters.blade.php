@@ -13,6 +13,11 @@
             ->map(fn ($value) => (string) $value)
             ->values()
             ->all(),
+        'season_id' => collect((array) request('season_id'))
+            ->filter(fn ($value) => is_scalar($value) && trim((string) $value) !== '')
+            ->map(fn ($value) => (string) $value)
+            ->values()
+            ->all(),
         'color' => collect((array) request('color'))
             ->filter(fn ($value) => is_scalar($value) && trim((string) $value) !== '')
             ->map(fn ($value) => (string) $value)
@@ -47,6 +52,7 @@
             ($group['kind'] ?? '') === 'stock' => 'stock_status',
             $group['key'] === 'category' => 'category_id',
             $group['key'] === 'type' => 'type_id',
+            $group['key'] === 'season' => 'season_id',
             default => $group['key'],
         };
         $choiceList = ($group['kind'] ?? '') === 'stock'
@@ -66,6 +72,7 @@
                 ? $selectedValues['price_band'] !== []
                 : (request()->filled('min_price') || request()->filled('max_price')),
             'type' => $selectedValues['type_id'] !== [],
+            'season' => $selectedValues['season_id'] !== [],
             'color' => $selectedValues['color'] !== [],
             'size' => $selectedValues['size'] !== [],
             'stock' => $selectedValues['stock_status'] !== [],

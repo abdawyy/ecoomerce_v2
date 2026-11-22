@@ -56,6 +56,16 @@
         <h6 class="fw-bold mb-1 product-card-title">
             <a href="{{ $productUrl }}" class="product-card-name">{{ $product->name }}</a>
         </h6>
+        @php
+            $catalogMeta = collect([
+                $product->category->name ?? null,
+                $product->type->name ?? null,
+                $product->season->name ?? null,
+            ])->filter()->implode(' · ');
+        @endphp
+        @if ($catalogMeta !== '')
+            <div class="product-card-catalog small text-muted mb-1">{{ $catalogMeta }}</div>
+        @endif
         <div class="d-flex align-items-center gap-2 flex-wrap">
             @if ($salePrice !== null)
                 <span class="price-current">{{ number_format($salePrice, 2) }} LE</span>

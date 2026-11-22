@@ -34,11 +34,21 @@
                         </div>
 
                         <div class="col-lg-2 col-md-4 col-sm-6">
-                            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">Type</label>
+                            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">{{ __('products.type') }}</label>
                             <select name="type_id" class="form-select">
                                 <option value="">All</option>
                                 @foreach($types as $type)
                                     <option value="{{ $type->id }}" {{ request('type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-4 col-sm-6">
+                            <label class="form-label" style="font-size: 0.8rem; font-weight: 600;">{{ __('products.season') }}</label>
+                            <select name="season_id" class="form-select">
+                                <option value="">All</option>
+                                @foreach($seasons as $season)
+                                    <option value="{{ $season->id }}" {{ request('season_id') == $season->id ? 'selected' : '' }}>{{ $season->name }}</option>
                                 @endforeach
                             </select>
                         </div>

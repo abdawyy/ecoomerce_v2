@@ -7,13 +7,14 @@ use App\Models\CatalogFilterOption;
 use App\Models\Category;
 use App\Models\productItems;
 use App\Models\products;
+use App\Models\Season;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class CatalogFilterService
 {
-    public const KEYS = ['category', 'price', 'type', 'color', 'size', 'stock', 'on_sale'];
+    public const KEYS = ['category', 'price', 'type', 'season', 'color', 'size', 'stock', 'on_sale'];
 
     public function ready(): bool
     {
@@ -129,6 +130,7 @@ class CatalogFilterService
 
         $this->syncChoices('category', $request->input('options.category', []), $catalog['categories']);
         $this->syncChoices('type', $request->input('options.type', []), $catalog['types']);
+        $this->syncChoices('season', $request->input('options.season', []), $catalog['seasons']);
         $this->syncChoices('color', $request->input('options.color', []), $catalog['colors']);
         $this->syncChoices('size', $request->input('options.size', []), $catalog['sizes']);
         $this->syncBands($request);
@@ -209,6 +211,7 @@ class CatalogFilterService
         $pool = match ($key) {
             'category' => $catalog['categories'],
             'type' => $catalog['types'],
+            'season' => $catalog['seasons'],
             'color' => $catalog['colors'],
             'size' => $catalog['sizes'],
             default => [],
@@ -244,7 +247,7 @@ class CatalogFilterService
      */
     protected function adminChoices(string $key, array $catalog, $selected): array
     {
-        if (! in_array($key, ['category', 'type', 'color', 'size'], true)) {
+        if (! in_array($key, ['category', 'type', 'season', 'color', 'size'], true)) {
             return [];
         }
 
@@ -252,6 +255,7 @@ class CatalogFilterService
         $pool = match ($key) {
             'category' => $catalog['categories'],
             'type' => $catalog['types'],
+            'season' => $catalog['seasons'],
             'color' => $catalog['colors'],
             'size' => $catalog['sizes'],
             default => [],
@@ -299,12 +303,10 @@ class CatalogFilterService
     }
 
     /**
-     * @return array{categories: array, types: array, colors: array, sizes: array}
+     * @return array{categories: array, types: array, seasons: array, colors: array, sizes: array}
      */
     protected function catalogChoices(): array
     {
-        $branding = app(BrandingService::class);
-
         $categories = Category::query()
             ->where('is_active', 1)
             ->orderBy('name')
@@ -321,9 +323,21 @@ class CatalogFilterService
             ->get()
             ->map(fn (Type $type) => [
                 'value' => (string) $type->id,
-                'label' => $branding->departmentLabel($type->name) ?: $type->name,
+                'label' => $type->name,
             ])
             ->all();
+
+        $seasons = Schema::hasTable('seasons')
+            ? Season::query()
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->get()
+                ->map(fn (Season $season) => [
+                    'value' => (string) $season->id,
+                    'label' => $season->name,
+                ])
+                ->all()
+            : [];
 
         $colors = products::query()->sellable()->distinct()->orderBy('color')->pluck('color')
             ->filter(fn ($color) => trim((string) $color) !== '')
@@ -341,7 +355,7 @@ class CatalogFilterService
             ->values()
             ->all();
 
-        return compact('categories', 'types', 'colors', 'sizes');
+        return compact('categories', 'types', 'seasons', 'colors', 'sizes');
     }
 
     /**

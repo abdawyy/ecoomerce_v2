@@ -35,8 +35,8 @@
                             <!-- Type Select -->
                             <div class="col-lg-12 col-12">
                                 <div class="mb-3">
-                                    <label for="typeSelect" class="form-label">{{ __('category_list.form_type') }} <x-admin.required /></label>
-                                    <select name="type_id" id="typeSelect" class="form-control" required>
+                                    <label for="typeSelect" class="form-label">{{ __('category_list.form_type') }}</label>
+                                    <select name="type_id" id="typeSelect" class="form-control">
                                         <option value="">{{ __('category_list.form_choose') }}</option>
                                         @foreach($types as $type)
                                             <option value="{{ $type->id }}" {{ old('type_id', $model->type_id ?? '') == $type->id ? 'selected' : '' }}>

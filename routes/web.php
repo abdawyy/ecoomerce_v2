@@ -8,6 +8,7 @@ use App\Http\Controllers\categoriesController;
 use App\Http\Controllers\discountCodesController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TypeController;
+use App\Http\Controllers\SeasonController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -140,6 +141,11 @@ Route::middleware(['admin'])->group(function () {
     Route::get('admin/type/list', [TypeController::class, 'list'])->name('type.list');
     Route::post('admin/type/delete/{id}', [TypeController::class, 'delete'])->name('type.delete');
     Route::post('/admin/type/status/{id}', [TypeController::class, 'toggleUserStatus'])->name('admin.type.toggleStatus');
+
+    Route::match(['get', 'post'], 'admin/season/edit/{id?}', [SeasonController::class, 'edit'])->name('season.edit');
+    Route::get('admin/season/list', [SeasonController::class, 'list'])->name('season.list');
+    Route::post('admin/season/delete/{id}', [SeasonController::class, 'delete'])->name('season.delete');
+    Route::post('/admin/season/status/{id}', [SeasonController::class, 'toggleUserStatus'])->name('admin.season.toggleStatus');
 
     // categories routes
     Route::match(['get', 'post'], 'admin/categories/edit/{id?}', [categoriesController::class, 'edit'])->name('categories.edit');

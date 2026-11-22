@@ -6,7 +6,7 @@ return [
     'title' => 'Categories',
     'form_name' => 'Name',
     'form_placeholder' => 'Enter Category Name',
-    'form_type' => 'Select Type',
-    'form_choose' => 'Choose a type',
+    'form_type' => 'Brand (optional)',
+    'form_choose' => 'No brand',
     'form_submit' => 'Submit',
 ];

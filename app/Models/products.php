@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Apptraits;
+use Illuminate\Support\Facades\Schema;
 
 class products extends Model
 {
@@ -18,6 +19,7 @@ class products extends Model
        'category_id',
        'color',
        'type_id',
+       'season_id',
        'is_active',
        'is_highest',
        'guide_id',
@@ -33,9 +35,18 @@ class products extends Model
 
     public function scopeSellable($query)
     {
-        return $query->where('is_active', 1)
+        $query->where('is_active', 1)
             ->whereHas('category', fn ($q) => $q->where('is_active', 1))
             ->whereHas('type', fn ($q) => $q->where('is_active', 1));
+
+        if (Schema::hasColumn($this->getTable(), 'season_id')) {
+            $query->where(function ($q) {
+                $q->whereNull('season_id')
+                    ->orWhereHas('season', fn ($season) => $season->where('is_active', 1));
+            });
+        }
+
+        return $query;
     }
 
     public function isSellable(): bool
@@ -47,8 +58,17 @@ class products extends Model
         $category = $this->relationLoaded('category') ? $this->category : $this->category()->first();
         $type = $this->relationLoaded('type') ? $this->type : $this->type()->first();
 
-        return $category && (int) $category->is_active === 1
-            && $type && (int) $type->is_active === 1;
+        if (! $category || (int) $category->is_active !== 1 || ! $type || (int) $type->is_active !== 1) {
+            return false;
+        }
+
+        if (! Schema::hasColumn($this->getTable(), 'season_id') || $this->season_id === null) {
+            return true;
+        }
+
+        $season = $this->relationLoaded('season') ? $this->season : $this->season()->first();
+
+        return $season && (int) $season->is_active === 1;
     }
 
     public function discountedUnitPrice(): float
@@ -67,6 +87,10 @@ class products extends Model
  public function type()
  {
      return $this->belongsTo(Type::class);
+ }
+ public function season()
+ {
+     return $this->belongsTo(Season::class);
  }
  public function orderItems(){
     return $this->hasMany(orderItems::class , 'products_id');

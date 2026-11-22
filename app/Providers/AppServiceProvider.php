@@ -76,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('index', function ($view) use ($shareNavData) {
             $shareNavData($view);
 
-            $products = products::with(['productImages', 'category', 'type'])
+            $products = products::with(['productImages', 'category', 'type', 'season'])
                 ->sellable()
                 ->orderByDesc('is_highest')
                 ->orderByDesc('name')

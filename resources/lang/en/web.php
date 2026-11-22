@@ -13,6 +13,8 @@ return [
   'mega_more' => 'More',
   'guides' => 'Help & Guides',
   'category' => 'Category',
+  'brand' => 'Brand',
+  'season' => 'Season',
   'all_products' => 'All Products',
   'search' => 'Search',
   'search_placeholder' => 'Enter search term...',

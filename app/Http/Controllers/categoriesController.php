@@ -23,7 +23,7 @@ class categoriesController extends Controller
         $request->validate([
 
             'name' => 'required|string|max:255', // Adjust validation as needed
-            'type_id' => 'required|exists:type,id', // Validates that the product_id exists in the products table
+            'type_id' => 'nullable|exists:type,id',
 
         ]);
 
@@ -32,7 +32,7 @@ class categoriesController extends Controller
         ];
         $values=[
             'name'=>$request->name,
-            'type_id' =>$request->type_id
+            'type_id' => $request->type_id ?: null,
         ];
         $model = self::updateOrCreate($this->model,$attributes,$values);
 

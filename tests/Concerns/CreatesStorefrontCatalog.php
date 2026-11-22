@@ -8,8 +8,10 @@ use App\Models\Cities;
 use App\Models\discountCodes;
 use App\Models\productItems;
 use App\Models\products;
+use App\Models\Season;
 use App\Models\Type;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 
 trait CreatesStorefrontCatalog
 {
@@ -32,11 +34,19 @@ trait CreatesStorefrontCatalog
         ], $overrides));
     }
 
+    protected function makeSeason(array $overrides = []): Season
+    {
+        return Season::create(array_merge([
+            'name' => 'Winter',
+            'is_active' => 1,
+        ], $overrides));
+    }
+
     protected function makeProduct(?Category $category = null, array $overrides = []): products
     {
         $category ??= $this->makeCategory();
 
-        return products::create(array_merge([
+        $payload = [
             'name' => 'Linen Dress',
             'description' => 'A modest linen dress.',
             'price' => 200,
@@ -45,7 +55,13 @@ trait CreatesStorefrontCatalog
             'type_id' => $category->type_id,
             'category_id' => $category->id,
             'is_active' => 1,
-        ], $overrides));
+        ];
+
+        if (Schema::hasColumn('products', 'season_id') && ! array_key_exists('season_id', $overrides)) {
+            $payload['season_id'] = $this->makeSeason()->id;
+        }
+
+        return products::create(array_merge($payload, $overrides));
     }
 
     protected function makeSize(products $product, array $overrides = []): productItems

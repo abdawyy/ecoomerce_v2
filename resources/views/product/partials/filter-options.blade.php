@@ -11,6 +11,7 @@
             $group['kind'] === 'stock' => 'stock_status',
             $group['key'] === 'category' => 'category_id',
             $group['key'] === 'type' => 'type_id',
+            $group['key'] === 'season' => 'season_id',
             default => $group['key'],
         };
         $selected = array_slice($selectedValues[$field] ?? [], 0, 1);

@@ -25,15 +25,15 @@ return [
 <h2 class="section">3. Products</h2>
 <ol>
     <li>Go to <strong>Products → Add product</strong>.</li>
-    <li>Fill name, price, category, type, sizes, colors, and stock.</li>
+    <li>Fill name, price, category, brand, season, sizes, colors, and stock.</li>
     <li>Upload product images (first image is the main thumbnail).</li>
     <li>Use <strong>Highest</strong> flag to feature items on the homepage carousel.</li>
     <li>Link a <strong>Size guide</strong> PDF if you created one under Guides.</li>
     <li>Toggle <strong>Active</strong> to show or hide on the storefront.</li>
 </ol>
 
-<h2 class="section">4. Categories & types</h2>
-<p><strong>Categories</strong> group products (e.g. Tops, Dresses). <strong>Types</strong> add extra filters. Both can be activated or deactivated without deleting data.</p>
+<h2 class="section">4. Categories, brands & seasons</h2>
+<p><strong>Categories</strong> group products (e.g. Hoodies). <strong>Brands</strong> and <strong>Seasons</strong> are required on each product and can be used as storefront filters. All three can be activated or deactivated without deleting data.</p>
 
 <h2 class="section">5. Orders</h2>
 <ol>

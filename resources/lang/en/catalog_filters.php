@@ -19,7 +19,8 @@ return [
     'groups' => [
         'category' => 'Category',
         'price' => 'Price',
-        'type' => 'Type',
+        'type' => 'Brand',
+        'season' => 'Season',
         'color' => 'Color',
         'size' => 'Size',
         'stock' => 'Stock',

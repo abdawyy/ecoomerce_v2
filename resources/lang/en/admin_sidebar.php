@@ -18,9 +18,12 @@ return [
     'view_cities' => 'View all Cities',
     'add_city' => 'Add City',
 
-    'types' => 'Types',
-    'view_types' => 'View all Types',
-    'add_type' => 'Add Type',
+    'types' => 'Brands',
+    'view_types' => 'View all Brands',
+    'add_type' => 'Add Brand',
+    'seasons' => 'Seasons',
+    'view_seasons' => 'View all Seasons',
+    'add_season' => 'Add Season',
         'guest_list' => 'Guest List',
 
 

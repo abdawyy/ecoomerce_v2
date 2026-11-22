@@ -7,6 +7,7 @@ use App\Models\products;
 use App\Models\productItems;
 use App\Models\Category;
 use App\Models\Type;
+use App\Models\Season;
 use App\Models\productImages;
 
 use App\Models\Guide;
@@ -69,6 +70,9 @@ class ProductController extends Controller
                 'images' => 'nullable|array',
                 'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             ];
+            if (Schema::hasColumn('products', 'season_id')) {
+                $rules['season_id'] = 'required|integer|exists:seasons,id';
+            }
             if (Schema::hasColumn('products', 'slug')) {
                 $rules['slug'] = 'nullable|string|max:255|unique:products,slug,'.($id ?: 'NULL').',id';
                 $rules['meta_title_en'] = 'nullable|string|max:255';
@@ -87,6 +91,9 @@ class ProductController extends Controller
                 'color' => $request->color,
                 'description' => $request->description,
             ];
+            if (Schema::hasColumn('products', 'season_id')) {
+                $values['season_id'] = $request->season_id;
+            }
             if (Schema::hasColumn('products', 'slug')) {
                 $values['slug'] = $this->uniqueProductSlug($request->slug ?: Str::slug((string) $request->name), $id);
                 $values['meta_title_en'] = $request->meta_title_en;
@@ -167,10 +174,11 @@ class ProductController extends Controller
         }
         $categories = Category::all();
         $types = Type::all();
+        $seasons = Schema::hasTable('seasons') ? Season::query()->orderBy('name')->get() : collect();
         $guides = Schema::hasTable('guides') ? Guide::active()->orderBy('title_en')->get() : collect();
         $sizes = $this->availableProductSizes($model);
 
-        return view('admin.product.edit', compact('model', 'categories', 'types', 'guides', 'sizes'));
+        return view('admin.product.edit', compact('model', 'categories', 'types', 'seasons', 'guides', 'sizes'));
     }
 
     /**
@@ -317,6 +325,7 @@ class ProductController extends Controller
         $search = $request->input('search');
         $category_id = $request->input('category_id');
         $type_id = $request->input('type_id');
+        $season_id = $request->input('season_id');
         $color = $request->input('color');
         $minPrice = $request->input('min_price');
         $maxPrice = $request->input('max_price');
@@ -329,7 +338,8 @@ class ProductController extends Controller
             'Name' => 'name',
             'Price' => 'price',
             'Sale' => 'sale',
-            'Type' => 'Type.name',
+            'Brand' => 'Type.name',
+            'Season' => 'Season.name',
             'Description' => 'description',
             'Color' => 'color',
             'Category Name' => 'Category.name', // Assuming relation is named `category`
@@ -338,7 +348,7 @@ class ProductController extends Controller
         ];
 
         // Build the query with filters
-        $query = products::with('category', 'type', 'productItems', 'productImages');
+        $query = products::with('category', 'type', 'season', 'productItems', 'productImages');
         
         // Apply search
         if ($search) {
@@ -353,6 +363,10 @@ class ProductController extends Controller
         // Apply type filter
         if ($type_id) {
             $query = $query->where('type_id', $type_id);
+        }
+
+        if ($season_id) {
+            $query = $query->where('season_id', $season_id);
         }
         
         // Apply color filter
@@ -394,6 +408,7 @@ class ProductController extends Controller
             'search' => $search,
             'category_id' => $category_id,
             'type_id' => $type_id,
+            'season_id' => $season_id,
             'color' => $color,
             'min_price' => $minPrice,
             'max_price' => $maxPrice,
@@ -402,7 +417,7 @@ class ProductController extends Controller
         ]);
 
         // Define the headers for the table
-        $headers = ['ID', 'Name', 'Qty', 'Created At', 'Price', 'Sale', 'Type', 'Description', 'Color', 'Category Name', 'Action'];
+        $headers = ['ID', 'Name', 'Qty', 'Created At', 'Price', 'Sale', 'Brand', 'Season', 'Description', 'Color', 'Category Name', 'Action'];
 
         // Prepare the rows by mapping through the types collection
         $rows = $data->map(function ($data) {
@@ -416,7 +431,8 @@ class ProductController extends Controller
                 'preview_name' => $data->name,
                 'Price' => $data->price,
                 'Sale' => $data->sale,
-                'Type' => $data->type->name ?? '—',
+                'Brand' => $data->type->name ?? '—',
+                'Season' => $data->season->name ?? '—',
                 'Description' => $data->description,
                 'Color' => $data->color,
                 'Category Name' => $data->category->name ?? '—',
@@ -433,11 +449,12 @@ class ProductController extends Controller
         // Get filter options for the view
         $categories = Category::all();
         $types = Type::all();
+        $seasons = Schema::hasTable('seasons') ? Season::query()->orderBy('name')->get() : collect();
         $colors = products::distinct()->pluck('color')->filter()->values();
         $maxProductPrice = products::max('price');
         
         // Return the view with headers and rows data
-        return view('admin.product.list', compact('headers', 'rows', 'data', 'search', 'url', 'categories', 'types', 'colors', 'maxProductPrice', 'category_id', 'type_id', 'color', 'minPrice', 'maxPrice', 'stock_status'));
+        return view('admin.product.list', compact('headers', 'rows', 'data', 'search', 'url', 'categories', 'types', 'seasons', 'colors', 'maxProductPrice', 'category_id', 'type_id', 'season_id', 'color', 'minPrice', 'maxPrice', 'stock_status'));
     }
     public function delete($id)
     {
@@ -457,6 +474,7 @@ class ProductController extends Controller
     {
         $search = $request->input('search');
         $typeIds = array_slice($this->filterValues($request, 'type_id'), 0, 1);
+        $seasonIds = array_slice($this->filterValues($request, 'season_id'), 0, 1);
         $colors = array_slice($this->filterValues($request, 'color'), 0, 1);
         $sizes = array_slice($this->filterValues($request, 'size'), 0, 1);
         $minPrice = $request->input('min_price');
@@ -477,6 +495,7 @@ class ProductController extends Controller
         $query = products::with([
             'category',
             'type',
+            'season',
             'productItems',
             'productImages',
         ])->sellable();
@@ -512,6 +531,10 @@ class ProductController extends Controller
 
         if ($typeIds !== []) {
             $query->whereIn('type_id', $typeIds);
+        }
+
+        if ($seasonIds !== []) {
+            $query->whereIn('season_id', $seasonIds);
         }
 
         if ($colors !== []) {
@@ -582,6 +605,7 @@ class ProductController extends Controller
             'search' => $search,
             'category_id' => $request->has('category_id') ? $categories->pluck('id')->all() : null,
             'type_id' => $typeIds ?: null,
+            'season_id' => $seasonIds ?: null,
             'color' => $colors ?: null,
             'size' => $sizes ?: null,
             'min_price' => $priceBands !== [] ? null : $minPrice,
@@ -601,16 +625,18 @@ class ProductController extends Controller
         }));
 
         $types = Type::where('is_active', 1)->get();
+        $seasons = Schema::hasTable('seasons') ? Season::where('is_active', 1)->orderBy('name')->get() : collect();
         $maxProductPrice = products::sellable()->max('price');
         $filterBar = $catalogFilters->forStorefront();
         $type_id = count($typeIds) === 1 ? $typeIds[0] : null;
+        $season_id = count($seasonIds) === 1 ? $seasonIds[0] : null;
         $color = count($colors) === 1 ? $colors[0] : null;
         $size = count($sizes) === 1 ? $sizes[0] : null;
         $selectedCategories = $categories;
 
         return view('product.list', compact(
-            'data', 'types', 'maxProductPrice', 'filterBar', 'priceBand', 'priceBands',
-            'id', 'categoryName', 'selectedCategories', 'search', 'type_id', 'typeIds', 'color', 'colors',
+            'data', 'types', 'seasons', 'maxProductPrice', 'filterBar', 'priceBand', 'priceBands',
+            'id', 'categoryName', 'selectedCategories', 'search', 'type_id', 'typeIds', 'season_id', 'seasonIds', 'color', 'colors',
             'size', 'sizes', 'minPrice', 'maxPrice', 'stock_status', 'stockStatuses', 'onSale', 'sort'
         ));
     }
@@ -728,7 +754,7 @@ class ProductController extends Controller
 
     protected function findActiveProductQuery()
     {
-        return products::with(['category', 'type', 'productItems', 'productImages'])->sellable();
+        return products::with(['category', 'type', 'season', 'productItems', 'productImages'])->sellable();
     }
     public function deleteImage($id)
     {

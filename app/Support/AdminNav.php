@@ -66,6 +66,10 @@ class AdminNav
                         self::child('type.list', 'admin_sidebar.view_types', Route::is('type.list')),
                         self::child('type.edit', 'admin_sidebar.add_type', Route::is('type.edit'), null, [], 'warning', AdminListReturn::addUrl('type.edit', 'types')),
                     ]),
+                    self::collapse('seasons-nav', 'admin_sidebar.seasons', 'bi-snow', Route::is('season.*'), [
+                        self::child('season.list', 'admin_sidebar.view_seasons', Route::is('season.list')),
+                        self::child('season.edit', 'admin_sidebar.add_season', Route::is('season.edit'), null, [], 'warning', AdminListReturn::addUrl('season.edit', 'seasons')),
+                    ]),
                 ],
             ],
             [
