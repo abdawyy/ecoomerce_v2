@@ -1,2 +1,10 @@
-# Uploaded product and site images in this folder are tracked.
-# The public/storage symlink stays gitignored in the repo root.
+# Keep directory structure. Do not git rm --cached existing images:
+# that would delete them on the next server pull.
+*
+!.gitignore
+!uploads/
+!uploads/.gitkeep
+!branding/
+!branding/.gitkeep
+!guides/
+!guides/.gitkeep
