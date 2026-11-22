@@ -54,6 +54,10 @@
     accent-color: #fcf4e9;
 }
 
+.plp-filter-bar .dropdown-menu {
+    z-index: 20 !important;
+}
+
 .plp-filter-menu {
     min-width: 230px;
     max-height: 280px;

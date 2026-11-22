@@ -225,6 +225,19 @@
             sectionLabel.textContent = text;
         }
     });
+
+    window.addEventListener('scroll', function (event) {
+        const target = event.target;
+        if (target && target.closest && target.closest('.plp-filter-menu')) {
+            return;
+        }
+        if (!window.bootstrap?.Dropdown) {
+            return;
+        }
+        document.querySelectorAll('.plp-filter-bar [data-bs-toggle="dropdown"]').forEach(function (toggle) {
+            window.bootstrap.Dropdown.getInstance(toggle)?.hide();
+        });
+    }, { passive: true });
 </script>
 @endpush
 
