@@ -646,11 +646,29 @@ class ProductController extends Controller
         $size = count($sizes) === 1 ? $sizes[0] : null;
         $selectedCategories = $categories;
 
-        return view('product.list', compact(
+        $departmentTitle = count($typeIds) === 1
+            ? optional($types->firstWhere('id', (int) $typeIds[0]))->name
+            : null;
+        $listTitle = ($categoryName?->name) ?: ($departmentTitle ?: __('web.all_products'));
+        $categoryInBar = collect($filterBar['groups'] ?? [])->contains(fn ($group) => $group['key'] === 'category');
+        $listRouteParams = (! $categoryInBar && $id) ? ['id' => $id] : [];
+        $filterAction = route('product.List', $listRouteParams);
+        $clearUrl = route('product.List', $listRouteParams);
+
+        $viewData = compact(
             'data', 'types', 'seasons', 'maxProductPrice', 'filterBar', 'priceBand', 'priceBands',
             'id', 'categoryName', 'selectedCategories', 'search', 'type_id', 'typeIds', 'season_id', 'seasonIds', 'color', 'colors',
-            'size', 'sizes', 'minPrice', 'maxPrice', 'stock_status', 'stockStatuses', 'onSale', 'sort'
-        ));
+            'size', 'sizes', 'minPrice', 'maxPrice', 'stock_status', 'stockStatuses', 'onSale', 'sort',
+            'listTitle', 'filterAction', 'clearUrl'
+        );
+
+        if ($request->headers->get('X-PLP-Ajax') === '1') {
+            return response()
+                ->view('product.partials.results', $viewData)
+                ->header('Cache-Control', 'no-store');
+        }
+
+        return view('product.list', $viewData);
     }
 
     /**
