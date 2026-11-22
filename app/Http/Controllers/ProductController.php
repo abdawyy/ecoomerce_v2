@@ -508,7 +508,19 @@ class ProductController extends Controller
                 ->where('is_active', 1)
                 ->get();
             if ($categories->isEmpty() && $fromPath) {
-                abort(404);
+                $inactive = Category::query()->whereIn('id', $categoryIds)->first();
+                if ($inactive) {
+                    $keeper = Category::query()
+                        ->where('is_active', 1)
+                        ->whereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower(trim((string) $inactive->name))])
+                        ->first();
+                    if ($keeper) {
+                        $categories = collect([$keeper]);
+                    }
+                }
+                if ($categories->isEmpty()) {
+                    abort(404);
+                }
             }
             if ($categories->isNotEmpty()) {
                 $query->whereIn('category_id', $categories->pluck('id'));

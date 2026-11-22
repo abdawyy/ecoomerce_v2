@@ -311,6 +311,8 @@ class CatalogFilterService
             ->where('is_active', 1)
             ->orderBy('name')
             ->get()
+            ->unique(fn (Category $category) => mb_strtolower(trim((string) $category->name)))
+            ->values()
             ->map(fn (Category $category) => [
                 'value' => (string) $category->id,
                 'label' => $category->name,

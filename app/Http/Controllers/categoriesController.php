@@ -21,10 +21,22 @@ class categoriesController extends Controller
 
         if ($request->isMethod('post')) {
         $request->validate([
-
-            'name' => 'required|string|max:255', // Adjust validation as needed
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($id) {
+                    $exists = Category::query()
+                        ->when($id, fn ($q) => $q->where('id', '!=', $id))
+                        ->where('is_active', 1)
+                        ->whereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower(trim((string) $value))])
+                        ->exists();
+                    if ($exists) {
+                        $fail(__('validation.unique', ['attribute' => __('category_list.form_name')]));
+                    }
+                },
+            ],
             'type_id' => 'nullable|exists:type,id',
-
         ]);
 
         $attributes=[
