@@ -48,7 +48,7 @@
                                         <div class="col-12 mb-2">
                                             <h6 class="product-form-heading">{{ __('products.product_details') }}</h6>
                                         </div>
-                                        <div class="col-12 mb-3">
+                                        <div class="col-md-8 mb-3">
                                             <label for="productName"
                                                 class="form-label">{{ __('products.name') }} <x-admin.required /></label>
                                             <input type="text" placeholder="{{ __('products.name_placeholder') }}"
@@ -59,6 +59,19 @@
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                        @if (\Illuminate\Support\Facades\Schema::hasColumn('products', 'sku'))
+                                        <div class="col-md-4 mb-3">
+                                            <label for="productSku"
+                                                class="form-label">{{ __('products.sku') }} <x-admin.required /></label>
+                                            <input type="text" placeholder="{{ __('products.sku_placeholder') }}"
+                                                value="{{ old('sku', $model->sku ?? '') }}"
+                                                class="form-control @error('sku') is-invalid @enderror"
+                                                id="productSku" name="sku" maxlength="32">
+                                            @error('sku')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        @endif
 
                                         <div class="col-12 mb-3">
                                             <label for="Description"

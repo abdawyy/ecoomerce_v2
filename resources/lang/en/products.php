@@ -7,6 +7,8 @@ return [
     'breadcrumb_active' => 'Add Product',
     'name' => 'Product Name',
     'name_placeholder' => 'Enter Product Name',
+    'sku' => 'SKU',
+    'sku_placeholder' => 'Enter SKU',
     'description' => 'Description',
     'description_placeholder' => 'Enter Product Description',
     'category' => 'Category',

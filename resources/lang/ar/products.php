@@ -8,6 +8,8 @@ return [
     'breadcrumb_active' => 'إضافة منتج',
     'name' => 'اسم المنتج',
     'name_placeholder' => 'ادخل اسم المنتج',
+    'sku' => 'رمز المنتج',
+    'sku_placeholder' => 'ادخل رمز المنتج',
     'description' => 'الوصف',
     'description_placeholder' => 'ادخل وصف المنتج',
     'category' => 'الفئة',

@@ -70,6 +70,9 @@ class ProductController extends Controller
                 'images' => 'nullable|array',
                 'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             ];
+            if (Schema::hasColumn('products', 'sku')) {
+                $rules['sku'] = 'required|string|max:32|unique:products,sku,'.($id ?: 'NULL').',id';
+            }
             if (Schema::hasColumn('products', 'season_id')) {
                 $rules['season_id'] = 'required|integer|exists:seasons,id';
             }
@@ -91,6 +94,9 @@ class ProductController extends Controller
                 'color' => $request->color,
                 'description' => $request->description,
             ];
+            if (Schema::hasColumn('products', 'sku')) {
+                $values['sku'] = trim((string) $request->sku);
+            }
             if (Schema::hasColumn('products', 'season_id')) {
                 $values['season_id'] = $request->season_id;
             }
