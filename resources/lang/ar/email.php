@@ -21,7 +21,7 @@ return [
     'total' => 'الإجمالي',
     'address' => 'عنوان الشحن',
     'phone' => 'الهاتف',
-    'invoice' => 'تحميل الفاتورة',
+    'invoice' => 'شوف فاتورتك',
     'money' => ':amount جنيه',
     'footer' => 'لأي استفسار راسلنا على',
     'contact_reply_subject' => 'استلمنا رسالتك — :site',

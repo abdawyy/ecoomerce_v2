@@ -25,5 +25,5 @@ return [
     'preview_sample_invoice_en' => 'معاينة فاتورة تجريبية (EN)',
     'preview_sample_invoice_ar' => 'معاينة فاتورة تجريبية (AR)',
     'preview_sample_guide' => 'معاينة PDF نموذجي قابل للتعديل',
-    'download_invoice' => 'تحميل الفاتورة PDF',
+    'download_invoice' => 'شوف فاتورتك',
 ];

@@ -335,6 +335,7 @@ class ProductController extends Controller
         // Define the mapping of headers to fields
         $headerMap = [
             'ID' => 'id',
+            'SKU' => 'sku',
             'Name' => 'name',
             'Price' => 'price',
             'Sale' => 'sale',
@@ -417,7 +418,7 @@ class ProductController extends Controller
         ]);
 
         // Define the headers for the table
-        $headers = ['ID', 'Name', 'Qty', 'Created At', 'Price', 'Sale', 'Brand', 'Season', 'Description', 'Color', 'Category Name', 'Action'];
+        $headers = ['ID', 'SKU', 'Name', 'Qty', 'Created At', 'Price', 'Sale', 'Brand', 'Season', 'Description', 'Color', 'Category Name', 'Action'];
 
         // Prepare the rows by mapping through the types collection
         $rows = $data->map(function ($data) {
@@ -425,6 +426,7 @@ class ProductController extends Controller
 
             return [
                 'ID' => $data->id,
+                'SKU' => $data->sku,
                 'Name' => $data->name,
                 'Qty' => (int) $data->productItems->sum(fn ($item) => (int) $item->quantity),
                 'preview' => $image ? asset('storage/'.$image->images) : null,

@@ -26,7 +26,7 @@ return [
     'delivery_city' => 'Delivery city',
     'delivery_fee' => 'Delivery fee',
     'discount' => 'Discount',
-    'download_invoice' => 'Download invoice',
+    'download_invoice' => 'See Your Invoice',
     'back_to_orders' => 'Back to orders',
     'product' => 'Product',
     'size' => 'Size',

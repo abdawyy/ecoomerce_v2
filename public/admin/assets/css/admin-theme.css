@@ -567,6 +567,11 @@ html[dir="rtl"] .sidebar-nav .nav-content a {
     width: 4.1rem;
 }
 
+.table-modern .admin-col-sku {
+    width: 6.2rem;
+    white-space: nowrap;
+}
+
 .table-modern .admin-col-type,
 .table-modern .admin-col-color {
     width: 5rem;

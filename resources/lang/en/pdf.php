@@ -25,5 +25,5 @@ return [
     'preview_sample_invoice_en' => 'Preview sample invoice (EN)',
     'preview_sample_invoice_ar' => 'Preview sample invoice (AR)',
     'preview_sample_guide' => 'Preview editable sample PDF',
-    'download_invoice' => 'Download invoice PDF',
+    'download_invoice' => 'See Your Invoice',
 ];

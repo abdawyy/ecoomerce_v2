@@ -21,7 +21,7 @@ return [
     'total' => 'Total',
     'address' => 'Shipping address',
     'phone' => 'Phone',
-    'invoice' => 'Download invoice',
+    'invoice' => 'See Your Invoice',
     'money' => ':amount LE',
     'footer' => 'Questions? Write to us at',
     'contact_reply_subject' => 'We received your message — :site',

@@ -53,7 +53,7 @@
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 12px;">
         <tr>
             <td align="center" bgcolor="#1b2740" style="background:#1b2740;">
-                <a href="{{ $invoiceUrl }}" style="display:inline-block;padding:12px 22px;font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#ffffff;text-decoration:none;">Download invoice</a>
+                <a href="{{ $invoiceUrl }}" style="display:inline-block;padding:12px 22px;font-family:Tahoma,Arial,sans-serif;font-size:14px;color:#ffffff;text-decoration:none;">{{ __('email.invoice', [], 'en') }}</a>
             </td>
         </tr>
     </table>

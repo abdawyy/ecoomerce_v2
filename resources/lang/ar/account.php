@@ -26,7 +26,7 @@ return [
     'delivery_city' => 'مدينة التوصيل',
     'delivery_fee' => 'رسوم التوصيل',
     'discount' => 'الخصم',
-    'download_invoice' => 'تحميل الفاتورة',
+    'download_invoice' => 'شوف فاتورتك',
     'back_to_orders' => 'العودة للطلبات',
     'product' => 'المنتج',
     'size' => 'المقاس',

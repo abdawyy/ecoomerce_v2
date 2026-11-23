@@ -29,9 +29,27 @@ class products extends Model
        'meta_description_en',
        'meta_description_ar',
        'is_indexable',
+       'sku',
 
     ];
     protected $table = 'products';
+
+    protected static function booted(): void
+    {
+        static::saved(function (products $product) {
+            if (filled($product->sku) || ! Schema::hasColumn($product->getTable(), 'sku')) {
+                return;
+            }
+
+            $product->sku = static::skuFor((int) $product->id);
+            $product->saveQuietly();
+        });
+    }
+
+    public static function skuFor(int $id): string
+    {
+        return sprintf('TL-%05d', $id);
+    }
 
     public function scopeSellable($query)
     {
