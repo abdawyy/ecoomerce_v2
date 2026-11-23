@@ -123,23 +123,38 @@ class HomeCardController extends Controller
      */
     protected function choices(): array
     {
-        $categories = Category::query()->orderBy('name')->get()
+        $categories = Category::query()
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get()
+            ->unique(fn (Category $category) => mb_strtolower(trim((string) $category->name)))
+            ->values()
             ->map(fn (Category $category) => [
                 'value' => (string) $category->id,
-                'label' => $category->name.($category->is_active ? '' : ' ('.__('branding.inactive').')'),
-            ])->values()->all();
+                'label' => $category->name,
+            ])
+            ->all();
 
-        $types = Type::query()->orderBy('name')->get()
+        $types = Type::query()
+            ->where('is_active', 1)
+            ->orderBy('name')
+            ->get()
             ->map(fn (Type $type) => [
                 'value' => (string) $type->id,
                 'label' => $type->name,
-            ])->values()->all();
+            ])
+            ->all();
 
         $seasons = Schema::hasTable('seasons')
-            ? Season::query()->orderBy('name')->get()->map(fn (Season $season) => [
-                'value' => (string) $season->id,
-                'label' => $season->name,
-            ])->values()->all()
+            ? Season::query()
+                ->where('is_active', 1)
+                ->orderBy('name')
+                ->get()
+                ->map(fn (Season $season) => [
+                    'value' => (string) $season->id,
+                    'label' => $season->name,
+                ])
+                ->all()
             : [];
 
         $colors = products::query()->sellable()->distinct()->orderBy('color')->pluck('color')
