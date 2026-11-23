@@ -55,6 +55,7 @@ class AdminNav
                 'heading' => 'admin_sidebar.section_store',
                 'items' => [
                     self::link('admin.settings.branding', 'admin_sidebar.branding', 'bi-palette', Route::is('admin.settings.branding')),
+                    self::link('admin.homeCards.edit', 'admin_sidebar.home_cards', 'bi-grid-3x2-gap', Route::is('admin.homeCards.*')),
                     self::link('admin.settings.seo', 'seo.title', 'bi-search', Route::is('admin.settings.seo')),
                     self::link('guides.admin.list', 'admin_sidebar.guides', 'bi-journal-text', Route::is('guides.admin.*')),
                     self::link('admin.catalogFilters.edit', 'admin_sidebar.catalog_filters', 'bi-funnel', Route::is('admin.catalogFilters.*')),

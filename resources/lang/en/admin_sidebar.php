@@ -30,6 +30,7 @@ return [
 
 
     'branding' => 'Branding & Media',
+    'home_cards' => 'Home cards',
     'pages' => 'Pages',
     'order_list' => 'Order List',
     'user_list' => 'User List',

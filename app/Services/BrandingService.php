@@ -2,9 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\CatalogFilterOption;
+use App\Models\Category;
+use App\Models\HomeCard;
+use App\Models\Season;
 use App\Models\SiteSetting;
+use App\Models\Type;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class BrandingService
 {
@@ -327,57 +333,95 @@ class BrandingService
     }
 
     /**
-     * Two homepage category tiles: name, URL, and image from Branding & Media.
+     * Homepage cards: name, filter URL, and image.
      *
      * @return array<int, array{name: string, url: string, image: string}>
      */
     public function homeCategoryTiles(): array
     {
-        $settings = $this->settings();
+        if (! Schema::hasTable('home_cards')) {
+            return [];
+        }
 
-        return [
-            $this->homeCategoryTile(
-                $settings->home_category_1_id ?? null,
-                $settings->home_tile_1_title_en ?? null,
-                $settings->home_tile_1_title_ar ?? null,
-                $this->categoryImage1Url(),
-                __('web.top')
-            ),
-            $this->homeCategoryTile(
-                $settings->home_category_2_id ?? null,
-                $settings->home_tile_2_title_en ?? null,
-                $settings->home_tile_2_title_ar ?? null,
-                $this->categoryImage2Url(),
-                __('web.Long Sleeve')
-            ),
-        ];
+        return HomeCard::query()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function (HomeCard $card) {
+                $image = $card->image_path ? $this->assetUrl($card->image_path) : '';
+                if ($image === '') {
+                    return null;
+                }
+
+                $locale = app()->getLocale();
+                $custom = trim((string) ($locale === 'ar'
+                    ? ($card->title_ar ?: $card->title_en)
+                    : ($card->title_en ?: $card->title_ar)));
+
+                return [
+                    'name' => $custom !== '' ? $custom : $this->homeCardFallbackName($card),
+                    'url' => $this->homeCardUrl($card),
+                    'image' => $image,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
-    /**
-     * @return array{name: string, url: string, image: string}
-     */
-    protected function homeCategoryTile(
-        mixed $categoryId,
-        ?string $titleEn,
-        ?string $titleAr,
-        string $image,
-        string $fallbackName
-    ): array {
-        $category = $categoryId
-            ? \App\Models\Category::query()->find($categoryId)
-            : null;
+    protected function homeCardUrl(HomeCard $card): string
+    {
+        $value = trim((string) $card->filter_value);
+        $key = match ($card->filter_type) {
+            'category' => 'category_id',
+            'type' => 'type_id',
+            'season' => 'season_id',
+            'color' => 'color',
+            'size' => 'size',
+            'price_band' => 'price_band',
+            'stock' => 'stock_status',
+            default => null,
+        };
 
-        $locale = app()->getLocale();
-        $custom = trim((string) ($locale === 'ar'
-            ? ($titleAr ?: $titleEn)
-            : ($titleEn ?: $titleAr)));
+        if ($key === null || $value === '') {
+            return route('product.List');
+        }
 
-        $name = $custom !== '' ? $custom : ($category?->name ?: $fallbackName);
-        $url = $category
-            ? route('product.List', ['id' => $category->id])
-            : route('product.List');
+        return route('product.List', [$key => $value]);
+    }
 
-        return compact('name', 'url', 'image');
+    protected function homeCardFallbackName(HomeCard $card): string
+    {
+        $value = trim((string) $card->filter_value);
+        $name = match ($card->filter_type) {
+            'category' => Category::query()->find($value)?->name,
+            'type' => Type::query()->find($value)?->name,
+            'season' => Schema::hasTable('seasons') ? Season::query()->find($value)?->name : null,
+            'color', 'size' => $value,
+            'price_band' => $this->priceBandLabel($value),
+            'stock' => $value === 'out_of_stock' ? __('web.out_of_stock') : __('web.in_stock'),
+            default => null,
+        };
+
+        $name = trim((string) $name);
+
+        return $name !== '' ? $name : __('home_cards.all_products');
+    }
+
+    protected function priceBandLabel(string $id): ?string
+    {
+        if ($id === '' || ! Schema::hasTable('catalog_filter_options')) {
+            return null;
+        }
+
+        $option = CatalogFilterOption::query()->find($id);
+        if (! $option) {
+            return null;
+        }
+
+        return app()->getLocale() === 'ar'
+            ? ($option->label_ar ?: $option->label_en)
+            : ($option->label_en ?: $option->label_ar);
     }
 
     public function departmentKey(?string $name): ?string
