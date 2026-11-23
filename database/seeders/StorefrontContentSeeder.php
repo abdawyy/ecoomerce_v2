@@ -350,23 +350,32 @@ class StorefrontContentSeeder extends Seeder
         $this->resetAutoIncrement('categories');
         Schema::enableForeignKeyConstraints();
 
-        if (! Schema::hasTable('site_settings')) {
-            return;
+        if (Schema::hasTable('site_settings')) {
+            $settings = SiteSetting::current();
+            $changed = false;
+            if (Schema::hasColumn('site_settings', 'home_category_1_id')) {
+                $settings->home_category_1_id = $pantsId;
+                $changed = true;
+            }
+            if (Schema::hasColumn('site_settings', 'home_category_2_id')) {
+                $settings->home_category_2_id = $nightId;
+                $changed = true;
+            }
+            if ($changed) {
+                $settings->save();
+                app(BrandingService::class)->clearCache();
+            }
         }
 
-        $settings = SiteSetting::current();
-        $changed = false;
-        if (Schema::hasColumn('site_settings', 'home_category_1_id')) {
-            $settings->home_category_1_id = $pantsId;
-            $changed = true;
-        }
-        if (Schema::hasColumn('site_settings', 'home_category_2_id')) {
-            $settings->home_category_2_id = $nightId;
-            $changed = true;
-        }
-        if ($changed) {
-            $settings->save();
-            app(BrandingService::class)->clearCache();
+        if (Schema::hasTable('home_cards')) {
+            $targets = [(string) $pantsId, (string) $nightId];
+            $linked = DB::table('home_cards')->where('filter_type', 'category')->orderBy('sort_order')->orderBy('id')->limit(2)->get();
+            foreach ($linked as $index => $card) {
+                DB::table('home_cards')->where('id', $card->id)->update([
+                    'filter_value' => $targets[$index] ?? $card->filter_value,
+                    'updated_at' => now(),
+                ]);
+            }
         }
     }
 
@@ -401,6 +410,18 @@ class StorefrontContentSeeder extends Seeder
         if ($changed) {
             $settings->save();
             app(BrandingService::class)->clearCache();
+        }
+
+        if (Schema::hasTable('home_cards')) {
+            foreach ($categoryMap as $oldId => $newId) {
+                DB::table('home_cards')
+                    ->where('filter_type', 'category')
+                    ->where('filter_value', (string) $oldId)
+                    ->update([
+                        'filter_value' => (string) $newId,
+                        'updated_at' => now(),
+                    ]);
+            }
         }
     }
 

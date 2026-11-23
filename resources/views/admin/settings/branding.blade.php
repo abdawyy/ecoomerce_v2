@@ -170,50 +170,9 @@
                         </div>
 
                         <hr class="my-4" id="home-tiles">
-                        <h5>{{ __('branding.home_tiles') }}</h5>
-                        <p class="text-muted">{{ __('branding.home_tiles_hint') }}</p>
-                        @php
-                            $categories = $categories ?? collect();
-                            $liveTiles = $branding->homeCategoryTiles();
-                        @endphp
-                        @if ($categories->isEmpty())
-                            <div class="alert alert-warning">{{ __('branding.home_tiles_no_categories') }}</div>
-                        @endif
-                        <div class="row g-4">
-                            @foreach ([
-                                1 => ['en' => __('web.top'), 'ar' => __('web.top', [], 'ar')],
-                                2 => ['en' => trim(__('web.Long Sleeve')), 'ar' => trim(__('web.Long Sleeve', [], 'ar'))],
-                            ] as $slot => $defaults)
-                                <div class="col-md-6">
-                                    <div class="admin-nested-panel border rounded-3 p-3 h-100">
-                                        <h6 class="fw-bold mb-3">{{ __('branding.home_tile_heading', ['n' => $slot, 'name' => $defaults['en']]) }}</h6>
-                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_name_en') }}</label>
-                                        <input type="text" name="home_tile_{{ $slot }}_title_en" class="form-control mb-2"
-                                               value="{{ old("home_tile_{$slot}_title_en", $settings->{"home_tile_{$slot}_title_en"} ?: $defaults['en']) }}">
-                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_name_ar') }}</label>
-                                        <input type="text" name="home_tile_{{ $slot }}_title_ar" class="form-control mb-3" dir="rtl"
-                                               value="{{ old("home_tile_{$slot}_title_ar", $settings->{"home_tile_{$slot}_title_ar"} ?: $defaults['ar']) }}">
-                                        <label class="form-label fw-semibold">{{ __('branding.home_tile_redirect') }}</label>
-                                        <select name="home_category_{{ $slot }}_id" class="form-select">
-                                            <option value="">{{ __('branding.home_tile_all_products') }}</option>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}" @selected((string) old("home_category_{$slot}_id", $settings->{"home_category_{$slot}_id"}) === (string) $category->id)>
-                                                    {{ $category->name }}@if (! $category->is_active) ({{ __('branding.inactive') }})@endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <div class="form-text">{{ __('branding.home_tile_redirect_hint') }}</div>
-                                        @php $live = $liveTiles[$slot - 1] ?? null; @endphp
-                                        @if ($live)
-                                            <p class="admin-nested-panel-live small mb-0 mt-3 text-break">
-                                                {{ __('branding.home_tile_live') }}:
-                                                <strong>{{ $live['name'] }}</strong>
-                                                → <a href="{{ $live['url'] }}" target="_blank" rel="noopener">{{ $live['url'] }}</a>
-                                            </p>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
+                        <div class="admin-nested-panel border rounded-3 p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <p class="mb-0">{{ __('home_cards.moved_from_branding') }}</p>
+                            <a href="{{ route('admin.homeCards.edit') }}" class="btn btn-dark">{{ __('home_cards.open_page') }}</a>
                         </div>
 
                         <hr class="my-4">
@@ -223,32 +182,18 @@
                             @foreach ([
                                 'hero_image' => __('branding.hero_image'),
                                 'hero_image_mobile' => __('branding.hero_image_mobile'),
-                                'category_image_1' => __('branding.category_image_1'),
-                                'category_image_2' => __('branding.category_image_2'),
                             ] as $field => $label)
-                                <div class="col-md-6 col-xl-3">
+                                <div class="col-md-6">
                                     <label class="form-label">{{ $label }}</label>
                                     @if ($field === 'hero_image_mobile')
                                         <div class="form-text text-muted mb-2">{{ __('branding.hero_image_mobile_hint') }}</div>
                                     @endif
                                     @php
-                                        $pathColumn = match($field) {
-                                            'hero_image' => 'hero_image_path',
-                                            'hero_image_mobile' => 'hero_image_mobile_path',
-                                            'category_image_1' => 'category_image_1_path',
-                                            'category_image_2' => 'category_image_2_path',
-                                            default => $field.'_path',
-                                        };
+                                        $pathColumn = $field === 'hero_image' ? 'hero_image_path' : 'hero_image_mobile_path';
                                         $currentPath = $settings->{$pathColumn} ?? null;
                                         $previewUrl = $currentPath
                                             ? $branding->assetUrl($currentPath)
-                                            : match($field) {
-                                                'hero_image' => $branding->heroImageUrl(),
-                                                'hero_image_mobile' => $branding->heroImageMobileUrl(),
-                                                'category_image_1' => $branding->categoryImage1Url(),
-                                                'category_image_2' => $branding->categoryImage2Url(),
-                                                default => '',
-                                            };
+                                            : ($field === 'hero_image' ? $branding->heroImageUrl() : $branding->heroImageMobileUrl());
                                     @endphp
                                     @if ($previewUrl)
                                         <div class="admin-image-preview mb-2 rounded overflow-hidden">

@@ -97,6 +97,88 @@
     .category-box:hover .category-overlay {
         padding-bottom: 50px;
     }
+
+    .home-card-grid {
+        display: grid;
+        grid-template-columns: repeat(var(--home-card-count, 1), minmax(0, 1fr));
+        gap: 1.25rem;
+    }
+
+    .home-card-grid .category-box {
+        min-height: 0;
+        height: auto;
+        aspect-ratio: 4 / 3;
+    }
+
+    .home-card-grid .category-overlay {
+        padding: clamp(0.85rem, 1.6vw, 2.5rem);
+    }
+
+    .home-card-grid .category-overlay h3 {
+        font-size: clamp(0.95rem, calc(2.8vw - (var(--home-card-count) * 0.22vw)), 2.15rem);
+        margin-bottom: clamp(0.35rem, 0.8vw, 1rem) !important;
+    }
+
+    .home-card-grid .category-box:hover .category-overlay {
+        padding-bottom: clamp(1rem, 2vw, 3.1rem);
+    }
+
+    .home-card-grid .home-card-cta {
+        font-size: clamp(0.72rem, calc(1.2vw - (var(--home-card-count) * 0.06vw)), 1rem);
+        padding: clamp(0.28rem, 0.45vw, 0.5rem) clamp(0.7rem, 1vw, 1.5rem);
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .home-card-grid[data-count="5"],
+        .home-card-grid[data-count="6"] {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .home-card-grid[data-count="5"] .category-overlay h3,
+        .home-card-grid[data-count="6"] .category-overlay h3 {
+            font-size: clamp(1.15rem, 1.7vw, 1.75rem);
+        }
+
+        .home-card-grid[data-count="5"] .home-card-cta,
+        .home-card-grid[data-count="6"] .home-card-cta {
+            font-size: clamp(0.85rem, 1vw, 1rem);
+            padding: 0.45rem 1.1rem;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .home-card-grid,
+        .home-card-grid[data-count="5"],
+        .home-card-grid[data-count="6"] {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .home-card-grid[data-count="1"] {
+            grid-template-columns: 1fr;
+        }
+
+        .home-card-grid .category-box,
+        .home-card-grid[data-count="5"] .category-box,
+        .home-card-grid[data-count="6"] .category-box {
+            aspect-ratio: 3 / 4;
+            min-height: 0;
+        }
+
+        .home-card-grid .category-overlay {
+            padding: 0.85rem;
+        }
+
+        .home-card-grid .category-overlay h3 {
+            font-size: clamp(0.95rem, 4.2vw, 1.35rem);
+        }
+
+        .home-card-grid .home-card-cta {
+            font-size: 0.78rem;
+            padding: 0.3rem 0.75rem;
+        }
+    }
 </style>
 @endpush
 
@@ -156,25 +238,26 @@
     <p class="carousel-swipe-hint d-md-none"><i class="bi bi-arrow-left-right me-1"></i> Swipe to browse</p>
 </section>
 
+@php $homeCards = $branding->homeCategoryTiles(); @endphp
+@if (count($homeCards) > 0)
 <section id="category" class="py-5 home-categories">
     <div class="container">
-        <div class="row g-4 justify-content-center">
-            @foreach ($branding->homeCategoryTiles() as $tile)
-                <div class="col-12 col-md-6">
-                    <a href="{{ $tile['url'] }}" class="category-box text-decoration-none d-block">
-                        <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $tile['image'] }}')"></span>
-                        <img src="{{ $tile['image'] }}" class="category-img" alt="{{ $tile['name'] }}">
-                        <div class="category-overlay">
-                            <h3 class="fw-bold text-white mb-3">{{ $tile['name'] }}</h3>
-                            <span class="btn btn-light px-4 py-2 rounded-pill fw-bold">
-                                {{ __('web.see_details') }}
-                            </span>
-                        </div>
-                    </a>
-                </div>
+        <div class="home-card-grid" data-count="{{ count($homeCards) }}" style="--home-card-count: {{ count($homeCards) }}">
+            @foreach ($homeCards as $tile)
+                <a href="{{ $tile['url'] }}" class="category-box text-decoration-none d-block">
+                    <span class="category-img-fill" aria-hidden="true" style="background-image: url('{{ $tile['image'] }}')"></span>
+                    <img src="{{ $tile['image'] }}" class="category-img" alt="{{ $tile['name'] }}">
+                    <div class="category-overlay">
+                        <h3 class="fw-bold text-white">{{ $tile['name'] }}</h3>
+                        <span class="btn btn-light rounded-pill fw-bold home-card-cta">
+                            {{ __('web.see_details') }}
+                        </span>
+                    </div>
+                </a>
             @endforeach
         </div>
     </div>
 </section>
+@endif
 
 </x-web.layout>

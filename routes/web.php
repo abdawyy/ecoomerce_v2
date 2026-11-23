@@ -21,6 +21,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\AdminGuideController;
 use App\Http\Controllers\AdminCatalogFilterController;
+use App\Http\Controllers\HomeCardController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\StorageFileController;
@@ -113,6 +114,8 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('admin/settings/branding', [SiteSettingsController::class, 'edit'])->name('admin.settings.branding');
     Route::post('admin/settings/branding', [SiteSettingsController::class, 'update'])->name('admin.settings.branding.update');
+    Route::get('admin/home-cards', [HomeCardController::class, 'edit'])->name('admin.homeCards.edit');
+    Route::post('admin/home-cards', [HomeCardController::class, 'update'])->name('admin.homeCards.update');
     Route::get('admin/settings/pdf-preview', [SiteSettingsController::class, 'pdfPreview'])->name('admin.settings.pdf.preview');
 
     Route::get('admin/guides/list', [AdminGuideController::class, 'list'])->name('guides.admin.list');
