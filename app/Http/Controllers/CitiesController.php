@@ -76,9 +76,22 @@ class CitiesController extends Controller
         if ($maxPrice !== null && $maxPrice !== '') {
             $query = $query->where('price', '<=', $maxPrice);
         }
-        
-        // Paginate and preserve query parameters
-        $data = $query->paginate(10)->appends(['search' => $search, 'min_price' => $minPrice, 'max_price' => $maxPrice]); // 👈 This preserves filter parameters
+
+        $query->orderBy('id');
+        $perPage = 10;
+        $highlightId = session('highlight_id');
+        if ($highlightId) {
+            $index = (clone $query)->pluck('id')->search(fn ($id) => (string) $id === (string) $highlightId);
+            if ($index !== false) {
+                $request->merge(['page' => (int) floor($index / $perPage) + 1]);
+            }
+        }
+
+        $data = $query->paginate($perPage)->appends([
+            'search' => $search,
+            'min_price' => $minPrice,
+            'max_price' => $maxPrice,
+        ]);
 
         // Define the headers for the table
         $headers = ['ID', 'Name', 'Price', 'Created At', 'Action'];

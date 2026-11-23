@@ -22,6 +22,18 @@
         font-weight: 700;
     }
 
+    .pdp-gallery {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 12px;
+        direction: ltr;
+    }
+    .pdp-gallery .img-main-container {
+        flex: 1;
+        min-width: 0;
+        margin-bottom: 0;
+    }
     .img-main-container { border-radius: 14px; overflow: hidden; background: var(--brand-soft); }
     .img-oneProduct { width: 100%; object-fit: cover; aspect-ratio: 4 / 5; }
     .img-main-container img { transition: transform 0.3s ease; }
@@ -29,13 +41,18 @@
 
     .thumb-scroll-container {
         display: flex;
+        flex-direction: column;
+        flex: 0 0 76px;
+        width: 76px;
         gap: 10px;
-        padding: 15px 0;
-        overflow-x: auto;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .img-oneProduct-sub {
         width: 76px;
         height: 76px;
+        flex-shrink: 0;
         border-radius: 10px;
         object-fit: cover;
         border: 2px solid transparent;
@@ -180,10 +197,14 @@
         overflow: visible;
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 575.98px) {
         .thumb-scroll-container {
-            flex-wrap: wrap;
-            overflow-x: visible;
+            flex: 0 0 64px;
+            width: 64px;
+        }
+        .img-oneProduct-sub {
+            width: 64px;
+            height: 64px;
         }
     }
 
@@ -209,19 +230,20 @@
         <div class="row g-5">
             <div class="col-12 col-lg-6">
                 <div class="content-card p-3 p-md-4">
-                    <div class="img-main-container mb-2">
-                        <img id="mainImage" class="img-oneProduct pointer"
-                             src="{{ $product->productImages->first() ? asset('storage/' . $product->productImages->first()->images) : $branding->placeholderProductUrl() }}"
-                             onclick="openImage(this)">
-                    </div>
-                    
-                    <div class="thumb-scroll-container">
-                        @foreach ($product->productImages as $productImage)
-                            <img class="img-oneProduct-sub {{ $loop->first ? 'img-selected' : '' }}"
-                                 src="{{ asset('storage/' . $productImage->images) }}"
-                                 loading="lazy" decoding="async"
-                                 onclick="changeMainImage(this)">
-                        @endforeach
+                    <div class="pdp-gallery">
+                        <div class="thumb-scroll-container">
+                            @foreach ($product->productImages as $productImage)
+                                <img class="img-oneProduct-sub {{ $loop->first ? 'img-selected' : '' }}"
+                                     src="{{ asset('storage/' . $productImage->images) }}"
+                                     loading="lazy" decoding="async"
+                                     onclick="changeMainImage(this)">
+                            @endforeach
+                        </div>
+                        <div class="img-main-container">
+                            <img id="mainImage" class="img-oneProduct pointer"
+                                 src="{{ $product->productImages->first() ? asset('storage/' . $product->productImages->first()->images) : $branding->placeholderProductUrl() }}"
+                                 onclick="openImage(this)">
+                        </div>
                     </div>
                 </div>
             </div>
