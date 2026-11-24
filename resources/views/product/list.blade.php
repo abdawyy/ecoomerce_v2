@@ -26,27 +26,21 @@
         @endphp
         <x-web.breadcrumb :items="$breadcrumbItems" />
 
-        <form method="GET" action="{{ $filterAction }}" class="plp-filter-bar d-none d-lg-flex">
-            @if (request('sort') && request('sort') !== 'newest')
-                <input type="hidden" name="sort" value="{{ request('sort') }}">
-            @endif
-            @if (request()->filled('search'))
-                <input type="hidden" name="search" value="{{ request('search') }}">
-            @endif
-            @include('product.partials.filters', ['mode' => 'bar', 'idPrefix' => 'd'])
-            <div class="plp-filter-actions">
-                <button type="submit" class="btn-filter apply">{{ __('web.filter') }}</button>
-                <a href="{{ $clearUrl }}" class="btn-filter clear">{{ __('web.clear_filters') }}</a>
-            </div>
-        </form>
+        <h1 class="plp-title">{{ $listTitle }}</h1>
+        <div class="plp-toolbar">
+            <form method="GET" action="{{ $filterAction }}" class="plp-filter-bar d-none d-lg-flex">
+                @if (request('sort') && request('sort') !== 'newest')
+                    <input type="hidden" name="sort" value="{{ request('sort') }}">
+                @endif
+                @if (request()->filled('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+                @include('product.partials.filters', ['mode' => 'bar', 'idPrefix' => 'd'])
+            </form>
 
-        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-            <div>
-                <h1 class="fw-bold h3 mb-1">{{ $listTitle }}</h1>
-                <p class="text-muted small mb-0">{{ __('web.products_count', ['count' => $data->total()]) }}</p>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
+            <div class="plp-toolbar-side">
+                <p class="plp-count">{{ __('web.products_count', ['count' => $data->total()]) }}</p>
+                <span class="plp-toolbar-sep d-none d-md-inline" aria-hidden="true">|</span>
                 <form method="GET" action="{{ route('product.List', ($id && ! request()->has('category_id')) ? ['id' => $id] : []) }}" class="plp-sort-form d-none d-md-flex align-items-center gap-2">
                     @foreach (request()->except('sort', 'page') as $key => $value)
                         @foreach ((array) $value as $item)
@@ -55,8 +49,8 @@
                             @endif
                         @endforeach
                     @endforeach
-                    <label for="sort" class="plp-sort-label small text-muted mb-0">{{ __('web.sort_by') }}</label>
-                    <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <label for="sort" class="plp-sort-label mb-0">{{ __('web.sort_by') }}</label>
+                    <select name="sort" id="sort" class="plp-sort-select" onchange="this.form.requestSubmit()">
                         <option value="newest" @selected(($sort ?? 'newest') === 'newest')>{{ __('web.sort_newest') }}</option>
                         <option value="price_asc" @selected(($sort ?? '') === 'price_asc')>{{ __('web.sort_price_asc') }}</option>
                         <option value="price_desc" @selected(($sort ?? '') === 'price_desc')>{{ __('web.sort_price_desc') }}</option>
@@ -159,7 +153,7 @@
             </div>
         @endif
 
-        <div class="row g-3 g-md-4">
+        <div class="row g-3 g-md-4 plp-product-grid">
             @forelse ($data as $product)
                 <div class="col-6 col-md-4 col-lg-3 mb-3">
                     <x-web.product-card :product="$product" image-class="list-product-img" />
@@ -208,6 +202,12 @@
 <script>
     document.addEventListener('change', function (event) {
         const input = event.target;
+        if (input.matches && input.matches('.plp-filter-check input, .filter-form input[name="on_sale"]')) {
+            if (input.closest('form')) {
+                input.closest('form').requestSubmit();
+            }
+            return;
+        }
         if (!input.classList || !input.classList.contains('plp-filter-option-input')) {
             return;
         }
@@ -223,6 +223,9 @@
         const sectionLabel = input.closest('.filter-section')?.querySelector('.filter-chosen-label');
         if (sectionLabel && text) {
             sectionLabel.textContent = text;
+        }
+        if (input.closest('form')) {
+            input.closest('form').requestSubmit();
         }
     });
 </script>
