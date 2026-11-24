@@ -85,27 +85,21 @@
     $filterSide = app()->getLocale() === 'ar' ? 'offcanvas-start' : 'offcanvas-end';
 @endphp
 <div id="plp-ajax-root" data-page-title="{{ $pageTitle }}">
-    <form method="GET" action="{{ $filterAction }}" class="plp-filter-bar d-none d-lg-flex">
-        @if (request('sort') && request('sort') !== 'newest')
-            <input type="hidden" name="sort" value="{{ request('sort') }}">
-        @endif
-        @if (request()->filled('search'))
-            <input type="hidden" name="search" value="{{ request('search') }}">
-        @endif
-        @include('product.partials.filters', ['mode' => 'bar', 'idPrefix' => 'd'])
-        <div class="plp-filter-actions">
-            <button type="submit" class="btn-filter apply">{{ __('web.filter') }}</button>
-            <a href="{{ $clearUrl }}" class="btn-filter clear">{{ __('web.clear_filters') }}</a>
-        </div>
-    </form>
+    <h1 class="plp-title">{{ $listTitle }}</h1>
+    <div class="plp-toolbar">
+        <form method="GET" action="{{ $filterAction }}" class="plp-filter-bar d-none d-lg-flex">
+            @if (request('sort') && request('sort') !== 'newest')
+                <input type="hidden" name="sort" value="{{ request('sort') }}">
+            @endif
+            @if (request()->filled('search'))
+                <input type="hidden" name="search" value="{{ request('search') }}">
+            @endif
+            @include('product.partials.filters', ['mode' => 'bar', 'idPrefix' => 'd'])
+        </form>
 
-    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
-        <div>
-            <h1 class="fw-bold h3 mb-1">{{ $listTitle }}</h1>
-            <p class="text-muted small mb-0">{{ __('web.products_count', ['count' => $data->total()]) }}</p>
-        </div>
-
-        <div class="d-flex align-items-center gap-2">
+        <div class="plp-toolbar-side">
+            <p class="plp-count">{{ __('web.products_count', ['count' => $data->total()]) }}</p>
+            <span class="plp-toolbar-sep d-none d-md-inline" aria-hidden="true">|</span>
             <form method="GET" action="{{ route('product.List', ($id && ! request()->has('category_id')) ? ['id' => $id] : []) }}" class="plp-sort-form d-none d-md-flex align-items-center gap-2">
                 @foreach (request()->except('sort', 'page') as $key => $value)
                     @foreach ((array) $value as $item)
@@ -114,8 +108,8 @@
                         @endif
                     @endforeach
                 @endforeach
-                <label for="sort" class="plp-sort-label small text-muted mb-0">{{ __('web.sort_by') }}</label>
-                <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.requestSubmit()">
+                <label for="sort" class="plp-sort-label mb-0">{{ __('web.sort_by') }}</label>
+                <select name="sort" id="sort" class="plp-sort-select" onchange="this.form.requestSubmit()">
                     <option value="newest" @selected(($sort ?? 'newest') === 'newest')>{{ __('web.sort_newest') }}</option>
                     <option value="price_asc" @selected(($sort ?? '') === 'price_asc')>{{ __('web.sort_price_asc') }}</option>
                     <option value="price_desc" @selected(($sort ?? '') === 'price_desc')>{{ __('web.sort_price_desc') }}</option>
