@@ -96,7 +96,6 @@ return [
   'footer_cookies' => 'Cookies',
   'shop_now' => 'Shop now',
   'continue_shopping' => 'Continue shopping',
-  'skip_to_content' => 'Skip to content',
   'returns_title' => 'Return Policy',
   'returns_intro' => 'We want you to be sure about your piece before it is yours.',
   'returns_step_1' => 'When your order arrives, you may measure and try on the item in the presence of our delivery representative.',

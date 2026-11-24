@@ -130,7 +130,7 @@
     }
 
     .qty-group .btn { width: 42px; }
-    .qty-group .form-control { border-left: 0; border-right: 0; }
+    .qty-group .form-control { border-inline: 0; }
     .qty-group .btn:focus,
     .qty-group .btn:focus-visible {
         box-shadow: none;
