@@ -122,7 +122,7 @@
     }
 
     .qty-group .btn { width: 42px; }
-    .qty-group .form-control { border-left: 0; border-right: 0; }
+    .qty-group .form-control { border-inline: 0; }
 
     .cta-btn {
         letter-spacing: 0.04em;

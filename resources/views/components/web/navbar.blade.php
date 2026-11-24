@@ -85,7 +85,7 @@
     </div>
 </nav>
 
-<div class="offcanvas {{ app()->getLocale() == 'ar' ? 'offcanvas-end' : 'offcanvas-start' }}" tabindex="-1" id="mobileMenu">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu">
     <div class="offcanvas-header border-bottom">
         <h5 class="offcanvas-title fw-bold">{{ __('web.menu') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>

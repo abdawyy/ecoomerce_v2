@@ -89,7 +89,6 @@ return [
     'footer_cookies' => 'الكوكيز',
     'shop_now' => 'تسوق الآن',
     'continue_shopping' => 'متابعة التسوق',
-    'skip_to_content' => 'تخطي إلى المحتوى',
     'product_description' => 'الوصف',
     'customer_reviews' => 'آراء العملاء',
     'write_your_review' => 'اكتب مراجعتك...',
