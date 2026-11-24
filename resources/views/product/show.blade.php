@@ -368,8 +368,9 @@
                         @endauth
                     </div>
                     <x-web.return-policy variant="compact" class="mt-3" />
-
-                    <hr class="my-5">
+                            <!--Customer-Reviews -->
+                            
+                    <!-- <hr class="my-5">
 
                     <div id="reviews-section">
                         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
@@ -424,7 +425,7 @@
                         @empty
                             <p class="text-muted small">{{ __('web.no_reviews_yet') }}</p>
                         @endforelse
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
