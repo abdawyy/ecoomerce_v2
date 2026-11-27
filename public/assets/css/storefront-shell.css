@@ -1202,14 +1202,10 @@ a.checkout-step-link:hover .checkout-step-label {
 }
 
 .pay-option:has(input:checked) {
-    border: 2px solid var(--brand-cream);
-    box-shadow: 0 8px 20px rgba(25, 48, 73, 0.16);
-    background: var(--brand-navy);
-    color: var(--brand-cream);
-}
-
-.pay-option:has(input:checked) .pay-option-title {
-    color: var(--brand-cream);
+    border: 2px solid #152238;
+    box-shadow: 0 4px 12px rgba(21, 34, 56, 0.08);
+    background: #F3ECE1;
+    color: #152238;
 }
 
 .pay-option-check {
