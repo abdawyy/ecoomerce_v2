@@ -119,6 +119,7 @@ return [
     'unable_to_add_to_cart' => 'تعذر إضافة المنتج إلى السلة.',
     'added_to_cart' => 'تمت الإضافة إلى السلة.',
     'added_short' => 'تمت الإضافة',
+    'go_to_cart' => 'اذهب إلى السلة',
     'select_rating' => 'يرجى اختيار تقييم بالنجوم',
     'review_requires_purchase' => 'يمكنك تقييم المنتج بعد إتمام عملية شراء مكتملة فقط.',
     'review_submitted' => 'تم إرسال المراجعة.',
