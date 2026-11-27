@@ -48,7 +48,7 @@
                             <label class="pay-option">
                                 <input type="radio" name="payment_method" value="instapay" @checked(old('payment_method') === 'instapay') required>
                                 <span class="pay-option-logo-wrap">
-                                    <img src="{{ asset('assets/images/instapay.png') }}" alt="" class="pay-option-logo">
+                                    <img src="{{ asset('assets/images/instapay.svg') }}" alt="" class="pay-option-logo pay-option-logo-instapay">
                                 </span>
                                 <span class="pay-option-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
                                 <span class="pay-option-title">{{ __('checkout.pay_instapay') }}</span>
