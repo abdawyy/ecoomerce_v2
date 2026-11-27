@@ -1,8 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="12 12 142 66" role="img" aria-label="Cash">
-  <rect x="26" y="26" width="124" height="48" rx="8" fill="#F3E6D4" stroke="#193049" stroke-width="2.5"/>
-  <rect x="16" y="16" width="124" height="48" rx="8" fill="#FCF4E9" stroke="#193049" stroke-width="2.5"/>
-  <circle cx="78" cy="40" r="13" fill="none" stroke="#193049" stroke-width="2"/>
-  <text x="78" y="45" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#193049">LE</text>
-  <circle cx="32" cy="40" r="2.4" fill="#193049"/>
-  <circle cx="124" cy="40" r="2.4" fill="#193049"/>
+  <g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+    <rect x="26" y="26" width="124" height="48" rx="8"/>
+    <rect x="16" y="16" width="124" height="48" rx="8"/>
+    <circle cx="78" cy="40" r="13" stroke-width="2"/>
+  </g>
+  <text x="78" y="45" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="currentColor">LE</text>
+  <circle cx="32" cy="40" r="2.4" fill="currentColor"/>
+  <circle cx="124" cy="40" r="2.4" fill="currentColor"/>
 </svg>
