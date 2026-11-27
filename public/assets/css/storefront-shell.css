@@ -1204,7 +1204,7 @@ a.checkout-step-link:hover .checkout-step-label {
 .pay-option:has(input:checked) {
     border: 2px solid #152238;
     box-shadow: 0 4px 12px rgba(21, 34, 56, 0.08);
-    background: #F3ECE1;
+    background: #F7EFE6;
     color: #152238;
 }
 
@@ -1227,9 +1227,10 @@ a.checkout-step-link:hover .checkout-step-label {
 }
 
 .pay-option.is-disabled {
-    opacity: 0.5;
+    opacity: 0.72;
     cursor: not-allowed;
-    background: var(--brand-soft);
+    background: #F2EFEA;
+    border-color: #E4DDD4;
 }
 
 .checkout-page .pay-option-logo {
