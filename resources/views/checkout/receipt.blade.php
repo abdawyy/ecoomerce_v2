@@ -17,6 +17,10 @@
             <h2 class="h3 fw-bold mb-2">{{ __('confirmation.thank_you') }}</h2>
             <p class="text-muted mb-4">{{ __('confirmation.description') }}</p>
 
+            @if (($paymentMethod ?? null) === 'instapay')
+                <div class="receipt-note mb-4" role="status">{{ __('email.instapay_whatsapp') }}</div>
+            @endif
+
             <div class="text-start receipt-totals rounded-3 p-3 mb-4">
                 <p class="mb-2">{{ __('confirmation.order_id') }} <strong>#{{ $orderID }}</strong></p>
                 <p class="mb-2">{{ __('confirmation.delivery_fees') }} <strong>{{ $deliveryFees }} LE</strong></p>

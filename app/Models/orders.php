@@ -261,10 +261,16 @@ class orders extends Model
     protected function clearCart($userId, $isGuest)
     {
         if ($isGuest) {
+            if (DB::transactionLevel() > 0) {
+                return;
+            }
+
             session()->forget('cart');
-        } else {
-            shoppingCart::where('user_id', $userId)->delete();
+
+            return;
         }
+
+        shoppingCart::where('user_id', $userId)->delete();
     }
 
 

@@ -242,6 +242,8 @@ Route::redirect('/checkout/address', '/checkout', 301);
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::delete('/cart/{id}', [CartController::class, 'delete'])->middleware('auth')->name('cart.delete');
 Route::get('/checkout/address', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout/payment', [CheckoutController::class, 'storeDetails'])->middleware('throttle:20,1')->name('checkout.payment.store');
+Route::get('/checkout/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
 Route::post('/checkout/order', [CheckoutController::class, 'order'])->middleware('throttle:10,1')->name('checkout.order');
 Route::post('/checkout/receipt/{order}/notify', [CheckoutController::class, 'notifyReceipt'])->middleware('throttle:12,1')->name('checkout.receipt.notify');
 Route::get('/checkout/receipt/{order}/invoice/{expires}/{hmac}', [CheckoutController::class, 'receiptInvoice'])->name('checkout.receipt.invoice.signed');

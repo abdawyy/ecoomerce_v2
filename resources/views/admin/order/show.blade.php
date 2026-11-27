@@ -98,6 +98,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>{{ __('orders.method') }}</th>
                         <th>{{ __('orders.amount') }}</th>
                         <th>{{ __('orders.date') }}</th>
                     </tr>
@@ -106,12 +107,13 @@
                     @forelse ($order->payments as $payment)
                         <tr>
                             <td>{{ $payment->id }}</td>
+                            <td>{{ ['cash' => __('orders.method_cash'), 'instapay' => __('orders.method_instapay')][$payment->payment_method] ?? $payment->payment_method }}</td>
                             <td>{{ $payment->amount }} LE</td>
                             <td>{{ $payment->created_at->format('Y-m-d H:i') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3">{{ __('orders.no_payments') }}</td>
+                            <td colspan="4">{{ __('orders.no_payments') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

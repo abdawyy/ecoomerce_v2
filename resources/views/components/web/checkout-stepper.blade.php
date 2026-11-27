@@ -4,6 +4,7 @@
     $steps = [
         'cart' => ['label' => __('checkout.step_cart'), 'route' => route('cart.index')],
         'details' => ['label' => __('checkout.step_details'), 'route' => route('checkout')],
+        'payment' => ['label' => __('checkout.step_payment'), 'route' => route('checkout.payment')],
         'confirm' => ['label' => __('checkout.step_confirm'), 'route' => null],
     ];
     $keys = array_keys($steps);

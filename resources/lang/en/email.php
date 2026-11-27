@@ -6,6 +6,7 @@ return [
     'greeting' => 'Hello :name,',
     'customer' => 'there',
     'order_thanks' => 'Thank you for your order. We are preparing it now.',
+    'instapay_whatsapp' => 'We will contact you on WhatsApp to complete your Instapay payment.',
     'order_number' => 'Order #:id',
     'placed' => 'Placed :date',
     'status' => 'Status',

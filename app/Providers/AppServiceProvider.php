@@ -109,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
             'contact_us' => 'contact',
             'cart.index' => 'cart',
             'checkout.address' => 'checkout',
+            'checkout.payment' => 'checkout',
             'guides.index' => 'guides',
         ];
 

@@ -29,19 +29,21 @@ class payments extends Model
         return $this->belongsTo(orders::class , 'orders_id');
 
     }
-    public static function createCashPayment($orderId, $totalAmount)
+    public static function createCashPayment($orderId, $totalAmount, string $method = 'cash')
     {
+        if (! in_array($method, ['cash', 'instapay'], true)) {
+            throw new \InvalidArgumentException('Unsupported payment method.');
+        }
+
         try {
-            // Create a new payment record with the provided order ID and total amount
             return self::create([
-                'orders_id'       => $orderId,
-                'amount'         => $totalAmount, // Assuming the total amount is paid in full
-                'status'         => 'pending',    // Default status is pending
-                'payment_method' => 'cash',       // Default payment method is cash
+                'orders_id' => $orderId,
+                'amount' => $totalAmount,
+                'status' => 'pending',
+                'payment_method' => $method,
             ]);
         } catch (\Exception $e) {
-            // Optionally throw an exception or log the error
-            throw new \Exception('Failed to create cash payment: ' . $e->getMessage());
+            throw new \Exception('Failed to create cash payment: '.$e->getMessage());
         }
     }
 

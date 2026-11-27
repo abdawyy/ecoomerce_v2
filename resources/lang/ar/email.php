@@ -6,6 +6,7 @@ return [
     'greeting' => 'مرحباً :name،',
     'customer' => 'بك',
     'order_thanks' => 'شكراً لطلبك. نجهّزه الآن.',
+    'instapay_whatsapp' => 'هيتم التواصل معاك عبر واتساب لإتمام الدفع.',
     'order_number' => 'طلب #:id',
     'placed' => 'بتاريخ :date',
     'status' => 'الحالة',

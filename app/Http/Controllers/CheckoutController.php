@@ -67,6 +67,12 @@ class CheckoutController extends Controller
             return redirect()->route('checkout')->with('error', __('checkout.invalid_submission'));
         }
 
+        $this->lockPaymentPayload($request);
+
+        $request->validate([
+            'payment_method' => ['required', Rule::in(['cash', 'instapay'])],
+        ]);
+
         if ($redirect = $this->redirectIfCartExceedsStock()) {
             return $redirect;
         }
@@ -76,6 +82,95 @@ class CheckoutController extends Controller
         }
 
         return $this->processGuestOrder($request);
+    }
+
+    public function storeDetails(Request $request)
+    {
+        if ($request->input('checkout_token') !== session('checkout_token')) {
+            return redirect()->route('checkout')->with('error', __('checkout.invalid_submission'));
+        }
+
+        $guest = ! Auth::check();
+        if (! $this->cartHasItems($guest ? null : Auth::id(), $guest)) {
+            return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
+        }
+
+        $validated = $request->validate($this->checkoutFieldRules($guest));
+        session(['checkout_details' => $validated]);
+
+        return redirect()->route('checkout.payment');
+    }
+
+    public function payment()
+    {
+        $details = session('checkout_details');
+        if (! is_array($details) || $details === []) {
+            return redirect()->route('checkout')->with('error', __('checkout.invalid_submission'));
+        }
+
+        if (Auth::check()) {
+            if (! $this->cartHasItems(Auth::id(), false)) {
+                return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
+            }
+
+            $cartItems = shoppingCart::with('product.productImages', 'productItems')
+                ->where('user_id', Auth::id())
+                ->get();
+
+            return view('checkout.payment', $this->checkoutViewData($cartItems, Auth::id(), null, true));
+        }
+
+        if (! $this->cartHasItems(null, true)) {
+            return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
+        }
+
+        [$cartItems, $subtotal] = $this->buildGuestCartViewData();
+
+        return view('checkout.payment', $this->checkoutViewData($cartItems, null, $subtotal, true));
+    }
+
+    protected function lockPaymentPayload(Request $request): void
+    {
+        $details = session('checkout_details');
+        if ($request->filled('payment_method') && is_array($details) && $details !== []) {
+            $request->replace(array_merge($details, [
+                'payment_method' => $request->input('payment_method'),
+                'checkout_token' => $request->input('checkout_token'),
+            ]));
+
+            return;
+        }
+
+        if (! $request->filled('payment_method')) {
+            $request->merge(['payment_method' => 'cash']);
+        }
+    }
+
+    protected function checkoutFieldRules(bool $guest): array
+    {
+        $rules = [
+            'full_name' => 'required|string|max:255',
+            'address_line1' => 'required|string|max:255',
+            'address_line2' => 'nullable|string|max:255',
+            'city' => ['required', 'integer', Cities::activeIdRule()],
+            'country' => 'nullable|string|max:100',
+            'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
+            'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
+        ];
+
+        if ($guest) {
+            $rules['email'] = 'required|email|max:255';
+
+            return $rules;
+        }
+
+        $rules['saved_address_id'] = [
+            'nullable',
+            'integer',
+            Rule::exists('addresses', 'id')->where(fn ($q) => $q->where('user_id', Auth::id())),
+        ];
+
+        return $rules;
     }
 
     protected function redirectIfCartExceedsStock()
@@ -110,20 +205,7 @@ class CheckoutController extends Controller
     {
         $userId = Auth::id();
 
-        $validatedData = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'address_line1' => 'required|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
-            'city' => ['required', 'integer', Cities::activeIdRule()],
-            'country' => 'nullable|string|max:100',
-            'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
-            'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
-            'saved_address_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('addresses', 'id')->where(fn ($q) => $q->where('user_id', $userId)),
-            ],
-        ]);
+        $validatedData = $request->validate($this->checkoutFieldRules(false));
 
         if (! $this->cartHasItems($userId, false)) {
             return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
@@ -168,7 +250,7 @@ class CheckoutController extends Controller
                     throw new RuntimeException('place_failed');
                 }
 
-                payments::createCashPayment($order->id, $total);
+                payments::createCashPayment($order->id, $total, (string) $request->input('payment_method', 'cash'));
 
                 return ['order' => $order, 'total' => $total, 'deliveryFee' => $deliveryFee];
             });
@@ -188,16 +270,7 @@ class CheckoutController extends Controller
 
     protected function processGuestOrder(Request $request)
     {
-        $validatedData = $request->validate([
-            'email' => 'required|email|max:255',
-            'full_name' => 'required|string|max:255',
-            'address_line1' => 'required|string|max:255',
-            'address_line2' => 'nullable|string|max:255',
-            'city' => ['required', 'integer', Cities::activeIdRule()],
-            'country' => 'nullable|string|max:100',
-            'phone_number' => ['required', 'string', 'min:8', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
-            'promo_code' => ['nullable', 'string', 'max:50', new ValidPromoCode],
-        ]);
+        $validatedData = $request->validate($this->checkoutFieldRules(true));
 
         if (! $this->cartHasItems(null, true)) {
             return redirect()->route('cart.index')->with('error', __('checkout.cart_empty'));
@@ -244,7 +317,7 @@ class CheckoutController extends Controller
                     throw new RuntimeException('place_failed');
                 }
 
-                payments::createCashPayment($order->id, $total);
+                payments::createCashPayment($order->id, $total, (string) $request->input('payment_method', 'cash'));
 
                 return ['order' => $order, 'total' => $total, 'guest' => $guestUser, 'deliveryFee' => $deliveryFee];
             });
@@ -258,6 +331,8 @@ class CheckoutController extends Controller
 
             return redirect()->back()->withInput()->with('error', __('checkout.place_failed'));
         }
+
+        session()->forget('cart');
 
         return $this->completeOrder($order['order']->id, $order['total'], $order['deliveryFee']);
     }
@@ -287,6 +362,7 @@ class CheckoutController extends Controller
     protected function completeOrder(int $orderId, float $total, $deliveryFees)
     {
         session()->forget('checkout_token');
+        session()->forget('checkout_details');
         session([
             'placed_order_id' => $orderId,
             'placed_order_total' => $total,
@@ -341,7 +417,7 @@ class CheckoutController extends Controller
         $this->authorizeReceipt($order);
 
         $orderModel = orders::query()
-            ->with(['guestUser:id,email,name', 'cities:id,price', 'orderItems'])
+            ->with(['guestUser:id,email,name', 'cities:id,price', 'orderItems', 'payments'])
             ->findOrFail($order);
 
         $total = session('placed_order_total', $orderModel->total_amount);
@@ -373,6 +449,7 @@ class CheckoutController extends Controller
             'emailSent' => false,
             'emailPending' => true,
             'metaPurchase' => $metaPurchase,
+            'paymentMethod' => $orderModel->payments->sortByDesc('id')->first()?->payment_method,
         ]);
     }
 
@@ -451,16 +528,25 @@ class CheckoutController extends Controller
         ));
     }
 
-    protected function checkoutViewData($cartItems, ?int $userId, ?float $guestSubtotal = null): array
+    protected function checkoutViewData($cartItems, ?int $userId, ?float $guestSubtotal = null, bool $useSavedDetails = false): array
     {
         $subtotal = $guestSubtotal ?? $cartItems->sum(function ($item) {
             return $this->lineTotal($item->product ?? null, (int) ($item->quantity ?? 1));
         });
 
         $shipping = app(ShippingService::class);
+        $savedDetails = $useSavedDetails && is_array(session('checkout_details'))
+            ? session('checkout_details')
+            : null;
         $cityId = old('city');
+        if (($cityId === null || $cityId === '') && is_array($savedDetails)) {
+            $cityId = $savedDetails['city'] ?? null;
+        }
         $city = $cityId ? Cities::find($cityId) : null;
         $promoCode = old('promo_code') ?? session('promo_code');
+        if (is_array($savedDetails) && array_key_exists('promo_code', $savedDetails)) {
+            $promoCode = $savedDetails['promo_code'];
+        }
         $promo = $promoCode ? discountCodes::findUsable($promoCode) : null;
         $discountPercent = $promo->discount_percentage ?? 0;
         $subtotal = $shipping->money((float) $subtotal);

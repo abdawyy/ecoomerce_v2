@@ -25,6 +25,9 @@
 @endphp
 <p style="margin:0 0 8px;font-size:16px;line-height:1.6;color:#1b2740;">{{ __('email.greeting', ['name' => $name]) }}</p>
 <p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:#4a453f;">{{ __('email.order_thanks') }}</p>
+@if ($order->payments->contains(fn ($payment) => $payment->payment_method === 'instapay'))
+<p style="margin:-8px 0 22px;font-size:15px;line-height:1.7;color:#1b2740;">{{ __('email.instapay_whatsapp') }}</p>
+@endif
 
 <p style="margin:0;font-size:18px;letter-spacing:0.02em;color:#1b2740;"><strong>{{ __('email.order_number', ['id' => $order->id]) }}</strong></p>
 <p style="margin:4px 0 22px;font-size:13px;color:#6b645b;">

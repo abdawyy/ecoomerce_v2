@@ -31,7 +31,7 @@
             </div>
 
             <div class="col-12">
-                <form action="{{ route('checkout.order') }}" method="POST" id="checkout-order-form">
+                <form action="{{ route('checkout.payment.store') }}" method="POST" id="checkout-order-form">
                     @csrf
                     <input type="hidden" name="checkout_token" value="{{ $checkoutToken }}">
                     @if (session('promo_code'))
@@ -221,9 +221,8 @@
                                         </div>
                                         <x-web.return-policy class="mt-3" />
                                         <button class="btn btn-dark w-100 mt-3 py-3 fw-bold" type="submit" id="checkout-submit-btn">
-                                            {{ __('checkout.confirm') }}
+                                            {{ __('checkout.continue_to_payment') }}
                                         </button>
-                                        <p class="small text-muted text-center mt-2 mb-0">{{ __('checkout.placing_hint') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -368,7 +367,7 @@
         form?.addEventListener('submit', function () {
             if (!submitBtn) return;
             submitBtn.disabled = true;
-            submitBtn.textContent = @json(__('checkout.placing_order'));
+            submitBtn.textContent = @json(__('checkout.continuing'));
         });
     })();
 </script>
