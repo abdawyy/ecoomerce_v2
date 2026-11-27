@@ -36,4 +36,6 @@ return [
     'saved' => 'Saved successfully.',
     'save_failed' => 'Could not be saved.',
     'order_status_updated' => 'Order status updated successfully.',
+    'order_status_updated_email_sent' => 'Order status updated and the customer email was sent.',
+    'order_status_updated_email_failed' => 'Order status updated, but the customer email could not be sent.',
 ];

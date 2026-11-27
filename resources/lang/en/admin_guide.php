@@ -39,7 +39,7 @@ return [
 <ol>
     <li>Open <strong>Orders</strong> from the sidebar (badge shows pending count).</li>
     <li>Click an order to see items, customer, address, and payment.</li>
-    <li>Change status: <em>Pending → Processing → Completed</em> or <em>Cancelled</em>.</li>
+    <li>Change status: <em>Pending → Processing → Out for delivery → Completed</em> or <em>Cancelled</em>. The customer is emailed on each change.</li>
     <li>Download the <strong>invoice PDF</strong> from the order page.</li>
     <li>New orders also trigger an email to the admin address in your <code>.env</code> file.</li>
 </ol>

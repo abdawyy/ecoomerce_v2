@@ -120,9 +120,10 @@
                                             <td>{{ number_format($order->total_amount ?? 0, 2) }} LE</td>
                                             <td>
                                                 @php
-                                                    $statusClass = match (strtolower($order->status ?? 'pending')) {
+                                                    $statusClass = match (strtolower(\App\Support\OrderStatus::normalize($order->status))) {
                                                         'completed' => 'success',
                                                         'processing' => 'info',
+                                                        'out for delivery' => 'primary',
                                                         'cancelled' => 'secondary',
                                                         default => 'warning text-dark',
                                                     };

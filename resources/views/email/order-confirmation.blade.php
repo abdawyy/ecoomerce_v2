@@ -20,7 +20,7 @@
     $delivery = (float) $order->resolvedDeliveryFee();
     $money = fn ($amount) => __('email.money', ['amount' => number_format((float) $amount, 2)]);
     $sep = app()->getLocale() === 'ar' ? '، ' : ', ';
-    $statusKey = 'email.status_'.($order->status ?: 'Pending');
+    $statusKey = 'email.status_'.\App\Support\OrderStatus::mailKey($order->status);
     $statusLabel = __($statusKey) === $statusKey ? ($order->status ?: 'Pending') : __($statusKey);
 @endphp
 <p style="margin:0 0 8px;font-size:16px;line-height:1.6;color:#1b2740;">{{ __('email.greeting', ['name' => $name]) }}</p>

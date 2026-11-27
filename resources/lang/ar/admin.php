@@ -36,4 +36,6 @@ return [
     'saved' => 'تم الحفظ بنجاح.',
     'save_failed' => 'تعذر الحفظ.',
     'order_status_updated' => 'تم تحديث حالة الطلب بنجاح.',
+    'order_status_updated_email_sent' => 'تم تحديث حالة الطلب وإرسال الإيميل للعميل.',
+    'order_status_updated_email_failed' => 'تم تحديث حالة الطلب، لكن تعذر إرسال الإيميل للعميل.',
 ];

@@ -11,18 +11,24 @@ class OrderStatusTest extends TestCase
     {
         $this->assertSame(OrderStatus::PENDING, OrderStatus::normalize('pending'));
         $this->assertSame(OrderStatus::PROCESSING, OrderStatus::normalize('processing'));
+        $this->assertSame(OrderStatus::OUT_FOR_DELIVERY, OrderStatus::normalize('out_for_delivery'));
+        $this->assertSame(OrderStatus::OUT_FOR_DELIVERY, OrderStatus::normalize('out for delivery'));
         $this->assertSame(OrderStatus::COMPLETED, OrderStatus::normalize('completed'));
+        $this->assertSame(OrderStatus::COMPLETED, OrderStatus::normalize('complate'));
         $this->assertSame(OrderStatus::CANCELLED, OrderStatus::normalize('cancelled'));
         $this->assertSame(OrderStatus::CANCELLED, OrderStatus::normalize('canceled'));
+        $this->assertSame(OrderStatus::CANCELLED, OrderStatus::normalize('cancel'));
     }
 
-    public function test_pending_list_filter_includes_processing(): void
+    public function test_list_filters_are_per_status(): void
     {
         $this->assertSame(
-            OrderStatus::pendingValues(),
+            OrderStatus::aliases('Pending'),
             OrderStatus::listFilterValues('Pending')
         );
-        $this->assertContains(OrderStatus::PROCESSING, OrderStatus::listFilterValues('pending'));
+        $this->assertContains(OrderStatus::OUT_FOR_DELIVERY, OrderStatus::listFilterValues('out_for_delivery'));
+        $this->assertNotContains(OrderStatus::PROCESSING, OrderStatus::listFilterValues('pending'));
+        $this->assertContains(OrderStatus::OUT_FOR_DELIVERY, OrderStatus::pendingValues());
     }
 
     public function test_bell_total_excludes_new_users_and_guests(): void

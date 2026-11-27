@@ -28,10 +28,9 @@
                             <label class="form-label">Status</label>
                             <select name="status" class="form-select">
                                 <option value="">All Status</option>
-                                <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="Processing" {{ request('status') === 'Processing' ? 'selected' : '' }}>Processing</option>
-                                <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                @foreach (\App\Support\OrderStatus::all() as $option)
+                                    <option value="{{ $option }}" {{ request('status') === $option ? 'selected' : '' }}>{{ $option }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-12">

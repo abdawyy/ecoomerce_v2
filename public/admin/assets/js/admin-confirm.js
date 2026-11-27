@@ -207,6 +207,7 @@
         switch (String(status || '').toLowerCase()) {
             case 'completed': return 'bg-success text-white';
             case 'processing': return 'bg-info text-white';
+            case 'out for delivery': return 'bg-primary text-white';
             case 'cancelled':
             case 'canceled': return 'bg-danger text-white';
             default: return 'bg-warning text-dark';

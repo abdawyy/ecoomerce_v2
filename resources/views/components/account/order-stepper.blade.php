@@ -1,14 +1,17 @@
 @props(['status'])
 
 @php
-    $normalized = strtolower($status ?? 'pending');
+    $canonical = \App\Support\OrderStatus::normalize($status);
+    $normalized = strtolower($canonical);
     $steps = [
         ['key' => 'pending', 'label' => __('account.step_pending')],
         ['key' => 'processing', 'label' => __('account.step_processing')],
+        ['key' => 'out for delivery', 'label' => __('account.step_out_for_delivery')],
         ['key' => 'completed', 'label' => __('account.step_completed')],
     ];
     $activeIndex = match ($normalized) {
-        'completed' => 2,
+        'completed' => 3,
+        'out for delivery' => 2,
         'processing' => 1,
         default => 0,
     };

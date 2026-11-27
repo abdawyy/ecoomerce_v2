@@ -122,6 +122,7 @@
                                             $statusClass = match (strtolower($status)) {
                                                 'completed' => 'bg-success text-white',
                                                 'processing' => 'bg-info text-white',
+                                                'out for delivery' => 'bg-primary text-white',
                                                 'cancelled' => 'bg-danger text-white',
                                                 default => 'bg-warning text-dark',
                                             };

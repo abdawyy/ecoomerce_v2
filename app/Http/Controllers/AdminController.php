@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderStatusUpdatedMail;
 use App\Models\Admin;
 use App\Traits\Apptraits;
 use App\Models\orders;
@@ -466,13 +468,38 @@ class AdminController extends Controller
             'status' => OrderStatus::validationRule(),
         ]);
 
+        $from = OrderStatus::normalize($order->status);
+        $to = OrderStatus::normalize($request->status);
+
         try {
             $order->transitionTo($request->status);
         } catch (\RuntimeException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        return redirect()->back()->with('success', __('admin.order_status_updated'));
+        if ($from === $to) {
+            return redirect()->back()->with('success', __('admin.order_status_updated'));
+        }
+
+        $order->load(['user:id,name,email', 'guestUser:id,name,email']);
+        $customerEmail = $order->user->email ?? $order->guestUser->email ?? null;
+
+        if (! $customerEmail) {
+            return redirect()->back()->with('error', __('admin.order_status_updated_email_failed'));
+        }
+
+        try {
+            Mail::to($customerEmail)->send(new OrderStatusUpdatedMail($order->fresh([
+                'user:id,name,email',
+                'guestUser:id,name,email',
+            ])));
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()->back()->with('error', __('admin.order_status_updated_email_failed'));
+        }
+
+        return redirect()->back()->with('success', __('admin.order_status_updated_email_sent'));
     }
     public function userShow($id, AdminCustomerProfileService $profiles)
     {
