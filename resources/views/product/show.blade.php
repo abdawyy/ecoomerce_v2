@@ -856,7 +856,7 @@
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (reduceMotion) {
             if (frame && !productImageIsVisible(frame)) {
-                frame.scrollIntoView({ behavior: 'auto', block: 'start' });
+                window.scrollTo({ top: 0, behavior: 'auto' });
             }
             return;
         }
@@ -875,7 +875,7 @@
             if (finished) return;
             finished = true;
             window.removeEventListener('scrollend', done);
-            flyAfterPause(800);
+            flyAfterPause(500);
         };
 
         if ('onscrollend' in window) {
@@ -885,7 +885,7 @@
             window.setTimeout(done, 700);
         }
 
-        frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function flyImageToCart() {
