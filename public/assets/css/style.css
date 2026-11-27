@@ -147,7 +147,7 @@ body {
 .cart {
     position: absolute;
     top: 15px;
-    right: -60px; /* Hide off-screen */
+    inset-inline-end: 15px;
     z-index: 90;
     background-color: var(--color-white);
     border-radius: 50%;
@@ -158,10 +158,11 @@ body {
     justify-content: center;
     transition: var(--transition-smooth);
     cursor: pointer;
+    opacity: 0;
 }
 
 .product-card:hover .cart {
-    right: 15px; /* Slide in */
+    opacity: 1;
 }
 
 .cart:hover {
@@ -508,7 +509,7 @@ body {
 #newCollection .card .cart, #allProduct .card .cart {
     position: absolute;
     top: 15px;
-    right: -100px;
+    inset-inline-end: 15px;
     z-index: 90;
     background-color: var(--color-white);
     border-radius: 50%;
@@ -519,14 +520,15 @@ body {
     justify-content: center;
     transition: 0.3s;
     cursor: pointer;
+    opacity: 0;
 }
 
 #newCollection .card:hover .cart, #allProduct .card:hover .cart {
-    right: 15px;
+    opacity: 1;
 }
 
 @media (max-width:992px) {
-    #newCollection .card .cart, #allProduct .card .cart { right: 15px; }
+    #newCollection .card .cart, #allProduct .card .cart { opacity: 1; }
 }
 
 /* --- Pagination Styles --- */

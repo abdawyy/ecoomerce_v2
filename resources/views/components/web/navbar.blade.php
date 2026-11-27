@@ -87,6 +87,30 @@
                     @endif
                 </div>
             @endauth
+            @php
+                $menuCategories = collect($categories ?? [])->sortBy(fn ($item) => mb_strtolower((string) $item->name))->values();
+                $menuBrands = collect($types ?? [])->sortBy(fn ($item) => mb_strtolower((string) $item->name))->values();
+            @endphp
+            @if ($menuCategories->isNotEmpty())
+                <div class="mobile-menu-group">
+                    <p class="mobile-menu-label">{{ __('web.category') }}</p>
+                    <div class="mobile-menu-links">
+                        @foreach ($menuCategories as $category)
+                            <a href="{{ route('product.List', ['id' => $category->id]) }}" class="mobile-menu-link">{{ $category->name }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+            @if ($menuBrands->isNotEmpty())
+                <div class="mobile-menu-group">
+                    <p class="mobile-menu-label">{{ __('web.brand') }}</p>
+                    <div class="mobile-menu-links">
+                        @foreach ($menuBrands as $brand)
+                            <a href="{{ route('product.List', ['type_id' => $brand->id]) }}" class="mobile-menu-link">{{ $brand->name }}</a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             <div class="d-flex justify-content-center gap-3">
                 <a href="{{ url('/lang/en') }}" class="text-decoration-none fw-bold {{ app()->getLocale() == 'en' ? 'text-dark' : 'text-muted' }}">EN</a>
                 <span class="text-muted">|</span>

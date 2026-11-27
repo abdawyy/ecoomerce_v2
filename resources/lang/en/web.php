@@ -111,6 +111,7 @@ return [
   'select_size_first' => 'Please select a size first',
   'unable_to_add_to_cart' => 'Unable to add to cart.',
   'added_to_cart' => 'Added to cart.',
+  'added_short' => 'Added',
   'select_rating' => 'Please select a star rating',
   'review_requires_purchase' => 'You can review a product only after a completed purchase.',
   'review_submitted' => 'Review submitted.',

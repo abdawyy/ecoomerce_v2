@@ -116,6 +116,7 @@ return [
     'select_size_first' => 'يرجى اختيار المقاس أولاً',
     'unable_to_add_to_cart' => 'تعذر إضافة المنتج إلى السلة.',
     'added_to_cart' => 'تمت الإضافة إلى السلة.',
+    'added_short' => 'تمت الإضافة',
     'select_rating' => 'يرجى اختيار تقييم بالنجوم',
     'review_requires_purchase' => 'يمكنك تقييم المنتج بعد إتمام عملية شراء مكتملة فقط.',
     'review_submitted' => 'تم إرسال المراجعة.',

@@ -22,7 +22,12 @@
         font-weight: 700;
     }
 
-    .img-main-container { border-radius: 14px; overflow: hidden; background: var(--brand-soft); }
+    .img-main-container {
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--brand-soft);
+        scroll-margin-top: calc(var(--header-height, 136px) + 12px);
+    }
     .img-oneProduct { width: 100%; object-fit: cover; aspect-ratio: 4 / 5; }
     .img-main-container img { transition: transform 0.3s ease; }
     .img-main-container:hover img { transform: scale(1.02); }
@@ -169,6 +174,88 @@
         box-shadow: none;
     }
 
+    .js-add-to-cart.is-adding:disabled,
+    .js-add-to-cart.is-added:disabled {
+        opacity: 1;
+        cursor: default;
+    }
+
+    .js-add-to-cart.is-added {
+        text-transform: none;
+        background: var(--brand-burgundy);
+        border-color: var(--brand-burgundy);
+    }
+
+    .pdp-cart-flyer {
+        position: fixed;
+        z-index: 10050;
+        object-fit: cover;
+        border-radius: 12px;
+        pointer-events: none;
+        transition: transform 0.65s cubic-bezier(.2, .7, .2, 1), opacity 0.65s ease;
+    }
+
+    .pdp-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        direction: ltr;
+        touch-action: none;
+        overscroll-behavior: none;
+    }
+
+    .pdp-lightbox-img {
+        max-width: min(78vw, 1100px);
+        max-height: 86vh;
+        border-radius: 10px;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .pdp-lightbox-nav,
+    .pdp-lightbox-close {
+        position: absolute;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--brand-cream, #fcf4e9);
+        background: var(--brand-navy, #193049);
+    }
+
+    .pdp-lightbox-nav {
+        top: 50%;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        font-size: 1.35rem;
+    }
+
+    .pdp-lightbox-prev { left: 12px; }
+    .pdp-lightbox-next { right: 12px; }
+
+    .pdp-lightbox-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+
+    @media (max-width: 575.98px) {
+        .pdp-lightbox-img { max-width: 74vw; }
+        .pdp-lightbox-prev { left: 8px; }
+        .pdp-lightbox-next { right: 8px; }
+    }
+
     .review-card {
         border-radius: 14px;
         border: 1px solid var(--brand-border);
@@ -306,7 +393,7 @@
                     </div>
 
                     <div class="d-flex gap-2 align-items-stretch">
-                        <button type="button" class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
+                        <button type="button" class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
                             <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
                         </button>
                         @php $isFavorite = collect($favoriteProductIds ?? [])->contains($product->id); @endphp
@@ -425,7 +512,7 @@
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>
             @endif
         </div>
-        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
+        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
             <i class="bi bi-bag-plus-fill me-1"></i> {{ __('web.add_to_cart') }}
         </button>
     </div>
@@ -447,14 +534,93 @@
     }
 
     function openImage(img) {
+        const thumbs = Array.from(document.querySelectorAll('.img-oneProduct-sub'));
+        if (!thumbs.length || !img) return;
+
+        let index = thumbs.findIndex(function (el) { return el.src === img.src; });
+        if (index < 0) index = 0;
+
         const overlay = document.createElement('div');
-        overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:9999; cursor:zoom-out;";
-        const largeImg = document.createElement('img');
-        largeImg.src = img.src;
-        largeImg.style = "max-width:90%; max-height:90%; border-radius:10px;";
-        overlay.appendChild(largeImg);
+        overlay.className = 'pdp-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.innerHTML = ''
+            + '<button type="button" class="pdp-lightbox-close" aria-label="Close">&times;</button>'
+            + '<button type="button" class="pdp-lightbox-nav pdp-lightbox-prev" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>'
+            + '<img class="pdp-lightbox-img" alt="" draggable="false">'
+            + '<button type="button" class="pdp-lightbox-nav pdp-lightbox-next" aria-label="Next"><i class="bi bi-chevron-right"></i></button>';
         document.body.appendChild(overlay);
-        overlay.onclick = () => document.body.removeChild(overlay);
+
+        const largeImg = overlay.querySelector('.pdp-lightbox-img');
+        const prevBtn = overlay.querySelector('.pdp-lightbox-prev');
+        const nextBtn = overlay.querySelector('.pdp-lightbox-next');
+        if (thumbs.length < 2) {
+            prevBtn.hidden = true;
+            nextBtn.hidden = true;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        function show(nextIndex) {
+            index = (nextIndex + thumbs.length) % thumbs.length;
+            largeImg.src = thumbs[index].src;
+            changeMainImage(thumbs[index]);
+        }
+
+        function close() {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = previousOverflow;
+            overlay.remove();
+        }
+
+        function onKey(event) {
+            if (event.key === 'Escape') close();
+            if (event.key === 'ArrowLeft') show(index - 1);
+            if (event.key === 'ArrowRight') show(index + 1);
+        }
+
+        show(index);
+        document.addEventListener('keydown', onKey);
+
+        overlay.addEventListener('click', function (event) {
+            if (overlay.dataset.swiped === '1') {
+                overlay.dataset.swiped = '0';
+                return;
+            }
+            if (event.target === overlay) close();
+        });
+        overlay.querySelector('.pdp-lightbox-close').addEventListener('click', function (event) {
+            event.stopPropagation();
+            close();
+        });
+        prevBtn.addEventListener('click', function (event) {
+            event.stopPropagation();
+            show(index - 1);
+        });
+        nextBtn.addEventListener('click', function (event) {
+            event.stopPropagation();
+            show(index + 1);
+        });
+        largeImg.addEventListener('click', function (event) { event.stopPropagation(); });
+
+        let startX = null;
+        let pointerId = null;
+        overlay.addEventListener('pointerdown', function (event) {
+            if (event.target.closest('.pdp-lightbox-nav, .pdp-lightbox-close')) return;
+            startX = event.clientX;
+            pointerId = event.pointerId;
+        });
+        overlay.addEventListener('pointerup', function (event) {
+            if (startX === null || event.pointerId !== pointerId) return;
+            const delta = event.clientX - startX;
+            startX = null;
+            if (Math.abs(delta) < 40) return;
+            overlay.dataset.swiped = '1';
+            show(delta < 0 ? index + 1 : index - 1);
+            window.setTimeout(function () { overlay.dataset.swiped = '0'; }, 0);
+        });
+        overlay.addEventListener('pointercancel', function () { startX = null; });
     }
 
     function selectedStock() {
@@ -494,6 +660,7 @@
 
     function syncAddToCartButtons(outOfStock) {
         document.querySelectorAll('.js-add-to-cart').forEach(function (btn) {
+            if (btn.classList.contains('is-adding') || btn.classList.contains('is-added')) return;
             btn.disabled = !!outOfStock;
             btn.setAttribute('aria-disabled', outOfStock ? 'true' : 'false');
         });
@@ -571,6 +738,140 @@
     });
 
     /* Add to Cart AJAX */
+    const addedShortLabel = @json(__('web.added_short'));
+    let addedTimer = null;
+
+    function cartButtons() {
+        return Array.from(document.querySelectorAll('.js-add-to-cart'));
+    }
+
+    function rememberCartLabels() {
+        cartButtons().forEach(function (btn) {
+            if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        });
+    }
+
+    function lockCartButtons() {
+        rememberCartLabels();
+        cartButtons().forEach(function (btn) {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+            btn.classList.add('is-adding');
+            btn.classList.remove('is-added');
+        });
+    }
+
+    function showAddedButtons() {
+        cartButtons().forEach(function (btn) {
+            btn.classList.remove('is-adding');
+            btn.classList.add('is-added');
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> ' + addedShortLabel;
+        });
+        window.clearTimeout(addedTimer);
+        addedTimer = window.setTimeout(restoreCartButtons, 1600);
+    }
+
+    function restoreCartButtons() {
+        window.clearTimeout(addedTimer);
+        cartButtons().forEach(function (btn) {
+            btn.classList.remove('is-adding', 'is-added');
+            if (btn.dataset.label) btn.innerHTML = btn.dataset.label;
+        });
+        syncAddToCartButtons(selectedStock() <= 0);
+    }
+
+    function productImageFrame() {
+        return document.querySelector('.img-main-container') || document.getElementById('mainImage');
+    }
+
+    function productImageIsVisible(frame) {
+        const rect = frame.getBoundingClientRect();
+        const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 136;
+        const topLimit = header + 8;
+        const visibleTop = Math.max(rect.top, topLimit);
+        const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+        const visible = Math.max(0, visibleBottom - visibleTop);
+        return visible >= Math.min(rect.height, window.innerHeight - topLimit) * 0.6;
+    }
+
+    function revealImageThenFly() {
+        const frame = productImageFrame();
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) {
+            if (frame && !productImageIsVisible(frame)) {
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            }
+            return;
+        }
+
+        const flyAfterPause = function (ms) {
+            window.setTimeout(flyImageToCart, ms);
+        };
+
+        if (!frame || productImageIsVisible(frame)) {
+            flyAfterPause(400);
+            return;
+        }
+
+        let finished = false;
+        const done = function () {
+            if (finished) return;
+            finished = true;
+            window.removeEventListener('scrollend', done);
+            flyAfterPause(400);
+        };
+
+        if ('onscrollend' in window) {
+            window.addEventListener('scrollend', done, { once: true });
+            window.setTimeout(done, 1200);
+        } else {
+            window.setTimeout(done, 700);
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function flyImageToCart() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const img = document.getElementById('mainImage');
+        const cart = document.querySelector('.storefront-cart-btn');
+        if (!img || !cart || !img.getAttribute('src')) return;
+        const from = img.getBoundingClientRect();
+        const to = cart.getBoundingClientRect();
+        if (from.width < 2 || from.height < 2) return;
+        const flyer = img.cloneNode(true);
+        flyer.removeAttribute('id');
+        flyer.removeAttribute('onclick');
+        flyer.className = 'pdp-cart-flyer';
+        flyer.style.left = from.left + 'px';
+        flyer.style.top = from.top + 'px';
+        flyer.style.width = from.width + 'px';
+        flyer.style.height = from.height + 'px';
+        document.body.appendChild(flyer);
+        const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+        const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+        requestAnimationFrame(function () {
+            flyer.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(0.12)';
+            flyer.style.opacity = '0.35';
+        });
+        const removeFlyer = function () { flyer.remove(); };
+        flyer.addEventListener('transitionend', removeFlyer, { once: true });
+        window.setTimeout(removeFlyer, 800);
+    }
+
+    function bumpCartIcon() {
+        const cart = document.querySelector('.storefront-cart-btn');
+        if (!cart) return;
+        cart.classList.remove('is-cart-bump');
+        void cart.offsetWidth;
+        cart.classList.add('is-cart-bump');
+        cart.addEventListener('animationend', function () {
+            cart.classList.remove('is-cart-bump');
+        }, { once: true });
+    }
+
     function addToCart(productId) {
         if (selectedStock() <= 0) {
             return;
@@ -583,6 +884,8 @@
             }
             return;
         }
+
+        lockCartButtons();
 
         fetch('/cart/add', {
             method: 'POST',
@@ -603,6 +906,9 @@
             .then(data => {
                 if (data.success) {
                     $('.cart-Notify, .cart-count').text(data.cartCount);
+                    bumpCartIcon();
+                    showAddedButtons();
+                    revealImageThenFly();
                     if (typeof window.trackMeta === 'function' && data.meta) {
                         window.trackMeta('AddToCart', data.meta);
                     }
@@ -611,11 +917,15 @@
                     }
                 } else if (data.redirect) {
                     window.location.href = data.redirect;
-                } else if (window.toastr) {
-                    toastr.error(data.message || @json(__('web.unable_to_add_to_cart')));
+                } else {
+                    restoreCartButtons();
+                    if (window.toastr) {
+                        toastr.error(data.message || @json(__('web.unable_to_add_to_cart')));
+                    }
                 }
             })
             .catch(err => {
+                restoreCartButtons();
                 if (window.toastr) {
                     toastr.error(err.message || @json(__('web.unable_to_add_to_cart')));
                 }
