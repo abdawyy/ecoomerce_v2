@@ -38,19 +38,19 @@
                         <div class="pay-methods">
                             <label class="pay-option">
                                 <input type="radio" name="payment_method" value="cash" @checked(old('payment_method', 'cash') === 'cash') required>
-                                <span class="pay-option-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
                                 <span class="pay-option-logo-wrap">
                                     <img src="{{ asset('assets/images/cash.svg') }}" alt="" class="pay-option-logo">
                                 </span>
+                                <span class="pay-option-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
                                 <span class="pay-option-title">{{ __('checkout.pay_cash') }}</span>
                             </label>
 
                             <label class="pay-option">
                                 <input type="radio" name="payment_method" value="instapay" @checked(old('payment_method') === 'instapay')>
-                                <span class="pay-option-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
                                 <span class="pay-option-logo-wrap">
                                     <img src="{{ asset('assets/images/instapay.png') }}" alt="" class="pay-option-logo">
                                 </span>
+                                <span class="pay-option-check" aria-hidden="true"><i class="bi bi-check-lg"></i></span>
                                 <span class="pay-option-title">{{ __('checkout.pay_instapay') }}</span>
                             </label>
 

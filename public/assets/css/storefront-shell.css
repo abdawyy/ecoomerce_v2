@@ -1153,6 +1153,8 @@ a.checkout-step-link:hover .checkout-step-label {
 .pay-methods {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    isolation: isolate;
     gap: 0.75rem;
     margin-bottom: 0.25rem;
 }
@@ -1172,6 +1174,8 @@ a.checkout-step-link:hover .checkout-step-label {
     background: var(--brand-white);
     cursor: pointer;
     text-align: center;
+    transform-origin: center center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .pay-option input {
@@ -1191,6 +1195,11 @@ a.checkout-step-link:hover .checkout-step-label {
     outline-offset: 2px;
 }
 
+.pay-option:hover:not(.is-disabled) {
+    transform: scale(1.03);
+    z-index: 2;
+}
+
 .pay-option:has(input:checked) {
     border-color: var(--brand-navy);
     box-shadow: 0 0 0 1px var(--brand-navy);
@@ -1199,11 +1208,9 @@ a.checkout-step-link:hover .checkout-step-label {
 
 .pay-option-check {
     display: none;
-    position: absolute;
-    top: 10px;
-    inset-inline-end: 10px;
     width: 22px;
     height: 22px;
+    flex: 0 0 22px;
     border-radius: 50%;
     background: var(--brand-navy);
     color: #fff;
