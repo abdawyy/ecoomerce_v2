@@ -875,7 +875,7 @@
             if (finished) return;
             finished = true;
             window.removeEventListener('scrollend', done);
-            flyAfterPause(300);
+            flyAfterPause(1000);
         };
 
         if ('onscrollend' in window) {
