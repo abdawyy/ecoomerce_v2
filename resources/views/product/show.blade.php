@@ -230,6 +230,67 @@
         padding: 22px;
         margin-bottom: 30px;
     }
+
+    .pdp-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        direction: ltr;
+        touch-action: none;
+        overscroll-behavior: none;
+    }
+
+    .pdp-lightbox-img {
+        max-width: min(78vw, 1100px);
+        max-height: 86vh;
+        border-radius: 10px;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .pdp-lightbox-nav,
+    .pdp-lightbox-close {
+        position: absolute;
+        border: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--brand-cream, #fcf4e9);
+        background: var(--brand-navy, #193049);
+    }
+
+    .pdp-lightbox-nav {
+        top: 50%;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        font-size: 1.35rem;
+    }
+
+    .pdp-lightbox-prev { left: 12px; }
+    .pdp-lightbox-next { right: 12px; }
+
+    .pdp-lightbox-close {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+
+    @media (max-width: 575.98px) {
+        .pdp-lightbox-img { max-width: 74vw; }
+        .pdp-lightbox-prev { left: 8px; }
+        .pdp-lightbox-next { right: 8px; }
+    }
 </style>
 @endpush
 
@@ -502,14 +563,93 @@
     }
 
     function openImage(img) {
+        const thumbs = Array.from(document.querySelectorAll('.img-oneProduct-sub'));
+        if (!thumbs.length || !img) return;
+
+        let index = thumbs.findIndex(function (el) { return el.src === img.src; });
+        if (index < 0) index = 0;
+
         const overlay = document.createElement('div');
-        overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:9999; cursor:zoom-out;";
-        const largeImg = document.createElement('img');
-        largeImg.src = img.src;
-        largeImg.style = "max-width:90%; max-height:90%; border-radius:10px;";
-        overlay.appendChild(largeImg);
+        overlay.className = 'pdp-lightbox';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.innerHTML = ''
+            + '<button type="button" class="pdp-lightbox-close" aria-label="Close">&times;</button>'
+            + '<button type="button" class="pdp-lightbox-nav pdp-lightbox-prev" aria-label="Previous"><i class="bi bi-chevron-left"></i></button>'
+            + '<img class="pdp-lightbox-img" alt="" draggable="false">'
+            + '<button type="button" class="pdp-lightbox-nav pdp-lightbox-next" aria-label="Next"><i class="bi bi-chevron-right"></i></button>';
         document.body.appendChild(overlay);
-        overlay.onclick = () => document.body.removeChild(overlay);
+
+        const largeImg = overlay.querySelector('.pdp-lightbox-img');
+        const prevBtn = overlay.querySelector('.pdp-lightbox-prev');
+        const nextBtn = overlay.querySelector('.pdp-lightbox-next');
+        if (thumbs.length < 2) {
+            prevBtn.hidden = true;
+            nextBtn.hidden = true;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        function show(nextIndex) {
+            index = (nextIndex + thumbs.length) % thumbs.length;
+            largeImg.src = thumbs[index].src;
+            changeMainImage(thumbs[index]);
+        }
+
+        function close() {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = previousOverflow;
+            overlay.remove();
+        }
+
+        function onKey(event) {
+            if (event.key === 'Escape') close();
+            if (event.key === 'ArrowLeft') show(index - 1);
+            if (event.key === 'ArrowRight') show(index + 1);
+        }
+
+        show(index);
+        document.addEventListener('keydown', onKey);
+
+        overlay.addEventListener('click', function (event) {
+            if (overlay.dataset.swiped === '1') {
+                overlay.dataset.swiped = '0';
+                return;
+            }
+            if (event.target === overlay) close();
+        });
+        overlay.querySelector('.pdp-lightbox-close').addEventListener('click', function (event) {
+            event.stopPropagation();
+            close();
+        });
+        prevBtn.addEventListener('click', function (event) {
+            event.stopPropagation();
+            show(index - 1);
+        });
+        nextBtn.addEventListener('click', function (event) {
+            event.stopPropagation();
+            show(index + 1);
+        });
+        largeImg.addEventListener('click', function (event) { event.stopPropagation(); });
+
+        let startX = null;
+        let pointerId = null;
+        overlay.addEventListener('pointerdown', function (event) {
+            if (event.target.closest('.pdp-lightbox-nav, .pdp-lightbox-close')) return;
+            startX = event.clientX;
+            pointerId = event.pointerId;
+        });
+        overlay.addEventListener('pointerup', function (event) {
+            if (startX === null || event.pointerId !== pointerId) return;
+            const delta = event.clientX - startX;
+            startX = null;
+            if (Math.abs(delta) < 40) return;
+            overlay.dataset.swiped = '1';
+            show(delta < 0 ? index + 1 : index - 1);
+            window.setTimeout(function () { overlay.dataset.swiped = '0'; }, 0);
+        });
+        overlay.addEventListener('pointercancel', function () { startX = null; });
     }
 
     function selectedStock() {

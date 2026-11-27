@@ -209,12 +209,12 @@
 
 <section id="newCollection" class="py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-end mb-4 mb-md-5">
+        <div class="home-collection-head d-flex justify-content-between align-items-end mb-4 mb-md-5">
             <div class="section-title">
                 <h2 class="fw-bold display-5 mb-0">{{ $branding->collectionTitle() }}</h2>
                 <p class="text-muted mt-2">{{ $branding->collectionLead() }}</p>
             </div>
-            <a href="{{ route('product.List') }}" class="home-show-all fw-bold text-decoration-none d-none d-md-block">
+            <a href="{{ route('product.List') }}" class="home-show-all fw-bold text-decoration-none">
                 {{ __('web.show_all') }}
             </a>
         </div>

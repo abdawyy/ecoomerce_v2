@@ -4,11 +4,20 @@
     transition: opacity 0.15s ease;
 }
 
+.plp-page,
+.plp-page .container,
+.plp-product-grid {
+    min-width: 0;
+    max-width: 100%;
+}
+
 .plp-title {
     margin: 0 0 1.1rem;
     font-size: clamp(1.6rem, 2vw, 2rem);
     font-weight: 700;
     color: var(--brand-navy, #193049);
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .plp-toolbar {
@@ -441,6 +450,27 @@
     width: 20px !important;
     height: 20px !important;
     display: inline-block !important;
+}
+
+@media (max-width: 429.98px) {
+    .plp-title {
+        font-size: 1.45rem;
+    }
+
+    .plp-toolbar {
+        gap: 0.75rem;
+    }
+
+    .plp-toolbar-side {
+        flex-wrap: wrap;
+        white-space: normal;
+        max-width: 100%;
+    }
+
+    .plp-sort-form {
+        white-space: normal;
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 768px) {
