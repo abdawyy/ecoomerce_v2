@@ -186,6 +186,12 @@
         border-color: var(--brand-burgundy);
     }
 
+    .js-sticky-add-to-cart.is-go-to-cart {
+        text-transform: none;
+        opacity: 1;
+        cursor: pointer;
+    }
+
     .pdp-cart-flyer {
         position: fixed;
         z-index: 10050;
@@ -512,7 +518,7 @@
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>
             @endif
         </div>
-        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
+        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart js-sticky-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
             <i class="bi bi-bag-plus-fill me-1"></i> {{ __('web.add_to_cart') }}
         </button>
     </div>
@@ -660,7 +666,7 @@
 
     function syncAddToCartButtons(outOfStock) {
         document.querySelectorAll('.js-add-to-cart').forEach(function (btn) {
-            if (btn.classList.contains('is-adding') || btn.classList.contains('is-added')) return;
+            if (btn.classList.contains('is-adding') || btn.classList.contains('is-added') || btn.classList.contains('is-go-to-cart')) return;
             btn.disabled = !!outOfStock;
             btn.setAttribute('aria-disabled', outOfStock ? 'true' : 'false');
         });
@@ -739,6 +745,8 @@
 
     /* Add to Cart AJAX */
     const addedShortLabel = @json(__('web.added_short'));
+    const goToCartLabel = @json(__('web.go_to_cart'));
+    const cartUrl = @json(route('cart.index'));
     let addedTimer = null;
 
     function cartButtons() {
@@ -754,6 +762,7 @@
     function lockCartButtons() {
         rememberCartLabels();
         cartButtons().forEach(function (btn) {
+            if (btn.classList.contains('is-go-to-cart')) return;
             btn.disabled = true;
             btn.setAttribute('aria-disabled', 'true');
             btn.classList.add('is-adding');
@@ -761,14 +770,29 @@
         });
     }
 
+    function promoteStickyToCart() {
+        const btn = document.querySelector('.js-sticky-add-to-cart');
+        if (!btn || btn.classList.contains('is-go-to-cart')) return;
+        btn.classList.remove('is-adding', 'is-added', 'js-add-to-cart');
+        btn.classList.add('is-go-to-cart');
+        btn.disabled = false;
+        btn.removeAttribute('aria-disabled');
+        btn.innerHTML = '<i class="bi bi-bag-check-fill me-1"></i> ' + goToCartLabel;
+        btn.onclick = function () {
+            window.location.href = cartUrl;
+        };
+    }
+
     function showAddedButtons() {
         cartButtons().forEach(function (btn) {
+            if (btn.classList.contains('js-sticky-add-to-cart')) return;
             btn.classList.remove('is-adding');
             btn.classList.add('is-added');
             btn.disabled = true;
             btn.setAttribute('aria-disabled', 'true');
             btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> ' + addedShortLabel;
         });
+        promoteStickyToCart();
         window.clearTimeout(addedTimer);
         addedTimer = window.setTimeout(restoreCartButtons, 1600);
     }
