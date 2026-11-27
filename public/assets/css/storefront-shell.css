@@ -1195,7 +1195,7 @@ a.checkout-step-link:hover .checkout-step-label {
     outline-offset: 2px;
 }
 
-.pay-option:hover:not(.is-disabled) {
+.pay-option:hover {
     transform: scale(1.03);
     z-index: 2;
 }
@@ -1227,8 +1227,11 @@ a.checkout-step-link:hover .checkout-step-label {
 .pay-option.is-disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    pointer-events: none;
     background: var(--brand-soft);
+}
+
+.checkout-page .pay-option-logo {
+    transform: none;
 }
 
 .pay-option-logo-wrap {
