@@ -34,7 +34,12 @@
         min-width: 0;
         margin-bottom: 0;
     }
-    .img-main-container { border-radius: 14px; overflow: hidden; background: var(--brand-soft); }
+    .img-main-container {
+        border-radius: 14px;
+        overflow: hidden;
+        background: var(--brand-soft);
+        scroll-margin-top: calc(var(--header-height, 136px) + 12px);
+    }
     .img-oneProduct {
         display: block;
         width: 100%;
@@ -198,6 +203,27 @@
         opacity: 0.4;
         cursor: not-allowed;
         box-shadow: none;
+    }
+
+    .js-add-to-cart.is-adding:disabled,
+    .js-add-to-cart.is-added:disabled {
+        opacity: 1;
+        cursor: default;
+    }
+
+    .js-add-to-cart.is-added {
+        text-transform: none;
+        background: var(--brand-burgundy);
+        border-color: var(--brand-burgundy);
+    }
+
+    .pdp-cart-flyer {
+        position: fixed;
+        z-index: 10050;
+        object-fit: cover;
+        border-radius: 12px;
+        pointer-events: none;
+        transition: transform 0.65s cubic-bezier(.2, .7, .2, 1), opacity 0.65s ease;
     }
 
     .review-card {
@@ -411,7 +437,7 @@
                     </div>
 
                     <div class="d-flex gap-2 align-items-stretch">
-                        <button type="button" class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
+                        <button type="button" class="btn btn-dark flex-grow-1 py-3 fw-bold rounded-3 cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
                             <i class="bi bi-bag-plus-fill me-2"></i> {{ __('web.add_to_cart') }}
                         </button>
                         @php $isFavorite = collect($favoriteProductIds ?? [])->contains($product->id); @endphp
@@ -531,7 +557,7 @@
                 <span class="fw-bold">{{ number_format($product->price, 2) }} LE</span>
             @endif
         </div>
-        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }})" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
+        <button type="button" class="btn btn-dark flex-grow-1 py-2 fw-bold cta-btn js-add-to-cart" onclick="addToCart({{ $product->id }}, this)" @if ($totalQuantity <= 0) disabled aria-disabled="true" @endif>
             <i class="bi bi-bag-plus-fill me-1"></i> {{ __('web.add_to_cart') }}
         </button>
     </div>
@@ -689,6 +715,7 @@
 
     function syncAddToCartButtons(outOfStock) {
         document.querySelectorAll('.js-add-to-cart').forEach(function (btn) {
+            if (btn.classList.contains('is-adding') || btn.classList.contains('is-added')) return;
             btn.disabled = !!outOfStock;
             btn.setAttribute('aria-disabled', outOfStock ? 'true' : 'false');
         });
@@ -766,6 +793,140 @@
     });
 
     /* Add to Cart AJAX */
+    const addedShortLabel = @json(__('web.added_short'));
+    let addedTimer = null;
+
+    function cartButtons() {
+        return Array.from(document.querySelectorAll('.js-add-to-cart'));
+    }
+
+    function rememberCartLabels() {
+        cartButtons().forEach(function (btn) {
+            if (!btn.dataset.label) btn.dataset.label = btn.innerHTML;
+        });
+    }
+
+    function lockCartButtons() {
+        rememberCartLabels();
+        cartButtons().forEach(function (btn) {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+            btn.classList.add('is-adding');
+            btn.classList.remove('is-added');
+        });
+    }
+
+    function showAddedButtons() {
+        cartButtons().forEach(function (btn) {
+            btn.classList.remove('is-adding');
+            btn.classList.add('is-added');
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+            btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> ' + addedShortLabel;
+        });
+        window.clearTimeout(addedTimer);
+        addedTimer = window.setTimeout(restoreCartButtons, 1600);
+    }
+
+    function restoreCartButtons() {
+        window.clearTimeout(addedTimer);
+        cartButtons().forEach(function (btn) {
+            btn.classList.remove('is-adding', 'is-added');
+            if (btn.dataset.label) btn.innerHTML = btn.dataset.label;
+        });
+        syncAddToCartButtons(selectedStock() <= 0);
+    }
+
+    function productImageFrame() {
+        return document.querySelector('.img-main-container') || document.getElementById('mainImage');
+    }
+
+    function productImageIsVisible(frame) {
+        const rect = frame.getBoundingClientRect();
+        const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 136;
+        const topLimit = header + 8;
+        const visibleTop = Math.max(rect.top, topLimit);
+        const visibleBottom = Math.min(rect.bottom, window.innerHeight);
+        const visible = Math.max(0, visibleBottom - visibleTop);
+        return visible >= Math.min(rect.height, window.innerHeight - topLimit) * 0.6;
+    }
+
+    function revealImageThenFly() {
+        const frame = productImageFrame();
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) {
+            if (frame && !productImageIsVisible(frame)) {
+                frame.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }
+            return;
+        }
+
+        const flyAfterPause = function (ms) {
+            window.setTimeout(flyImageToCart, ms);
+        };
+
+        if (!frame || productImageIsVisible(frame)) {
+            flyAfterPause(400);
+            return;
+        }
+
+        let finished = false;
+        const done = function () {
+            if (finished) return;
+            finished = true;
+            window.removeEventListener('scrollend', done);
+            flyAfterPause(800);
+        };
+
+        if ('onscrollend' in window) {
+            window.addEventListener('scrollend', done, { once: true });
+            window.setTimeout(done, 1200);
+        } else {
+            window.setTimeout(done, 700);
+        }
+
+        frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function flyImageToCart() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const img = document.getElementById('mainImage');
+        const cart = document.querySelector('.storefront-cart-btn');
+        if (!img || !cart || !img.getAttribute('src')) return;
+        const from = img.getBoundingClientRect();
+        const to = cart.getBoundingClientRect();
+        if (from.width < 2 || from.height < 2) return;
+        const flyer = img.cloneNode(true);
+        flyer.removeAttribute('id');
+        flyer.removeAttribute('onclick');
+        flyer.className = 'pdp-cart-flyer';
+        flyer.style.left = from.left + 'px';
+        flyer.style.top = from.top + 'px';
+        flyer.style.width = from.width + 'px';
+        flyer.style.height = from.height + 'px';
+        document.body.appendChild(flyer);
+        const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+        const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+        requestAnimationFrame(function () {
+            flyer.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) scale(0.12)';
+            flyer.style.opacity = '0.35';
+        });
+        const removeFlyer = function () { flyer.remove(); };
+        flyer.addEventListener('transitionend', removeFlyer, { once: true });
+        window.setTimeout(removeFlyer, 800);
+    }
+
+    function bumpCartIcon() {
+        const cart = document.querySelector('.storefront-cart-btn');
+        if (!cart) return;
+        cart.classList.remove('is-cart-bump');
+        void cart.offsetWidth;
+        cart.classList.add('is-cart-bump');
+        cart.addEventListener('animationend', function () {
+            cart.classList.remove('is-cart-bump');
+        }, { once: true });
+    }
+
     function addToCart(productId) {
         if (selectedStock() <= 0) {
             return;
@@ -778,6 +939,8 @@
             }
             return;
         }
+
+        lockCartButtons();
 
         fetch('/cart/add', {
             method: 'POST',
@@ -798,6 +961,9 @@
             .then(data => {
                 if (data.success) {
                     $('.cart-Notify, .cart-count').text(data.cartCount);
+                    bumpCartIcon();
+                    showAddedButtons();
+                    revealImageThenFly();
                     if (typeof window.trackMeta === 'function' && data.meta) {
                         window.trackMeta('AddToCart', data.meta);
                     }
@@ -806,11 +972,15 @@
                     }
                 } else if (data.redirect) {
                     window.location.href = data.redirect;
-                } else if (window.toastr) {
-                    toastr.error(data.message || @json(__('web.unable_to_add_to_cart')));
+                } else {
+                    restoreCartButtons();
+                    if (window.toastr) {
+                        toastr.error(data.message || @json(__('web.unable_to_add_to_cart')));
+                    }
                 }
             })
             .catch(err => {
+                restoreCartButtons();
                 if (window.toastr) {
                     toastr.error(err.message || @json(__('web.unable_to_add_to_cart')));
                 }

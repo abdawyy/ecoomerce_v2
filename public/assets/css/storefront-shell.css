@@ -513,6 +513,31 @@ body:has(.modal.show) {
     height: 1.2em;
 }
 
+.storefront-cart-btn.is-cart-bump {
+    animation: cart-bump 0.55s ease;
+}
+
+.storefront-cart-btn.is-cart-bump .badge-cart {
+    animation: cart-badge-pop 0.55s ease;
+}
+
+@keyframes cart-bump {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.18); }
+}
+
+@keyframes cart-badge-pop {
+    0%, 100% { transform: scale(1); }
+    45% { transform: scale(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .storefront-cart-btn.is-cart-bump,
+    .storefront-cart-btn.is-cart-bump .badge-cart {
+        animation: none;
+    }
+}
+
 .storefront-cart-btn .badge-cart {
     position: absolute;
     top: 0;
