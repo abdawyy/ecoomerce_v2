@@ -38,6 +38,7 @@ return [
     'pay_instapay' => 'Instapay',
     'pay_visa' => 'Visa',
     'visa_soon' => 'Available very soon',
+    'payment_required' => 'Choose a payment method.',
     'progress' => 'Checkout progress',
     'saved_address' => 'Saved address',
     'select_saved_address' => 'Choose a saved address',

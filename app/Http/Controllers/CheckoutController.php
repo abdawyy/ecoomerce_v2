@@ -71,6 +71,9 @@ class CheckoutController extends Controller
 
         $request->validate([
             'payment_method' => ['required', Rule::in(['cash', 'instapay'])],
+        ], [
+            'payment_method.required' => __('checkout.payment_required'),
+            'payment_method.in' => __('checkout.payment_required'),
         ]);
 
         if ($redirect = $this->redirectIfCartExceedsStock()) {
@@ -139,10 +142,6 @@ class CheckoutController extends Controller
             ]));
 
             return;
-        }
-
-        if (! $request->filled('payment_method')) {
-            $request->merge(['payment_method' => 'cash']);
         }
     }
 

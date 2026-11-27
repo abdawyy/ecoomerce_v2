@@ -38,6 +38,7 @@ return [
     'pay_instapay' => 'Instapay',
     'pay_visa' => 'Visa',
     'visa_soon' => 'هتكون متاحة قريبًا',
+    'payment_required' => 'اختار طريقة دفع.',
     'progress' => 'مراحل الدفع',
     'saved_address' => 'عنوان محفوظ',
     'select_saved_address' => 'اختر عنواناً محفوظاً',

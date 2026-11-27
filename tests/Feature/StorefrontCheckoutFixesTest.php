@@ -132,6 +132,7 @@ class StorefrontCheckoutFixesTest extends TestCase
                 'country' => 'Egypt',
                 'phone_number' => '01111111111',
                 'saved_address_id' => $second->id,
+                'payment_method' => 'cash',
             ])
             ->assertRedirect();
 
@@ -164,6 +165,7 @@ class StorefrontCheckoutFixesTest extends TestCase
                 'city' => $city->id,
                 'country' => 'Egypt',
                 'phone_number' => '01222222222',
+                'payment_method' => 'cash',
             ])
             ->assertRedirect();
 

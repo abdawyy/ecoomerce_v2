@@ -37,7 +37,7 @@
 
                         <div class="pay-methods">
                             <label class="pay-option">
-                                <input type="radio" name="payment_method" value="cash" @checked(old('payment_method', 'cash') === 'cash') required>
+                                <input type="radio" name="payment_method" value="cash" @checked(old('payment_method') === 'cash') required>
                                 <span class="pay-option-logo-wrap">
                                     <img src="{{ asset('assets/images/cash.svg') }}" alt="" class="pay-option-logo">
                                 </span>
@@ -46,7 +46,7 @@
                             </label>
 
                             <label class="pay-option">
-                                <input type="radio" name="payment_method" value="instapay" @checked(old('payment_method') === 'instapay')>
+                                <input type="radio" name="payment_method" value="instapay" @checked(old('payment_method') === 'instapay') required>
                                 <span class="pay-option-logo-wrap">
                                     <img src="{{ asset('assets/images/instapay.png') }}" alt="" class="pay-option-logo">
                                 </span>

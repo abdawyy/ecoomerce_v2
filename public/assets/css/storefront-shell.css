@@ -1203,7 +1203,16 @@ a.checkout-step-link:hover .checkout-step-label {
 .pay-option:has(input:checked) {
     border-color: var(--brand-navy);
     box-shadow: 0 0 0 1px var(--brand-navy);
-    background: var(--brand-cream);
+    background: var(--brand-navy);
+    color: var(--brand-cream);
+}
+
+.pay-option:has(input:checked) .pay-option-title {
+    color: var(--brand-cream);
+}
+
+.pay-option:has(input[value="cash"]:checked) .pay-option-logo {
+    filter: brightness(0) invert(1);
 }
 
 .pay-option-check {
@@ -1212,7 +1221,7 @@ a.checkout-step-link:hover .checkout-step-label {
     height: 22px;
     flex: 0 0 22px;
     border-radius: 50%;
-    background: var(--brand-navy);
+    background: #198754;
     color: #fff;
     align-items: center;
     justify-content: center;
